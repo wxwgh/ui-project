@@ -36,6 +36,7 @@
 					<el-button size="mini" type="text" icon="el-icon-plus" @click.stop="addClick(data)"></el-button>
 				</span>
 				<span v-else>
+					<el-button size="mini" type="text">{{data.count}}</el-button>
 					<el-button size="mini" type="text" :icon="data.icon" @click.stop="selectClick(node,data)"></el-button>
 					<el-button size="mini" type="text" icon="el-icon-minus" @click.stop="deleteClick(node,data)"></el-button>
 				</span>
@@ -174,6 +175,7 @@ export default {
 				var layer_option = {
 					id:$this.$UUID(),
 					index:"2",
+					count:datas.features.length,
 					label:$this.$refs.layertreeimportbox.layer_name,
 					isTip:false,
 					isPlot:true,
@@ -577,6 +579,7 @@ export default {
 			var option = {
 				id:$this.$UUID(),
 				index:"2",
+				count:0,
 				label:$this.$refs.layeraddbox.layer_name,
 				isTip:false,
 				isPlot:true,

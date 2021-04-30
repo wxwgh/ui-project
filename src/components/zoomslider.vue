@@ -198,11 +198,35 @@ export default {
 		var $this =this;
 		var map = this.myCommon.getMap();
 		map.on("zoomlevelschange",function(){
-			$this.init_zoom_slider();
+			$this.init_change_slider();
 		})
 		map.on("zoomend",function(){
 			$this.init_zoom_slider();
 		})
+	},
+	init_change_slider(){
+		var map = this.myCommon.getMap();
+		var max_zoom = map.getMaxZoom();
+		var min_zoom = map.getMinZoom();
+		var current_zoom = map.getZoom();
+		var temp_zoom="";
+		if(current_zoom<=min_zoom){
+			temp_zoom = min_zoom;
+		}else if(current_zoom>min_zoom&&current_zoom<max_zoom){
+			temp_zoom = current_zoom;
+		}else if(map.getZoom()>=max_zoom){
+			temp_zoom = max_zoom;
+		}
+		
+		// 获取间隔数or级别数
+		var steps = max_zoom - min_zoom;
+		//获取间隔高度
+		var step_height = this.ruler_height/steps;
+		var step_top = this.cursor_top/steps;
+		//设置mask高度
+		this.$store.state.zoom_slider_info.mask_height = (max_zoom-temp_zoom)*step_height;
+		//设置cursor位置
+		this.$store.state.zoom_slider_info.cursor_top = (max_zoom-temp_zoom)*step_top;
 	},
 	//初始化级别指示条
 	init_zoom_slider(){

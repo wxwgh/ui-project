@@ -87,6 +87,7 @@ export default{
 							tempData[i].children[j].layer.remove();
 						}
 						tempData[i].children.splice(j,1);
+						tempData[i].count-=1;
 					}
 				}
 			}
@@ -785,10 +786,8 @@ export default{
 	},
 	get_geojson(layer){
 		var temp = layer.getLatLngs();
-		console.log(temp);
 		//此处为深拷贝
 		var temp_latlngs = JSON.parse(JSON.stringify(temp));
-		console.log(temp_latlngs);
 		for(let i=0;i<temp_latlngs.length;i++){
 			for(let j=0;j<temp_latlngs[i].length;j++){
 				temp_latlngs[i][j] = [temp_latlngs[i][j].lng,temp_latlngs[i][j].lat];
@@ -804,25 +803,12 @@ export default{
 		};
 		return JSON.stringify(geojson);
 	},
-	// get_xzqh_geojson(layer){
-	// 	var temp = layer.getLatLngs();
-	// 	console.log(temp);
-	// 	//此处为深拷贝
-	// 	var temp_latlngs = JSON.parse(JSON.stringify(temp));
-	// 	console.log(temp_latlngs);
-	// 	for(let i=0;i<temp_latlngs.length;i++){
-	// 		for(let j=0;j<temp_latlngs[i][0].length;j++){
-	// 			temp_latlngs[i][0][j] = [temp_latlngs[i][0][j].lng,temp_latlngs[i][0][j].lat];
-	// 			if(j===temp_latlngs[i][0].length-1){
-	// 				temp_latlngs[i][0].push([temp_latlngs[i][0][0][0],temp_latlngs[i][0][0][1]])
-	// 				break;
-	// 			}
-	// 		}
-	// 	}
-	// 	var geojson = {
-	// 		Region:temp_latlngs,
-	// 		id:1
-	// 	};
-	// 	return JSON.stringify(geojson);
-	// }
+	update_layer_count(id,count){
+		var layer_group = $store.state.layerGroups[0].children;
+		for(let i=0;i<layer_group.length;i++){
+			if(layer_group[i].id===id){
+				layer_group[i].count=count;
+			}
+		}
+	},
 }

@@ -119,6 +119,7 @@ export default {
 					var option = {
 						id:parentId,
 						index:"2",
+						count:0,
 						label:"坐标定位",
 						isTip:false,
 						isPlot:true,
@@ -195,6 +196,12 @@ export default {
 				};
 				//创建图层
 				$this.myCommon.createLayer(option2);
+				var temp_layer_group = $this.$store.state.layerGroups[0].children;
+				for(let i=0;i<temp_layer_group.length;i++){
+					if(temp_layer_group[i].id===parentId){
+						temp_layer_group[i].count+=1;
+					}
+				}
 			}).catch(() => {
 				
 			});
@@ -311,6 +318,7 @@ export default {
 		var option = {
 			id:id,
 			index:"2",
+			count:0,
 			label:value,
 			isTip:false,
 			isPlot:false,
@@ -353,6 +361,7 @@ export default {
 				console.log(result);
 				var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 				var page = null;
+				$this.myCommon.update_layer_count(id,temp.count);
 				if(temp.count%$this.pageNum===0){
 					page = parseInt(temp.count/$this.pageNum);
 				}else{
@@ -461,6 +470,7 @@ export default {
 			}).then(function (result) {
 				var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 				var page = null;
+				$this.myCommon.update_layer_count(id,temp.count);
 				if(temp.count%$this.pageNum===0){
 					page = parseInt(temp.count/$this.pageNum);
 				}else{

@@ -21,6 +21,7 @@ export default {
 			maxZoom: this.$store.state.mapList[0].urls[0].maxZoom,
 			zoomControl: false,
 			attributionControl: false,
+			// worldCopyJump:true,
 		})
 		// L.control.pan().addTo(this.$store.state.mapContainer[0].map);
 		// L.control.zoomslider().addTo(this.$store.state.mapContainer[0].map);

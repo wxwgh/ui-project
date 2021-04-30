@@ -122,6 +122,7 @@ export default {
 					};
 					//创建图层
 					$this.myCommon.createLayer(option);
+					layer_parent.count+=1;
 				}
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);
@@ -227,6 +228,7 @@ export default {
 				};
 				//创建图层
 				$this.myCommon.createLayer(option);
+				layer_parent.count+=1;
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);
 			})
@@ -347,6 +349,7 @@ export default {
 					};
 					//创建图层
 					$this.myCommon.createLayer(option);
+					layer_parent.count+=1;
 				}
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);

@@ -1,0 +1,132 @@
+<template>
+	<div>
+		<el-select v-model="poi_name" size="small" placeholder="选择poi关键字" style="width:100%" @change="isSameName">
+			<el-option v-for="post in options" :key="post.id" :label="post.label" :value="post.value"></el-option>
+		</el-select>
+	</div>
+	
+</template>
+
+<script>
+import $store from '@/store/index.js';
+export default {
+  name: 'searchpoibox',
+  data(){
+    return {
+		poi_name:"",
+		isName:false,
+		options:[
+			{
+				id:this.$UUID(),
+				value:"餐饮",
+				label:"餐饮"
+			},
+			{
+				id:this.$UUID(),
+				value:"宾馆",
+				label:"宾馆"
+			},
+			{
+				id:this.$UUID(),
+				value:"购物",
+				label:"购物"
+			},
+			{
+				id:this.$UUID(),
+				value:"生活服务",
+				label:"生活服务"
+			},
+			{
+				id:this.$UUID(),
+				value:"美容",
+				label:"美容"
+			},
+			{
+				id:this.$UUID(),
+				value:"旅游景点",
+				label:"旅游景点"
+			},
+			{
+				id:this.$UUID(),
+				value:"休闲娱乐",
+				label:"休闲娱乐"
+			},
+			{
+				id:this.$UUID(),
+				value:"运动健身",
+				label:"运动健身"
+			},
+			{
+				id:this.$UUID(),
+				value:"教育",
+				label:"教育"
+			},
+			{
+				id:this.$UUID(),
+				value:"文化传媒",
+				label:"文化传媒"
+			},
+			{
+				id:this.$UUID(),
+				value:"医疗",
+				label:"医疗"
+			},
+			{
+				id:this.$UUID(),
+				value:"汽车服务",
+				label:"汽车服务"
+			},
+			{
+				id:this.$UUID(),
+				value:"交通设施",
+				label:"交通设施"
+			},
+			{
+				id:this.$UUID(),
+				value:"金融",
+				label:"金融"
+			},
+			{
+				id:this.$UUID(),
+				value:"商务大厦",
+				label:"商务大厦"
+			},
+			{
+				id:this.$UUID(),
+				value:"地产小区",
+				label:"地产小区"
+			},
+			{
+				id:this.$UUID(),
+				value:"公司企业",
+				label:"公司企业"
+			},
+			{
+				id:this.$UUID(),
+				value:"政府机构",
+				label:"政府机构"
+			},
+			{
+				id:this.$UUID(),
+				value:"道路",
+				label:"道路"
+			},
+		]
+	}
+  },
+  methods:{
+	isSameName(){
+		this.isName=false;
+		var temp_child = $store.state.layerGroups[0].children;
+		for(let i=0;i<temp_child.length;i++){
+			if(temp_child[i].label===this.poi_name){
+				this.isName=true;
+			}
+		}
+	},
+  },
+}
+</script>
+
+<style lang="less">
+</style>

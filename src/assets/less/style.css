@@ -1,0 +1,19 @@
+.tabMouseOver{
+	background-color: #409eff1a;
+}
+.mapCursor{
+	cursor:default;
+}
+.mapUnCursor{
+	cursor:grab;
+}
+.layerCursor{
+	cursor:pointer;
+	z-index:1000000;
+}
+.textActive{
+	color:#409EFF;
+}
+.aliasInputClass{
+	margin-top: 10px;
+}

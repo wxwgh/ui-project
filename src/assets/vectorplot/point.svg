@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54 (76480) - https://sketchapp.com -->
+    <title>32-点</title>
+    <desc>Created with Sketch.</desc>
+    <g id="18-对象绘制" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="对象绘制" transform="translate(-13.000000, -12.000000)" fill="#5D6D7E" fill-rule="nonzero">
+            <g id="18-对象绘制" transform="translate(13.000000, 10.000000)">
+                <g id="gallery" transform="translate(0.000000, 2.000000)">
+                    <g id="32-点">
+                        <circle id="点符号" cx="16" cy="16" r="5"></circle>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

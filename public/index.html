@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>yg.ico" type="image/x-icon">
+    <title>影像地图服务汇聚与分析软件</title>
+	<script src="eel.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+	//禁用右键菜单
+	window.document.oncontextmenu = function(){ 
+		return false;
+	}
+	window.progress=[];
+	eel.expose(updateTaskProgress);
+	function updateTaskProgress(data){
+		var id="";
+		for(let i=0;i<window.progress.length;i++){
+			if(data.id===window.progress[i].id){
+				id=data.id;
+				break;
+			}
+		}
+		if(id){
+			for(let i=0;i<window.progress.length;i++){
+				if(data.id===window.progress[i].id){
+					window.updateProgress(data.id,data.progress);
+					window.updateExportProgress(data.id,data.exportProgress);
+					if(window.progress[i].progress===100&&window.progress[i].exportProgress===100){
+						window.updateTaskIndexedDB(data);
+						window.progress.splice(i,1);
+					}
+					// window.progress[i].progress=data.progress;
+					// window.progress[i].exportProgress=data.exportProgress;
+					// window.progress[i].is_realize=data.is_realize;
+				}
+			}
+		}else{
+			window.progress.push(data);
+		}
+	}
+</script>
+</body>
+</html>

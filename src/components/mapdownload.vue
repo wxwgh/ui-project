@@ -196,18 +196,7 @@ export default {
 						//python瓦片下载函数
 						await eel.tile_load(data)();
 					}
-					var index_down = setInterval(function(){
-						for(let i=0;i<window.progress.length;i++){
-							if(data.id===window.progress[i].id){
-								$this.myCommon.updateProgress(data.id,window.progress[i].progress);
-								$this.myCommon.updateExportProgress(data.id,window.progress[i].exportProgress);
-								if(window.progress[i].progress===100&&window.progress[i].exportProgress===100){
-									$this.myCommon.updateTaskIndexedDB(data);
-									clearInterval(index_down);
-								}
-							}
-						}
-					},1000);
+					
 					
 				}else if($this.$refs.mapdownloadbox.activeName==="2"){
 					//更新下载信息
@@ -222,18 +211,7 @@ export default {
 						//python瓦片下载函数
 						await eel.dem_load(data)();
 					}
-					var index_down = setInterval(function(){
-						for(let i=0;i<window.progress.length;i++){
-							if(data.id===window.progress[i].id){
-								$this.myCommon.updateProgress(data.id,window.progress[i].progress);
-								$this.myCommon.updateExportProgress(data.id,window.progress[i].exportProgress);
-								if(window.progress[i].progress===100&&window.progress[i].exportProgress===100){
-									$this.myCommon.updateTaskIndexedDB(data);
-									clearInterval(index_down);
-								}
-							}
-						}
-					},1000);
+					
 				}else if($this.$refs.mapdownloadbox.activeName==="3"){
 					//更新矢量下载信息
 					var data = $this.$store.state.downloadInfo.vector_load_info;

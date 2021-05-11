@@ -47,6 +47,8 @@ import {Base64} from 'js-base64';
 //引入移动面板插件
 // import './assets/plugins/pancontrol/L.Control.Pan.css';
 // import './assets/plugins/pancontrol/L.Control.Pan.js';
+//引入解析shp文件插件
+import './assets/plugins/analyzeshapefile/shapefile.js';
 
 Vue.prototype.gcj02towgs84=gcj02towgs84;
 Vue.prototype.Base64=Base64;

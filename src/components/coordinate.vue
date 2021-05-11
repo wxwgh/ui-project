@@ -20,13 +20,14 @@ import coordinatetransitionbox from '@/components/coordinatetransitionbox.vue';
 export default {
   name: 'coordinate',
   components:{
-  	dfmtransitionbox
+  	dfmtransitionbox,
+	coordinatetransitionbox
   },
   data(){
     return {
 		coordinatePost:[
 			{
-				name:"坐标转换",
+				name:"投影转换",
 				url:require('../assets/maptools/coordinate.png'),
 				isShow:false,
 				

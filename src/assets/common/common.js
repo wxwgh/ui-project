@@ -538,41 +538,13 @@ export default{
 	},
 	//获取map
 	getMap(){
-		var map="";
-		for(let i=0;i<$store.state.mapContainer.length;i++){
-			if($store.state.mapContainer[i].isShow){
-				map=$store.state.mapContainer[i].map;
-			}
-		}
+		var map = $store.state.map_container.map;
 		return map;
 	},
 	//获取图层
 	getLayer(){
-		var layer="";
-		for(let i=0;i<$store.state.mapContainer.length;i++){
-			if($store.state.mapContainer[i].isShow){
-				layer=$store.state.mapContainer[i].layer;
-			}
-		}
+		var layer = $store.state.map_container.layer;
 		return layer;
-	},
-	// 切换路由时 选择二维视图
-	setTwoView(type){
-		var flag=false;
-		for(let i=0;i<$store.state.mapContainer.length;i++){
-			if($store.state.mapContainer[i].isShow){
-				if(type!==$store.state.mapContainer[i].type){
-					flag=true;
-				}
-			}
-		}
-		if(flag){
-			$(".el-tabs__item").each(function(){
-				if($(this).text()==="二维视图"){
-					$(this).trigger("click");
-				}
-			});
-		}
 	},
 	//更新地图类型
 	updateMapType(type){
@@ -809,6 +781,82 @@ export default{
 			if(layer_group[i].id===id){
 				layer_group[i].count=count;
 			}
+		}
+	},
+	//清空自定义地图列表选中状态
+	clear_custom_active(){
+		var temp_list = $store.state.custom_map_list;
+		for(let i=0;i<temp_list.length;i++){
+			temp_list[i].isActive=false;
+		}
+	},
+	init_change_slider(){
+		var ruler_height = 147;
+		var cursor_top = 135;
+		var map = $store.state.map_container.map;
+		var max_zoom = map.getMaxZoom();
+		var min_zoom = map.getMinZoom();
+		var current_zoom = map.getZoom();
+		var temp_zoom="";
+		if(current_zoom<=min_zoom){
+			temp_zoom = min_zoom;
+		}else if(current_zoom>min_zoom&&current_zoom<max_zoom){
+			temp_zoom = current_zoom;
+		}else if(map.getZoom()>=max_zoom){
+			temp_zoom = max_zoom;
+		}
+		
+		// 获取间隔数or级别数
+		var steps = max_zoom - min_zoom;
+		//获取间隔高度
+		var step_height = ruler_height/steps;
+		var step_top = cursor_top/steps;
+		//设置mask高度
+		$store.state.zoom_slider_info.mask_height = (max_zoom-temp_zoom)*step_height;
+		//设置cursor位置
+		$store.state.zoom_slider_info.cursor_top = (max_zoom-temp_zoom)*step_top;
+	},
+	//初始化级别指示条
+	init_zoom_slider(){
+		var ruler_height = 147;
+		var cursor_top = 135;
+		var map = $store.state.map_container.map;
+		var max_zoom = map.getMaxZoom();
+		var min_zoom = map.getMinZoom();
+		var current_zoom = map.getZoom();
+		// 获取间隔数or级别数
+		var steps = max_zoom - min_zoom;
+		//获取间隔高度
+		var step_height = ruler_height/steps;
+		var step_top = cursor_top/steps;
+		//设置mask高度
+		$store.state.zoom_slider_info.mask_height = (max_zoom-current_zoom)*step_height;
+		//设置cursor位置
+		$store.state.zoom_slider_info.cursor_top = (max_zoom-current_zoom)*step_top;
+	},
+	init_map_event(){
+		var $this =this;
+		var map = $store.state.map_container.map;
+		map.on("zoomlevelschange",function(){
+			$this.init_change_slider();
+		})
+		map.on("zoomend",function(){
+			$this.init_zoom_slider();
+		})
+	},
+	set_down_load_able(type){
+		if(type==="谷歌地图"){
+			$store.state.down_load_able.is_vector_able=true;
+			$store.state.down_load_able.is_dem_able=false;
+		}else if(type==="OSM地图"){
+			$store.state.down_load_able.is_vector_able=false;
+			$store.state.down_load_able.is_dem_able=true;
+		}else if(type.indexOf("自定义")!==-1){
+			$store.state.down_load_able.is_vector_able=true;
+			$store.state.down_load_able.is_dem_able=true;
+		}else{
+			$store.state.down_load_able.is_vector_able=true;
+			$store.state.down_load_able.is_dem_able=true;
 		}
 	},
 }

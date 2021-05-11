@@ -83,13 +83,6 @@ export default {
 		is_label_show:false,
 		ruler_height:147,
 		cursor_top:135,
-		cursor_move:{
-			//相对于body 位置
-			client_y:0,
-			//相对于div 位置
-			off_top:0,
-			is_down:false
-		}
 	}
   },
   computed:{
@@ -102,9 +95,9 @@ export default {
   },
   mounted:function(){
 	// 初始化地图事件
-	this.init_map_event();
+	this.myCommon.init_map_event();
   	//初始化级别指示条
-  	this.init_zoom_slider();
+  	this.myCommon.init_zoom_slider();
   },
   methods:{
 	cursor_down(e){
@@ -194,56 +187,56 @@ export default {
 			map.setZoom(min_zoom);
 		}
 	},
-	init_map_event(){
-		var $this =this;
-		var map = this.myCommon.getMap();
-		map.on("zoomlevelschange",function(){
-			$this.init_change_slider();
-		})
-		map.on("zoomend",function(){
-			$this.init_zoom_slider();
-		})
-	},
-	init_change_slider(){
-		var map = this.myCommon.getMap();
-		var max_zoom = map.getMaxZoom();
-		var min_zoom = map.getMinZoom();
-		var current_zoom = map.getZoom();
-		var temp_zoom="";
-		if(current_zoom<=min_zoom){
-			temp_zoom = min_zoom;
-		}else if(current_zoom>min_zoom&&current_zoom<max_zoom){
-			temp_zoom = current_zoom;
-		}else if(map.getZoom()>=max_zoom){
-			temp_zoom = max_zoom;
-		}
+	// init_map_event(){
+	// 	var $this =this;
+	// 	var map = this.myCommon.getMap();
+	// 	map.on("zoomlevelschange",function(){
+	// 		$this.myCommon.init_change_slider();
+	// 	})
+	// 	map.on("zoomend",function(){
+	// 		$this.myCommon.init_zoom_slider();
+	// 	})
+	// },
+	// init_change_slider(){
+	// 	var map = this.myCommon.getMap();
+	// 	var max_zoom = map.getMaxZoom();
+	// 	var min_zoom = map.getMinZoom();
+	// 	var current_zoom = map.getZoom();
+	// 	var temp_zoom="";
+	// 	if(current_zoom<=min_zoom){
+	// 		temp_zoom = min_zoom;
+	// 	}else if(current_zoom>min_zoom&&current_zoom<max_zoom){
+	// 		temp_zoom = current_zoom;
+	// 	}else if(map.getZoom()>=max_zoom){
+	// 		temp_zoom = max_zoom;
+	// 	}
 		
-		// 获取间隔数or级别数
-		var steps = max_zoom - min_zoom;
-		//获取间隔高度
-		var step_height = this.ruler_height/steps;
-		var step_top = this.cursor_top/steps;
-		//设置mask高度
-		this.$store.state.zoom_slider_info.mask_height = (max_zoom-temp_zoom)*step_height;
-		//设置cursor位置
-		this.$store.state.zoom_slider_info.cursor_top = (max_zoom-temp_zoom)*step_top;
-	},
-	//初始化级别指示条
-	init_zoom_slider(){
-		var map = this.myCommon.getMap();
-		var max_zoom = map.getMaxZoom();
-		var min_zoom = map.getMinZoom();
-		var current_zoom = map.getZoom();
-		// 获取间隔数or级别数
-		var steps = max_zoom - min_zoom;
-		//获取间隔高度
-		var step_height = this.ruler_height/steps;
-		var step_top = this.cursor_top/steps;
-		//设置mask高度
-		this.$store.state.zoom_slider_info.mask_height = (max_zoom-current_zoom)*step_height;
-		//设置cursor位置
-		this.$store.state.zoom_slider_info.cursor_top = (max_zoom-current_zoom)*step_top;
-	},
+	// 	// 获取间隔数or级别数
+	// 	var steps = max_zoom - min_zoom;
+	// 	//获取间隔高度
+	// 	var step_height = this.ruler_height/steps;
+	// 	var step_top = this.cursor_top/steps;
+	// 	//设置mask高度
+	// 	this.$store.state.zoom_slider_info.mask_height = (max_zoom-temp_zoom)*step_height;
+	// 	//设置cursor位置
+	// 	this.$store.state.zoom_slider_info.cursor_top = (max_zoom-temp_zoom)*step_top;
+	// },
+	// //初始化级别指示条
+	// init_zoom_slider(){
+	// 	var map = this.myCommon.getMap();
+	// 	var max_zoom = map.getMaxZoom();
+	// 	var min_zoom = map.getMinZoom();
+	// 	var current_zoom = map.getZoom();
+	// 	// 获取间隔数or级别数
+	// 	var steps = max_zoom - min_zoom;
+	// 	//获取间隔高度
+	// 	var step_height = this.ruler_height/steps;
+	// 	var step_top = this.cursor_top/steps;
+	// 	//设置mask高度
+	// 	this.$store.state.zoom_slider_info.mask_height = (max_zoom-current_zoom)*step_height;
+	// 	//设置cursor位置
+	// 	this.$store.state.zoom_slider_info.cursor_top = (max_zoom-current_zoom)*step_top;
+	// },
 	zoom_add_click(){
 		var map = this.myCommon.getMap();
 		this.myCommon.unbindMapEvent(map);
@@ -331,7 +324,7 @@ export default {
 .zoomSliderParent{
 	position: absolute;
 	right: 40px;
-	top:60px;
+	top:30px;
 	z-index:100000;
 }
 .panClass{

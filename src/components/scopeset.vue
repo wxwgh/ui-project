@@ -59,6 +59,12 @@ export default {
 				
 			},
 			{
+				name:"导入范围",
+				url:require('../assets/mapdownload/importscope.png'),
+				isShow:false,
+				
+			},
+			{
 				name:"删除范围",
 				url:require('../assets/mapdownload/clear.png'),
 				isShow:false,
@@ -192,58 +198,63 @@ export default {
 				$this.myCommon.unbindMapEvent(map);
 			})
 		}else if(post.name==="行政区划"){
-			$this.$confirm(<scopesetxzqh ref='scopesetxzqh'/>, '行政区划选取', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				closeOnClickModal:false,
-			}).then(() => {
-				if($this.$refs.scopesetxzqh.provincePost.option.length===0){
-					return false;
-				}else if(!$this.$refs.scopesetxzqh.cityPost.value){
-					$this.myCommon.clearScope();
-					setPolygon($this.$refs.scopesetxzqh.provincePost,$this.$refs.scopesetxzqh.provincePost.option);
-				}else if(!$this.$refs.scopesetxzqh.countyPost.value){
-					$this.myCommon.clearScope();
-					setPolygon($this.$refs.scopesetxzqh.cityPost,$this.$refs.scopesetxzqh.cityPost.option);
-				}else if(!$this.$refs.scopesetxzqh.streetPost.value){
-					$this.myCommon.clearScope();
-					setPolygon($this.$refs.scopesetxzqh.countyPost,$this.$refs.scopesetxzqh.countyPost.option);
-				}else if($this.$refs.scopesetxzqh.streetPost.value){
-					for(let i=0;i<$this.$refs.scopesetxzqh.streetPost.option.length;i++){
-						if($this.$refs.scopesetxzqh.streetPost.value===$this.$refs.scopesetxzqh.streetPost.option[i].label){
-							var center = $this.$refs.scopesetxzqh.streetPost.option[i].center;
-							map.setView(L.latLng(center.split(",")[1],center.split(",")[0]),$this.$refs.scopesetxzqh.streetPost.zoom);
-						}
-					}
+			$(".mapListBottom span").each(function(){
+				if($(this).text()==="快速导航"){
+					$(this).trigger("click");
 				}
-				function setPolygon(data,option){
-					for(let i=0;i<option.length;i++){
-						if(data.value===option[i].label){
-							var temp = option[i].polyline.split("|");
-							var temp_latlngs =[];
-							for(let j=0;j<temp.length;j++){
-								var tempPoints=temp[j].split(";");
-								var latlngs =[];
-								for(let f=0;f<tempPoints.length;f++){
-									var temp_lnglat=$this.gcj02towgs84(parseFloat(tempPoints[f].split(",")[0]),parseFloat(tempPoints[f].split(",")[1]));
-									var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
-									latlngs.push(latlng);
-								}
-								temp_latlngs.push(latlngs);
-							}
-							let polygon = L.polygon(temp_latlngs,$this.$data.rectAngleOptions).addTo(map);
-							polygon.bindTooltip("单击下载",$this.$data.tipOptions);
-							$this.bindEvent(polygon);
-							var geojson = $this.myCommon.get_geojson(polygon);
-							$this.myCommon.update_scopeInfo(true,option[i].adcode,polygon,geojson);
-							var center = option[i].center;
-							map.setView(L.latLng(center.split(",")[1],center.split(",")[0]),data.zoom);
-						}
-					}
-				}
-			}).catch(() => {
-				
 			});
+			// $this.$confirm(<scopesetxzqh ref='scopesetxzqh'/>, '行政区划选取', {
+			// 	confirmButtonText: '确定',
+			// 	cancelButtonText: '取消',
+			// 	closeOnClickModal:false,
+			// }).then(() => {
+			// 	if($this.$refs.scopesetxzqh.provincePost.option.length===0){
+			// 		return false;
+			// 	}else if(!$this.$refs.scopesetxzqh.cityPost.value){
+			// 		$this.myCommon.clearScope();
+			// 		setPolygon($this.$refs.scopesetxzqh.provincePost,$this.$refs.scopesetxzqh.provincePost.option);
+			// 	}else if(!$this.$refs.scopesetxzqh.countyPost.value){
+			// 		$this.myCommon.clearScope();
+			// 		setPolygon($this.$refs.scopesetxzqh.cityPost,$this.$refs.scopesetxzqh.cityPost.option);
+			// 	}else if(!$this.$refs.scopesetxzqh.streetPost.value){
+			// 		$this.myCommon.clearScope();
+			// 		setPolygon($this.$refs.scopesetxzqh.countyPost,$this.$refs.scopesetxzqh.countyPost.option);
+			// 	}else if($this.$refs.scopesetxzqh.streetPost.value){
+			// 		for(let i=0;i<$this.$refs.scopesetxzqh.streetPost.option.length;i++){
+			// 			if($this.$refs.scopesetxzqh.streetPost.value===$this.$refs.scopesetxzqh.streetPost.option[i].label){
+			// 				var center = $this.$refs.scopesetxzqh.streetPost.option[i].center;
+			// 				map.setView(L.latLng(center.split(",")[1],center.split(",")[0]),$this.$refs.scopesetxzqh.streetPost.zoom);
+			// 			}
+			// 		}
+			// 	}
+			// 	function setPolygon(data,option){
+			// 		for(let i=0;i<option.length;i++){
+			// 			if(data.value===option[i].label){
+			// 				var temp = option[i].polyline.split("|");
+			// 				var temp_latlngs =[];
+			// 				for(let j=0;j<temp.length;j++){
+			// 					var tempPoints=temp[j].split(";");
+			// 					var latlngs =[];
+			// 					for(let f=0;f<tempPoints.length;f++){
+			// 						var temp_lnglat=$this.gcj02towgs84(parseFloat(tempPoints[f].split(",")[0]),parseFloat(tempPoints[f].split(",")[1]));
+			// 						var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
+			// 						latlngs.push(latlng);
+			// 					}
+			// 					temp_latlngs.push(latlngs);
+			// 				}
+			// 				let polygon = L.polygon(temp_latlngs,$this.$data.rectAngleOptions).addTo(map);
+			// 				polygon.bindTooltip("单击下载",$this.$data.tipOptions);
+			// 				$this.bindEvent(polygon);
+			// 				var geojson = $this.myCommon.get_geojson(polygon);
+			// 				$this.myCommon.update_scopeInfo(true,option[i].adcode,polygon,geojson);
+			// 				var center = option[i].center;
+			// 				map.setView(L.latLng(center.split(",")[1],center.split(",")[0]),data.zoom);
+			// 			}
+			// 		}
+			// 	}
+			// }).catch(() => {
+				
+			// });
 		}else if(post.name==="删除范围"){
 			if($this.$store.state.scopeInfo.scopeLayer.length!==0){
 				$this.$confirm('范围删除后不可恢复, 是否继续?', '删除范围', {

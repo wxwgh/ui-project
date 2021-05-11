@@ -153,11 +153,17 @@ export default new Vuex.Store({
 	//共享数据
     state: {
 		viewer:"",
+		// 自定义地图列表
+		custom_map_list:[],
 		navigation_tree:[],
 		layer_delete_options:[],
 		zoom_slider_info:{
 			mask_height:"",
 			cursor_top:""
+		},
+		down_load_able:{
+			is_vector_able:true,
+			is_dem_able:true,
 		},
 		//测试单位
 		measure_unit:{
@@ -188,6 +194,11 @@ export default new Vuex.Store({
 			limitTime:"",
 			error_count:"",
 			isAdmin:false
+		},
+		map_container:{
+			map:"",
+			layer:"",
+			type:"common_map",
 		},
 		mapContainer:[
 			{
@@ -250,7 +261,7 @@ export default new Vuex.Store({
 						isActive:false,
 						isShow:false,
 						minZoom: 3,
-						maxZoom: 15,
+						maxZoom: 18,
 						image:require('../assets/gaode/gaodeyx.png'),
 						url:"GaoDe.Normal.yx",
 						realUrl:"http://webst04.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
@@ -291,7 +302,7 @@ export default new Vuex.Store({
 						name:"谷歌地图-街道",
 						isActive:false,
 						isShow:false,
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						url:"Google.Normal.road",
 						image:require('../assets/google/googleroad.png'),
@@ -373,7 +384,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"OSM地图-街道",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/osm/osmroad.png'),
 						isActive:false,
@@ -385,7 +396,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"OSM地图-地形",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/osm/osmzxc.png'),
 						isActive:false,
@@ -451,7 +462,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"天地图-街道",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/tianditu/tiandituroad.png'),
 						isActive:false,
@@ -471,7 +482,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"天地图-影像",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/tianditu/tiandituyx.png'),
 						isActive:false,
@@ -491,7 +502,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"天地图-地形",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/tianditu/tianditudx.png'),
 						isActive:false,
@@ -557,7 +568,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"必应地图-影像",
-						minZoom: 1,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/bingmap/bingyx.png'),
 						isActive:false,
@@ -573,7 +584,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"必应地图-影像+路网",
-						minZoom: 1,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/bingmap/bingyxlw.png'),
 						isActive:false,
@@ -758,7 +769,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"易智瑞-街道",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/esri/esriroad.png'),
 						isActive:false,
@@ -772,7 +783,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"易智瑞-影像",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/esri/esriyx.png'),
 						isActive:false,
@@ -786,7 +797,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"易智瑞-地形",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/esri/esridx.png'),
 						isActive:false,
@@ -838,7 +849,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"Here地图-精简",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/heremap/herejj.png'),
 						isActive:false,
@@ -852,7 +863,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"Here地图-影像",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/heremap/hereyx.png'),
 						isActive:false,
@@ -866,7 +877,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"Here地图-地形",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/heremap/heredx.png'),
 						isActive:false,
@@ -910,7 +921,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"智图-彩色",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/zhitu/zhitucs.png'),
 						isActive:false,
@@ -932,7 +943,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"智图-灰色",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/zhitu/zhituhs.png'),
 						isActive:false,
@@ -946,7 +957,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"智图-蓝黑",
-						minZoom: 0,
+						minZoom: 3,
 						maxZoom: 18,
 						image:require('../assets/zhitu/zhitulh.png'),
 						isActive:false,
@@ -1030,6 +1041,7 @@ export default new Vuex.Store({
 		gaodeKey:"0244190557d71e34ec9394db3d75ce32",
 		downLoadTableId:"dc876853-e318-4e16-a962-f002e8f9cdce",
 		user_table_id:"befa2a7b-4a45-4e5d-8fe8-8d700cfbf64c",
+		custom_map_list_id:"071b43fb-b357-4424-9220-44ba186818b7",
 		scopeInfo:{
 			isXZQH:"",
 			adcode:"",

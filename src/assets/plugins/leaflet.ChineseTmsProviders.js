@@ -58,7 +58,11 @@ L.TileLayer.ChinaProvider.providers = {
         Subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
         key: "174705aebfe31b79b3587279e211cb9a"
     },
-
+	CusTom:{
+		Normal:{
+			
+		}
+	},
     GaoDe: {
         Normal: {
             road: '//webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',

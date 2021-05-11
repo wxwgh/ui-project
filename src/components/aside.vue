@@ -25,6 +25,10 @@
 				<!-- 导航树 -->
 				<navigationtree></navigationtree>
 			</div>
+			<div v-if="mapListHeader[3].isShow">
+				<!-- 自定义地图列表 -->
+				<custommaplist></custommaplist>
+			</div>
 		</div>
 		<template v-for="post in mapListBottom">
 			<div class="mapListBottom" :class="{textActive:post.isActive,mapListOver:post.isShow}" :id="post.id" @click="mapListBottomClick(post)" @mouseleave="mouseLeave(post)" @mouseover="mouseOver(post)">
@@ -38,11 +42,13 @@
 <script>
 import layertree from '@/components/layertree.vue';
 import navigationtree from '@/components/navigationtree.vue';
+import custommaplist from '@/components/custommaplist.vue';
 export default {
   name: 'myaside',
   components:{
   	layertree,
 	navigationtree,
+	custommaplist,
   },
   data(){
 	return {
@@ -63,6 +69,12 @@ export default {
 				id:this.$UUID(),
 				name:"快速导航",
 				image:require('../assets/maplist/xzqh.png'),
+				isShow:false
+			},
+			{
+				id:this.$UUID(),
+				name:"自定义地图列表",
+				image:require('../assets/maplist/release.png'),
 				isShow:false
 			},
 		],
@@ -89,6 +101,14 @@ export default {
 				isShow:false,
 				isActive:false
 			},
+			{
+				id:this.$UUID(),
+				name:"自定义地图列表",
+				class:"asideImage",
+				image:require('../assets/maplist/release.png'),
+				isShow:false,
+				isActive:false
+			},
 		],
 		mapList:this.$store.state.mapList
 	}
@@ -102,6 +122,7 @@ export default {
 			//删除图层
 			layer.remove();
 		}
+		this.myCommon.set_down_load_able(post.name);
 		//清空三维图层
 		this.$store.state.viewer.imageryLayers.removeAll();
 		var mapList = this.$store.state.mapList;
@@ -120,14 +141,14 @@ export default {
 					}else{
 						layer = L.tileLayer.chinaProvider(mapList[i].urls[j].url).addTo(map);
 					}
-					this.myCommon.updateLayer(layer);
+					this.$store.state.map_container.layer = layer;
 				}else{
 					mapList[i].urls[j].isActive=false;
 				}
 			}
 		}
 		//设置地图缩放级别
-		this.myCommon.setMapZoom();
+		//this.myCommon.setMapZoom();
 		//更新下载信息
 		this.myCommon.updateNameAndUrl();
 	},
@@ -187,7 +208,7 @@ export default {
 	border-right:1px solid #E4E7ED;
 }
 .mapListHeader{
-	line-height: 48px;
+	line-height: 39px;
 	font-size: 13px;
 	font-weight: 500;
 	color: #303133;
@@ -195,7 +216,7 @@ export default {
 	width: 100%;
 }
 .mapListBottom{
-	line-height: 48px;
+	line-height: 39px;
 	font-size: 13px;
 	font-weight: 500;
 	color: #303133;
@@ -219,15 +240,15 @@ export default {
 	height: 100%;
 	font-size: 13px;
 	color: #303133;
-	line-height: 48px;
+	line-height: 38px;
 	
 }
 .mapListUlClass>li{
 	cursor:pointer;
 }
 .mapListMainImage{
-	width: 24px;
-	height: 24px;
+	width: 20px;
+	height: 20px;
 	vertical-align:middle;
 	margin-right: 10px;
 	margin-left: 20px;

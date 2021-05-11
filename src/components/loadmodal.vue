@@ -1,7 +1,7 @@
 <template>
 	<div class="topButtonsParent">
 		<div class="topButtons">
-			<div class="topButton" v-for="post in showSetPost" :class="{tabMouseOver:post.isShow}" @mouseleave="mouseLeave(post)" @mouseover="mouseOver(post)">
+			<div class="topButton" v-for="post in mapDownLoadPost" :class="{tabMouseOver:post.isShow}" @click="downLoadClick(post)" @mouseleave="mouseLeave(post)" @mouseover="mouseOver(post)">
 				<el-image class="tabImage" :src="post.url" fit='fill'></el-image>
 				<div class="description">
 					<span>{{post.name}}</span>
@@ -9,32 +9,26 @@
 			</div>
 		</div>
 		<div class="description">
-			<span>分幅设置</span>
+			<span>下载相关</span>
 		</div>
 	</div>
 </template>
 
 <script>
 export default {
-  name: 'showset',
+  name: 'mapdownload',
   data(){
     return {
-		showSetPost:[
-			// {
-			// 	name:"经纬格网",
-			// 	url:require('../assets/vectorplot/mapgrid.png'),
-			// 	isShow:false,
-				
-			// },
+		mapDownLoadPost:[
 			{
-				name:"自定分幅",
-				url:require('../assets/vectorplot/custom.png'),
+				name:"地图下载",
+				url:require('../assets/mapdownload/vector.png'),
 				isShow:false,
 				
 			},
 			{
-				name:"标准分幅",
-				url:require('../assets/vectorplot/standard.png'),
+				name:"下载任务",
+				url:require('../assets/mapdownload/DownLoadManager.png'),
 				isShow:false,
 				
 			},
@@ -42,7 +36,7 @@ export default {
 	}
   },
   methods:{
-  	showSetClick(post){
+  	downLoadClick(post){
 		var map = this.myCommon.getMap();
 		this.myCommon.unbindMapEvent(map);
 		this.myCommon.switchMouseStyle(false,map);

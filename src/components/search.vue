@@ -377,8 +377,9 @@ export default {
 					}).then(function(result){
 						var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 						for(let i=0;i<temp.pois.length;i++){
-							var tempLatlng = temp.pois[i].location.split(",");
-							var latlng = L.latLng(tempLatlng[1],tempLatlng[0]);
+							// var tempLatlng = temp.pois[i].location.split(",");
+							var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
+							var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
 							var points=[];
 							points.push(latlng);
 							var marker =null;
@@ -486,8 +487,8 @@ export default {
 					}).then(function(result){
 						var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 						for(let i=0;i<temp.pois.length;i++){
-							var tempLatlng = temp.pois[i].location.split(",");
-							var latlng = L.latLng(tempLatlng[1],tempLatlng[0]);
+							var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
+							var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
 							var points=[];
 							points.push(latlng);
 							var marker =null;

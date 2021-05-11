@@ -9,10 +9,10 @@
 		  			<onlinemap></onlinemap>
 		  			<!-- 范围设置 -->
 		  			<scopeset></scopeset>
+					<!-- 显示设置 -->
+					<showset></showset>
 		  			<!-- 下载相关 -->
 		  			<mapdownload></mapdownload>
-		  			<!-- 显示设置 -->
-		  			<!-- <showset></showset> -->
 		  		</div>
 		  	</el-tab-pane>
 		      <el-tab-pane label="矢量标绘" name="second">
@@ -52,8 +52,9 @@
 		<el-col :span="20" >
 			<!-- 地图窗口 表格面板 -->
 			<el-tabs v-model="tabActionName" type="card" :before-leave="tabBeforeClick" >
-				<el-tab-pane label="二维视图" name="1" >
-					<router-view></router-view>
+				<el-tab-pane label="二维视图" name="1">
+					<router-view v-if="is_router_show"></router-view>
+					<zoomslider></zoomslider>
 				</el-tab-pane>
 				<el-tab-pane label="三维视图" name="2" >
 					<mapcesium></mapcesium>
@@ -65,7 +66,7 @@
 					<attributetable></attributetable>
 				</el-tab-pane>
 			</el-tabs>
-			<zoomslider></zoomslider>
+			
 		</el-col>
 	</el-row>
   </div>
@@ -114,24 +115,51 @@
         activeName: 'first',
 		//地图窗口选项卡 标识
 		tabActionName:"1",
+		is_router_show:true,
       };
     },
+	provide(){
+		return {
+			reload:this.reload
+		}
+	},
 	mounted:function(){
 		//初始化indexedDB
 		this.initIndexedDB();
+		//初始化用户
 		this.initUser();
+		//初始化下载任务 表格数据
 		this.initDownLoadTableDatas();
+		//初始化地图名和下载地址
 		this.myCommon.updateNameAndUrl();
 		//初始化快速导航树
 		this.initNavigationTree();
 		//进度条更新方法 挂载到windows对象上
 		this.initProgress();
+		// 初始化自定义图层列表
+		this.init_map_list();
+		//页面刷新返回首页
+		// this.return_home();
 	},
 	// 页面创建时
 	created:function(){
 		$("body").css("height",window.innerHeight);
 	},
     methods: {
+		reload(){
+			this.is_router_show = false;
+			this.$nextTick(() => {
+			   this.is_router_show = true;
+		    })
+		},
+		// return_home(){
+		// 	var $this =this;
+		// 	window.addEventListener('load',function(){
+		// 		if($this.$router.path!=='/'){
+		// 			$this.$router.replace('/');
+		// 		}
+		// 	})
+		// },
 		initProgress(){
 			var $this = this;
 			window["updateProgress"] =function(id,progress){
@@ -165,11 +193,16 @@
 					return data.flag
 				}
 			}
+			if(activeName==="1"){
+				//刷新地图窗口
+				this.reload();
+			}
 		},
 		//数据库及表初始化函数
 		initIndexedDB(){
 			let id = this.$store.state.downLoadTableId;
 			let user_id = this.$store.state.user_table_id;
+			let custom_id = this.$store.state.custom_map_list_id;
 			// indexedDB.deleteDatabase("download");
 			var request = indexedDB.open("download",1);
 			//成功回调函数
@@ -189,6 +222,11 @@
 				if(!db.objectStoreNames.contains(user_id)){
 					//新增一张表 主键是id
 					db.createObjectStore(user_id,{autoIncrement:true});
+				}
+				//创建自定义服务表
+				if(!db.objectStoreNames.contains(custom_id)){
+					//新增一张表 主键是id
+					db.createObjectStore(custom_id,{autoIncrement:true});
 				}
 			};
 		},
@@ -296,6 +334,50 @@
 				db.close();
 			};
 			
+		},
+		init_map_list(){
+			var $this = this;
+			var id = this.$store.state.custom_map_list_id;
+			//打开一个数据库 并指定名称
+			var request = indexedDB.open("download",1);
+			//成功回调函数
+			request.onsuccess = function(e) {
+				var db = e.target.result;
+				//创建一个事务对象 指定表名 和操作模式
+				var trans = db.transaction(id,"readwrite");
+				//获取表格对象
+				var objStore = trans.objectStore(id);
+				//获取游标对象
+				var cursor = objStore.openCursor();
+				cursor.onsuccess=function(e){
+					var result = e.target.result;
+					//查询数据
+					if(result){
+						var temp = {
+							id:result.value.id,
+							name:result.value.name,
+							center:result.value.center,
+							dpi:result.value.dpi,
+							scale:result.value.scale,
+							isActive:result.value.isActive,
+							isShow:result.value.isShow,
+							minZoom: result.value.minZoom,
+							maxZoom: result.value.maxZoom,
+							image:result.value.image,
+							url:result.value.url,
+							realUrl:result.value.realUrl,
+							imageProvider:result.value.imageProvider,
+						};
+						$this.$store.state.custom_map_list.push(temp);
+						//添加至provider对象
+						L.TileLayer.ChinaProvider.providers.CusTom.Normal[result.value.name] = result.value.realUrl;
+						L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
+						//将游标按它的方向移动到下一个位置，到其健与可选健参数匹配的项
+						result.continue();
+					}
+				}
+				db.close();
+			};
 		},
 		initWebSocket(){
 			var $this = this;

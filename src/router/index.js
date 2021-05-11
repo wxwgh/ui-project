@@ -13,7 +13,11 @@ const routes = [
     {
       path: '/commonMap',
       name: 'CommonMap',
-      component: CommonMap
+      component: CommonMap,
+	  meta:{
+		  keep_alive:false,
+		  is_back:false
+	  }
     },
 	{
 	  path: '/baiduMap',

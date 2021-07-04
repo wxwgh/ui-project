@@ -10,7 +10,7 @@ export default {
   name: 'searchplacebox',
   data(){
     return {
-		place_name:"北京海淀区",
+		place_name:"派出所",
 		isName:false,
 	}
   },

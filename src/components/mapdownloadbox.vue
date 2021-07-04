@@ -9,7 +9,7 @@
 			<el-select v-model="tileOptionValue" size="mini" class="tileSelectClass">
 				<el-option v-for="post in tileOptions" :labek="post.label" :value="post.value"></el-option>
 			</el-select>
-			<el-table border :data="tableDatas" size="mini" max-width="100%" :max-height="tableHeight" @select-all="tileSelectAll" @select="tileSelect">
+			<el-table border :data="tableDatas" ref="down_table" size="mini" max-width="100%" :max-height="tableHeight" @select-all="tileSelectAll" @select="tileSelect">
 				<el-table-column type="selection" width="40"></el-table-column>
 				<el-table-column prop="level" label="级别" width="50"></el-table-column>
 				<el-table-column prop="scale" label="比例尺" min-width="80"></el-table-column>
@@ -28,21 +28,16 @@
 				<el-option v-for="post in demOptions" :labek="post.label" :value="post.value"></el-option>
 			</el-select>
 		</el-tab-pane>
-	    <el-tab-pane label="矢量下载" name="3" :disabled="get_vector_able">
-			<el-input v-model="vectorNameInput" @input="is_vector_same_name()" size="small" placeholder="任务名称" class="downnameClass"></el-input>
-			<el-input v-model="vectorDownInput" size="small" placeholder="存储目录" class="downloadClass">
+	    <el-tab-pane label="POI下载" name="3" :disabled="get_poi_able">
+			<el-input v-model="poi_name" @input="isSameName()" size="small" placeholder="任务名称" class="downnameClass"></el-input>
+			<el-input v-model="poi_save_path" size="small" placeholder="存储目录" class="downloadClass">
 				<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="fileChoose()"></i>
 			</el-input>
-			<el-select v-model="vectorOptionValue" size="mini" class="vectorSelectClass">
-				<el-option v-for="post in vectorOptions" :labek="post.label" :value="post.value"></el-option>
+			<el-input v-model="poi_search_name" size="mini" placeholder="搜索关键字" class="poi_input_class"></el-input>
+			<div></div>
+			<el-select v-model="poi_save_format" size="mini" class="poi_select_class">
+				<el-option v-for="post in poi_save_format_options" :labek="post.label" :value="post.value"></el-option>
 			</el-select>
-			<el-table ref="vector_table" border :data="vectorDatas" size="mini" max-width="100%" :max-height="tableHeight" @select-all="vectorSelectAll" @select="vectorSelect">
-				<el-table-column type="selection" width="40"></el-table-column>
-				<el-table-column prop="layer_type" label="类别" width="80"></el-table-column>
-				<el-table-column prop="data_type" label="类型" width="50"></el-table-column>
-				<el-table-column prop="describe" label="说明" ></el-table-column>
-				<el-table-column prop="data_code" label="数据集名称" v-if="false"></el-table-column>
-			</el-table>
 		</el-tab-pane>
     </el-tabs>
 </template>
@@ -63,10 +58,6 @@ export default {
 		demNameInput:"",
 		demDownInput:"D:/SuperMap DownLoad",
 		demOptionValue:"img",
-		vectorNameInput:"",
-		vectorDownInput:"D:/SuperMap DownLoad",
-		vectorOptionValue:"shp",
-		is_vector_name:false,
 		tileOptions:[
 			{
 				value:"png",
@@ -79,119 +70,77 @@ export default {
 				label:"img"
 			},
 		],
-		vectorOptions:[
+		//poi下载相关变量
+		poi_name:"",
+		poi_search_name:"",
+		poi_save_path:"D:/SuperMap DownLoad",
+		poi_save_format:"shp",
+		is_poi_name:false,
+		poi_save_format_options:[
 			{
 				value:"shp",
 				label:"shp"
-			}
+			},
+			{
+				value:"kml",
+				label:"kml"
+			},
+			{
+				value:"csv",
+				label:"csv"
+			},
 		],
 		tableDatas:$store.state.downloadTableDatas,
-		vectorDatas:[
-			{
-				layer_type:"建筑",
-				data_type:"面",
-				describe:"商业建筑,宗教建筑,商场,广场",
-				data_code:"buildings"
-			},
-			{
-				layer_type:"土地利用",
-				data_type:"面",
-				describe:"公园,商业用地,住宅,农田,森林,自然保护区,工业区",
-				data_code:"landuse"
-			},
-			{
-				layer_type:"自然资源",
-				data_type:"面",
-				describe:"冰川,海滩,山泉",
-				data_code:"naturals"
-			},
-			{
-				layer_type:"绿地",
-				data_type:"面",
-				describe:"村庄,岛屿,郊区",
-				data_code:"places"
-			},
-			{
-				layer_type:"宗教",
-				data_type:"面",
-				describe:"宗教建筑",
-				data_code:"pofw"
-			},
-			{
-				layer_type:"兴趣点",
-				data_type:"点",
-				describe:"餐饮,宾馆,购物,交通设施",
-				data_code:"pois"
-			},
-			{
-				layer_type:"铁路",
-				data_type:"线",
-				describe:"铁路网",
-				data_code:"railways"
-			},
-			{
-				layer_type:"公路",
-				data_type:"线",
-				describe:"公路网",
-				data_code:"roads"
-			},
-			{
-				layer_type:"交通枢纽",
-				data_type:"面",
-				describe:"码头,停车场",
-				data_code:"traffic"
-			},
-			{
-				layer_type:"运输",
-				data_type:"面",
-				describe:"汽车站,机场",
-				data_code:"transport"
-			},
-			{
-				layer_type:"水系",
-				data_type:"面",
-				describe:"水库,河堤",
-				data_code:"water"
-			},
-		]
 	}
   },
   computed:{
-  	  get_vector_able:function(){
-  		  return $store.state.down_load_able.is_vector_able;
+  	  get_poi_able:function(){
+  		  return $store.state.down_load_able.is_poi_able;
   	  },
   	  get_dem_able:function(){
   		  return $store.state.down_load_able.is_dem_able;
   	  },
   },
   methods:{
-	//初始化矢量下载表单
-	init_vector(){
-		this.$refs.vector_table.clearSelection();
-		this.vectorNameInput="";
-		this.vectorDownInput="D:/SuperMap DownLoad";
-		
+	//初始化poi下载面板
+	init_poi_panel(){
+		this.poi_name="";
+		this.poi_save_path="D:/SuperMap DownLoad";
+		this.poi_save_format="shp";
+		this.is_poi_name=false;
+		this.poi_search_name="";
 	},
-	is_vector_same_name(){
-		var $this =this;
-		var path = this.vectorDownInput+"\\"+this.vectorNameInput;
-		is_samename(path);
-		async function is_samename(path){
-			//python瓦片下载函数
-			$this.is_vector_name =await eel.is_samename(path)();
-		}
+	//初始化瓦片下载面板
+	init_tile_panel(){
+		this.tileNameInput="";
+		this.tileDownInput="D:/SuperMap DownLoad";
+		this.tileChecked=false;
+		this.tileOptionValue="png";
+		this.tileOptions=[
+			{
+				value:"png",
+				label:"png"
+			}
+		];
+		this.$refs.down_table.clearSelection();
+	},
+	//初始化高程下载面板
+	init_dem_panel(){
+		this.demNameInput="";
+		this.demDownInput="D:/SuperMap DownLoad";
+		this.demOptionValue="img";
 	},
 	//文件路径选取
 	fileChoose(){
 		var $this =this;
-		getSavePath();
-		async function getSavePath(){
+		get_export_path();
+		async function get_export_path(){
 			if($this.activeName==="1"){
-				$this.tileDownInput =await eel.get_save_path()();
+				$this.tileDownInput =await eel.get_export_path()();
 			}else if($this.activeName==="2"){
-				$this.demDownInput =await eel.get_save_path()();
+				$this.demDownInput =await eel.get_export_path()();
 			}else if($this.activeName==="3"){
-				$this.vectorDownInput =await eel.get_save_path()();
+				$this.poi_save_path =await eel.get_export_path()();
 			}
 		}
 	},
@@ -231,32 +180,6 @@ export default {
 		this.myCommon.clearTotal();
 		this.myCommon.updateTotal(selection);
 	},
-	vectorSelect(selection,row){
-		//清空数据集
-		$store.state.downloadInfo.vector_load_info.dataset_names=[];
-		//更新数据集数组
-		for(let i=0;i<selection.length;i++){
-			var temp={
-				dataset_name:selection[i].data_code,
-				describe:selection[i].layer_type,
-				id:this.myCommon.UUID()
-			}
-			$store.state.downloadInfo.vector_load_info.dataset_names.push(temp);
-		}
-	},
-	vectorSelectAll(selection){
-		//清空数据集
-		$store.state.downloadInfo.vector_load_info.dataset_names=[];
-		//更新数据集数组
-		for(let i=0;i<selection.length;i++){
-			var temp={
-				dataset_name:selection[i].data_code,
-				describe:selection[i].layer_type,
-				id:this.myCommon.UUID()
-			}
-			$store.state.downloadInfo.vector_load_info.dataset_names.push(temp);
-		}
-	},
 	mouseOver(post){
 		this.myCommon.mouseOver(post);
 	},
@@ -265,11 +188,23 @@ export default {
 	},
 	isSameName(){
 		var $this =this;
-		var path = this.tileDownInput+"\\"+this.tileNameInput;
+		var path ="";
+		if($this.activeName==="1"){
+			path = this.tileDownInput+"\\"+this.tileNameInput;
+		}else if($this.activeName==="2"){
+			path = this.demDownInput+"\\"+this.demNameInput;
+		}else if($this.activeName==="3"){
+			path = this.poi_save_path+"\\"+this.poi_name;
+		}
 		is_samename(path);
 		async function is_samename(path){
-			//python瓦片下载函数
-			$this.isName =await eel.is_samename(path)();
+			if($this.activeName==="1"){
+				$this.isName =await eel.is_samename(path)();
+			}else if($this.activeName==="2"){
+				$this.isName =await eel.is_samename(path)();
+			}else if($this.activeName==="3"){
+				$this.is_poi_name =await eel.is_samename(path)();
+			}
 		}
 	}
   },
@@ -288,10 +223,16 @@ export default {
 	margin-left:10px;
 	margin-bottom: 10px;
 }
-.vectorSelectClass{
-	margin-bottom: 10px;
-}
 .demSelectClass{
 	margin-bottom: 233px;
+}
+
+//poi下载样式
+.poi_select_class{
+	margin-top:10px;
+	margin-bottom: 195px;
+}
+.poi_input_class{
+	width:30%;
 }
 </style>

@@ -87,7 +87,7 @@ export default {
 						}
 						$this.createMarker(e.latlng,map,distance);
 						var tempLine=L.polyline([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]], {color: "red",weight:1}).addTo(map);
-						$this.$data.layers.push(tempLine);
+						$this.$store.state.measure_layers.push(tempLine);
 						
 						point_first=e.latlng;
 					}
@@ -109,7 +109,7 @@ export default {
 				}
 				if(point_first){
 					var tempLine=L.polyline([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]], {color: "red",weight:1}).addTo(map);
-					$this.$data.layers.push(tempLine);
+					$this.$store.state.measure_layers.push(tempLine);
 					var first = point_first;
 					var end = e.latlng;
 					var temp_distance = first.distanceTo(end);
@@ -215,7 +215,7 @@ export default {
 					var polygon  = L.polygon(points,{color: 'red',weight:1,className:"polygonClass"}).addTo(map);
 					var popup = L.popup({autoClose:false,closeOnClick:false}).setLatLng(polygon.getCenter()).setContent(area).openOn(map);
 					polygon.bindPopup(popup);
-					$this.$data.layers.push(polygon);
+					$this.$store.state.measure_layers.push(polygon);
 				}
 				$this.myCommon.switchMouseStyle(false,map);
 				$this.myCommon.unbindMapEvent(map);
@@ -236,14 +236,14 @@ export default {
 				
 			});
 		}else if(post.name==="删除结果"){
-			if($this.$data.layers.length>0){
+			if($this.$store.state.measure_layers.length>0){
 				this.$confirm('结果删除后不可恢复, 是否继续?', '删除结果', {
 				    confirmButtonText: '确定',
 				    cancelButtonText: '取消',
 					closeOnClickModal:false,
 				    type: 'warning'
 				}).then(() => {
-					var layers = $this.$data.layers;
+					var layers = $this.$store.state.measure_layers;
 					if(layers.length>0){
 						for(let i=0;i<layers.length;i++){
 							layers[i].remove();
@@ -253,7 +253,11 @@ export default {
 				}).catch(() => {
 				});
 			}else{
-				$this.$alert('当前没有计算结果', '删除结果', {confirmButtonText: '确定',});
+				$this.$message({
+				    showClose: true,
+					type: 'error',
+				    message: '当前没有计算结果'
+				});
 			}
 			
 		}
@@ -275,7 +279,7 @@ export default {
 		}else{
 			tempLayer = L.marker(point, {icon: tempIcon}).addTo(map);
 		}
-		this.$data.layers.push(tempLayer);
+		this.$store.state.measure_layers.push(tempLayer);
 	},
 	mouseOver(post){
 		this.myCommon.mouseOver(post);

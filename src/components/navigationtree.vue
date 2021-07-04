@@ -17,7 +17,6 @@ export default {
   },
   methods:{
   	node_click(data){
-		console.log(data);
 		var $this = this;
 		var map = this.myCommon.getMap();;
 		this.myCommon.unbindMapEvent(map);
@@ -69,10 +68,9 @@ export default {
 					}
 				});
 			})
-			var geojson = $this.myCommon.get_geojson(polygon);
-			$this.myCommon.update_scopeInfo(true,temp_data.districts[0].adcode,polygon,geojson);
+			$this.myCommon.update_scopeInfo(true,temp_data.districts[0].adcode,[polygon]);
 			var center = temp_data.districts[0].center;
-			map.setView(L.latLng(center.split(",")[1],center.split(",")[0]),data.zoom);
+			map.flyToBounds(polygon.getBounds());
 		})
   	},
   },

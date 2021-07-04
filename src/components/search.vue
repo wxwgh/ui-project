@@ -38,12 +38,12 @@ export default {
 				isShow:false,
 				
 			},
-			{
-				name:"poi搜索",
-				url:require('../assets/vectorplot/search.png'),
-				isShow:false,
+			// {
+			// 	name:"poi搜索",
+			// 	url:require('../assets/vectorplot/search.png'),
+			// 	isShow:false,
 				
-			},
+			// },
 		],
 	}
   },
@@ -88,23 +88,22 @@ export default {
 				var value = $this.$refs.searchlocationbox.location_value;
 				var tempLatlng = value.split(",");
 				var latlng = L.latLng(tempLatlng[1],tempLatlng[0]);
-				var points=[];
-				points.push(latlng);
+				var features=[];
+				features.push([latlng.lat,latlng.lng]);
 				var marker = $this.myCommon.createMarker(latlng,value);
 				$this.myCommon.setLocation(latlng,$this.zoom);
 				//判断是否有坐标定位图层
 				var layerGroup = $this.$store.state.layerGroups[0].children;
 				var flag=false;
-				var parentId=null;
 				var layer_parent="";
 				for(let i=0;i<layerGroup.length;i++){
 					if(layerGroup[i].label==="坐标定位"){
 						flag=true;
-						parentId=layerGroup[i].id;
 						layer_parent=layerGroup[i];
+						break;
 					}
 				}
-				var temp_list =["id","Name","parentId"];
+				var temp_list =["name","parentId","mydescribe"];
 				if(!flag){
 					var table_header=[];
 					for(let i=0;i<temp_list.length;i++){
@@ -117,7 +116,7 @@ export default {
 					}
 					//图层参数
 					var option = {
-						id:parentId,
+						id:$this.$UUID(),
 						index:"2",
 						count:0,
 						label:"坐标定位",
@@ -125,6 +124,7 @@ export default {
 						isPlot:true,
 						type:"marker",
 						isShow:true,
+						coordinate:"4326",
 						icon:"fa fa-eye-slash",
 						table_header:table_header,
 						header_keys:temp_list,
@@ -147,13 +147,6 @@ export default {
 					//更新当前选取图层列表
 					$this.myCommon.update_operation_list([temp]);
 				}
-				var coordinate=[points[0].lng,points[0].lat];
-				//获取geojsonid
-				var geojson_id = layer_parent.children.length+1;
-				var geojson={
-					Point:coordinate,
-					id:geojson_id
-				}
 				var label=null;
 				var isTip=null;
 				if(value.length>22){
@@ -168,18 +161,18 @@ export default {
 				for(let i=0;i<temp_list.length;i++){
 					if(temp_list[i]==="id"){
 						attribute[temp_list[i]]=id;
-					}else if(temp_list[i]==="Name"){
+					}else if(temp_list[i]==="name"){
 						attribute[temp_list[i]]="定位图层";
 					}else if(temp_list[i]==="parentId"){
-						attribute[temp_list[i]]=id;
+						attribute[temp_list[i]]=layer_parent.id;
 					}else{
-						attribute[temp_list[i]]="";
+						attribute[temp_list[i]]="用户自定义坐标";
 					}
 					
 				}
 				var option2 = {
 					id:id,
-					parentId:parentId,
+					parentId:layer_parent.id,
 					index:"3",
 					label:label,
 					name:$this.$refs.searchlocationbox.location_value,
@@ -190,18 +183,11 @@ export default {
 					isSelect:true,
 					type:"marker",
 					layer:marker,
-					geojson:JSON.stringify(geojson),
 					attribute:attribute,
-					points:points,
+					features:features,
 				};
 				//创建图层
 				$this.myCommon.createLayer(option2);
-				var temp_layer_group = $this.$store.state.layerGroups[0].children;
-				for(let i=0;i<temp_layer_group.length;i++){
-					if(temp_layer_group[i].id===parentId){
-						temp_layer_group[i].count+=1;
-					}
-				}
 			}).catch(() => {
 				
 			});
@@ -220,8 +206,10 @@ export default {
 				closeOnClickModal:false,
 				beforeClose:function(action, instance, done){
 					if(action==="close"){
+						$this.$refs.searchplacebox.place_name="";
 						done();
 					}else if(action==="cancel"){
+						$this.$refs.searchplacebox.place_name="";
 						done();
 					}else if(action==="confirm"){
 						var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
@@ -237,7 +225,7 @@ export default {
 							$this.$message({
 							    showClose: true,
 								type: 'error',
-							    message: '已有同名图层,请重名搜索结果图层'
+							    message: '已有同名图层,请重命名搜索结果图层'
 							});
 							return false;
 						}else{
@@ -295,7 +283,6 @@ export default {
 			}).then(() => {
 				var value = $this.$refs.searchpoibox.poi_name;
 				$this.searchResult(value);
-				$this.$refs.searchpoibox.poi_name="";
 			}).catch(() => {
 				
 			});
@@ -304,7 +291,7 @@ export default {
 	searchResult(value){
 		var $this=this;
 		var id = $this.$UUID();
-		var temp_list =["id","name","type","parentId"];
+		var temp_list =["id","name","address","tel","timestamp","type","parentId"];
 		var table_header=[];
 		for(let i=0;i<temp_list.length;i++){
 			var temp={
@@ -324,6 +311,7 @@ export default {
 			isPlot:false,
 			isShow:true,
 			type:"marker",
+			coordinate:"4326",
 			icon:"fa fa-eye-slash",
 			table_header:table_header,
 			header_keys:temp_list,
@@ -332,14 +320,7 @@ export default {
 		}
 		//创建图层
 		$this.myCommon.createLayer(option);
-		var layer_group = $this.$store.state.layerGroups[0].children;
-		var layer_parent = "";
-		for(let i=0;i<layer_group.length;i++){
-			if(layer_group[i].id===option.id){
-				layer_parent=layer_group[i];
-			}
-		}
-		
+		var layer_parent = option;
 		var temp={
 			label:value,
 			type:"marker"
@@ -352,16 +333,25 @@ export default {
 		$this.myCommon.clear_operation_list();
 		//更新当前选取图层列表
 		$this.myCommon.update_operation_list([temp]);
+		$this.$store.state.loading=true;
 		if($this.$store.state.scopeInfo.isXZQH){
 			var url="https://restapi.amap.com/v3/place/text?s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&city="+$this.$store.state.scopeInfo.adcode+"&citylimit=false&extensions=all&language=zh_cn&callback=jsonp_991342_&platform=JS&logversion=2.0&appname=https://lbs.amap.com/api/javascript-api/example/poi-search/keywords-search&csid=B7489A1F-1304-4922-81A1-1E3E4538E28F&sdkversion=1.4.15&keywords="+value;
 			$this.axios({
 				method: 'get',
 				url: url
 			}).then(function(result){
-				console.log(result);
 				var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 				var page = null;
-				$this.myCommon.update_layer_count(id,temp.count);
+				if(parseInt(temp.count) === 0){
+					$this.$store.state.loading=false;
+					$this.$message({
+					    showClose: true,
+						type: 'error',
+					    message: '没有查询到数据'
+					});
+					$this.$refs.searchplacebox.place_name=""
+					return false;
+				}
 				if(temp.count%$this.pageNum===0){
 					page = parseInt(temp.count/$this.pageNum);
 				}else{
@@ -380,8 +370,8 @@ export default {
 							// var tempLatlng = temp.pois[i].location.split(",");
 							var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
 							var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
-							var points=[];
-							points.push(latlng);
+							var features=[];
+							features.push([latlng.lat,latlng.lng]);
 							var marker =null;
 							var label=null;
 							var isTip=null;
@@ -399,37 +389,30 @@ export default {
 								isSelect=true;
 								icon = "fa fa-eye-slash";
 								marker = $this.myCommon.createMarker(latlng,temp.pois[i].name);
-							}else if(i>=$this.selectLength||select.length>$this.selectLength){
+							}else{
 								isSelect=false;
 								icon ="fa fa-eye";
 								marker=null;
 							}
-							var coordinate=[points[0].lng,points[0].lat];
-							//获取geojsonid
-							var geojson_id = layer_parent.children.length+1;
-							var geojson={
-								Point:coordinate,
-								id:geojson_id
-							}
 							var layer_id = $this.$UUID();
-							var attribute={};
-							for(let j=0;j<temp_list.length;j++){
-								if(temp_list[j]==="id"){
-									attribute[temp_list[j]]=temp.pois[i].id;
-								}else if(temp_list[j]==="name"){
-									attribute[temp_list[j]]=temp.pois[i].name;
-								}else if(temp_list[j]==="type"){
-									attribute[temp_list[j]]=temp.pois[i].type;
-								}else if(temp_list[j]==="parentId"){
-									attribute[temp_list[j]]=layer_id;
-								}else{
-									attribute[temp_list[j]]="";
-								}
-								
+							var attribute={
+								id:temp.pois[i].id,
+								name:temp.pois[i].name,
+								address:temp.pois[i].address,
+								tel:temp.pois[i].tel,
+								timestamp:temp.pois[i].timestamp,
+								type:temp.pois[i].type,
+								parentId:layer_id,
+							};
+							if(temp.pois[i].address instanceof Array){
+								attribute.address="";
 							}
-							var option = {
+							if(temp.pois[i].tel instanceof Array){
+								attribute.tel = "";
+							}
+							var option2 = {
 								id:layer_id,
-								parentId:id,
+								parentId:layer_parent.id,
 								index:"3",
 								label:label,
 								name:temp.pois[i].name,
@@ -440,38 +423,59 @@ export default {
 								isSelect:isSelect,
 								type:"marker",
 								layer:marker,
-								geojson:JSON.stringify(geojson),
 								attribute:attribute,
-								points:points,
+								features:features,
 							};
 							//创建图层
-							$this.myCommon.createLayer(option);
+							$this.myCommon.createLayer(option2);
 						}
+						$this.$store.state.loading=false;
 					})
 				}
-				var center = $this.$store.state.scopeInfo.scopeLayer[0].getCenter();
-				$this.myCommon.setLocation(center,$this.zoom);
 			})
 		}else{
-			var bounds = $this.$store.state.scopeInfo.scopeLayer[0].getBounds();
-			var latlngs = $this.$store.state.scopeInfo.scopeLayer[0].getLatLngs()[0];
-			var center = $this.$store.state.scopeInfo.scopeLayer[0].getCenter();
-			var polygonBounds="";
-			for(let i=0;i<latlngs.length;i++){
-				if(i===latlngs.length-1){
-					polygonBounds+=latlngs[i].lng+","+latlngs[i].lat;
-				}else{
-					polygonBounds+=latlngs[i].lng+","+latlngs[i].lat+";";
+			var layers = $this.$store.state.scopeInfo.scopeLayer;
+			var bounds = "";
+			if(layers.length>1){
+				for(let i=0;i<layers.length;i++){
+					if(i===0){
+						bounds = layers[i].getBounds();
+					}else{
+						bounds = bounds.extend(layers[i].getBounds());
+					}
+				}
+				var temp_bounds = "";
+				// 获取左上坐标
+				temp_bounds+=bounds.getNorthWest().lng+","+bounds.getNorthWest().lat+";";
+				temp_bounds+=bounds.getSouthEast().lng+","+bounds.getSouthEast().lat;
+				bounds = temp_bounds;
+			}else{
+				var latlngs = layers[0].getLatLngs()[0];
+				for(let i=0;i<latlngs.length;i++){
+					if(i===latlngs.length-1){
+						bounds+=latlngs[i].lng+","+latlngs[i].lat;
+					}else{
+						bounds+=latlngs[i].lng+","+latlngs[i].lat+";";
+					}
 				}
 			}
-			var url="https://restapi.amap.com/v3/place/polygon?polygon="+polygonBounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
+			var url="https://restapi.amap.com/v3/place/polygon?polygon="+bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
 			$this.axios({
 			  method: 'get',
 			  url: url
 			}).then(function (result) {
 				var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 				var page = null;
-				$this.myCommon.update_layer_count(id,temp.count);
+				if(parseInt(temp.count) === 0){
+					$this.$store.state.loading=false;
+					$this.$message({
+					    showClose: true,
+						type: 'error',
+					    message: '没有查询到数据'
+					});
+					$this.$refs.searchplacebox.place_name=""
+					return false;
+				}
 				if(temp.count%$this.pageNum===0){
 					page = parseInt(temp.count/$this.pageNum);
 				}else{
@@ -480,7 +484,7 @@ export default {
 				var select = [];
 				//根据页数进行穷举查询
 				for(let x=1;x<=page;x++){
-					var url="https://restapi.amap.com/v3/place/polygon?polygon="+polygonBounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page="+x+"&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
+					var url="https://restapi.amap.com/v3/place/polygon?polygon="+bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page="+x+"&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
 					$this.axios({
 						method: 'get',
 						url: url
@@ -489,8 +493,8 @@ export default {
 						for(let i=0;i<temp.pois.length;i++){
 							var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
 							var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
-							var points=[];
-							points.push(latlng);
+							var features=[];
+							features.push([latlng.lat,latlng.lng]);
 							var marker =null;
 							var label=null;
 							var isTip=null;
@@ -508,36 +512,30 @@ export default {
 								isSelect=true;
 								icon = "fa fa-eye-slash";
 								marker = $this.myCommon.createMarker(latlng,temp.pois[i].name);
-							}else if(i>=$this.selectLength||select.length>$this.selectLength){
+							}else{
 								isSelect=false;
 								icon ="fa fa-eye";
 								marker=null;
 							}
-							var coordinate=[points[0].lng,points[0].lat];
-							//获取geojsonid
-							var geojson_id = layer_parent.children.length+1;
-							var geojson={
-								Point:coordinate,
-								id:geojson_id
-							}
 							var layer_id = $this.$UUID();
-							var attribute={};
-							for(let j=0;j<temp_list.length;j++){
-								if(temp_list[j]==="id"){
-									attribute[temp_list[j]]=layer_id;
-								}else if(temp_list[j]==="name"){
-									attribute[temp_list[j]]=temp.pois[i].name;
-								}else if(temp_list[j]==="type"){
-									attribute[temp_list[j]]=temp.pois[i].type;
-								}else if(temp_list[j]==="parentId"){
-									attribute[temp_list[j]]=layer_id;
-								}else{
-									attribute[temp_list[j]]="";
-								}
+							var attribute={
+								id:temp.pois[i].id,
+								name:temp.pois[i].name,
+								address:temp.pois[i].address,
+								tel:temp.pois[i].tel,
+								timestamp:temp.pois[i].timestamp,
+								type:temp.pois[i].type,
+								parentId:layer_parent.id,
+							};
+							if(temp.pois[i].address instanceof Array){
+								attribute.address="";
 							}
-							var option = {
+							if(temp.pois[i].tel instanceof Array){
+								attribute.tel = "";
+							}
+							var option2 = {
 								id:layer_id,
-								parentId:id,
+								parentId:layer_parent.id,
 								index:"3",
 								label:label,
 								name:temp.pois[i].name,
@@ -548,18 +546,23 @@ export default {
 								isSelect:isSelect,
 								type:"marker",
 								layer:marker,
-								geojson:JSON.stringify(geojson),
 								attribute:attribute,
-								points:points,
+								features:features,
 							};
 							//创建图层
-							$this.myCommon.createLayer(option);
+							$this.myCommon.createLayer(option2);
 						}
+						$this.$store.state.loading=false;
 					})
 				}
-				$this.myCommon.setLocation(center,$this.zoom);
+				
 			})	
 		}
+		$(".mapListBottom span").each(function(){
+			if($(this).text()==="图层管理"){
+				$(this).trigger("click");
+			}
+		});
 	},
 	mouseOver(post){
 		this.myCommon.mouseOver(post);

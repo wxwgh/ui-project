@@ -30,13 +30,10 @@
 				if(data.id===window.progress[i].id){
 					window.updateProgress(data.id,data.progress);
 					window.updateExportProgress(data.id,data.exportProgress);
-					if(window.progress[i].progress===100&&window.progress[i].exportProgress===100){
+					if(data.exportProgress===100){
 						window.updateTaskIndexedDB(data);
 						window.progress.splice(i,1);
 					}
-					// window.progress[i].progress=data.progress;
-					// window.progress[i].exportProgress=data.exportProgress;
-					// window.progress[i].is_realize=data.is_realize;
 				}
 			}
 		}else{

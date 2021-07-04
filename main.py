@@ -7,14 +7,84 @@ from loadserver import download
 from loadserver import analyze
 from loadserver import importandexport
 from loadserver import userlicence
-
+from osgeo import ogr
+from osgeo import osr
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+import sys
 
 eel.init('web')
-# 获取shp中矢量数据
+
+# 图层管理器 导入相关
+# 导入数据
 @eel.expose
-def get_features(info):
-    datas = importandexport.get_features(info)
-    return datas
+def import_features(info):
+    result = importandexport.import_features(info)
+    return result
+# 获取导入路径
+@eel.expose
+def get_import_path():
+    file_path = importandexport.get_import_path()
+    return file_path
+#获取导入文件坐标系
+@eel.expose
+def get_import_coordinate(info):
+    coord_name = importandexport.get_import_coordinate(info)
+    return coord_name
+# 获取导入数据json
+@eel.expose
+def get_import_features(info):
+    result = importandexport.get_import_features(info)
+    return result
+#判断文件是否存在
+@eel.expose
+def get_file_exists(info):
+    result = importandexport.get_file_exists(info)
+    return result
+
+# 图层管理器 导出相关
+# 获取导出路径
+@eel.expose
+def get_export_path():
+    file_path = importandexport.get_export_path()
+    return file_path
+#判断文件是否存在
+@eel.expose
+def is_samename(path):
+    flag = os.path.exists(path)
+    return flag
+# 导出数据
+@eel.expose
+def export_features(info):
+    result = importandexport.export_features(info)
+    return result
+# 判断是否是相同基准坐标系
+@eel.expose
+def is_same_geo(source,target):
+    is_same = importandexport.is_same_geo(source,target)
+    return is_same
+
+# 坐标转换相关
+# 获取导入tif路径
+@eel.expose
+def get_tif_path():
+    file_path = analyze.get_tif_path()
+    return file_path
+# 投影转换
+@eel.expose
+def tif_coordinate_trans(info):
+    analyze.tif_coordinate_trans(info)
+
+# 用户许可相关
+# 获取许可文件路径
+@eel.expose
+def get_licence_path():
+    file_path = userlicence.get_licence_path()
+    return file_path
+
+
+
 # 导出shp矢量
 @eel.expose
 def export_shape(info):
@@ -44,11 +114,6 @@ def delete_file(path):
 @eel.expose
 def open_file(path):
     os.startfile(path)
-#判断目录是否存在
-@eel.expose
-def is_samename(path):
-    flag = os.path.exists(path)
-    return flag
 #获取存储路径
 @eel.expose
 def get_save_path():
@@ -67,25 +132,6 @@ def get_grid_path():
     root.withdraw()
     # 获取文件夹路径
     file_path = filedialog.askopenfilename(filetypes=[('grid','*.tif;*.img')])
-    return file_path
-# 获取许可文件路径
-@eel.expose
-def get_licence_path():
-    root= tk.Tk()
-    root.withdraw()
-    # 获取文件夹路径
-    file_path = filedialog.askopenfilename(filetypes=[('licence','*.sm1x')])
-    return file_path
-# 获取shp格式文件路径
-@eel.expose
-def get_shape_path():
-    root= tk.Tk()
-    root.withdraw()
-    # 将窗口显示在所有其他窗口之上
-    root.attributes("-topmost", True)
-    # 获取文件夹路径
-    file_path = filedialog.askopenfilename(filetypes=[('shp', '*.shp')])
-    root.destroy()
     return file_path
 # 提取等值
 @eel.expose
@@ -114,8 +160,8 @@ def get_licence(info):
 # 更新许可
 @eel.expose
 def update_licence(info):
-    content = userlicence.update_licence(info)
-    return content
+    result = userlicence.update_licence(info)
+    return result
 
 
 eel.start('index.html',port=18099,size=(1920,1080),chromeFlags=['-kiosk'])

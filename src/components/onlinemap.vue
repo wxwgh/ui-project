@@ -112,7 +112,7 @@ export default {
 				active:false
 			},
 			{
-				name:"服务发布",
+				name:"我的地图",
 				url:require('../assets/mapdownload/release.png'),
 				isShow:false,
 				type:"commonMap",
@@ -134,165 +134,62 @@ export default {
 		this.myCommon.unbindMapEvent(map);
 		this.myCommon.switchMouseStyle(false,map);
 		this.myCommon.clearOperation();
-		if(post.name==="服务发布"){
-			$this.$confirm(<custommaplistbox ref='custommaplistbox'/>, '服务发布', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				closeOnClickModal:false,
-				beforeClose:function(action, instance, done){
-					if(action==="close"){
-						$this.$refs.custommaplistbox.init_custommaplistbox();
-						done();
-					}else if(action==="cancel"){
-						$this.$refs.custommaplistbox.init_custommaplistbox();
-						done();
-					}else if(action==="confirm"){
-						var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
-						if(!taskRegex.test($this.$refs.custommaplistbox.map_name)){
-							$this.$message({
-							    showClose: true,
-								type: 'error',
-							    message: '服务名称,格式不正确'
-							});
-							return false;
-						}
-						if(!taskRegex.test($this.$refs.custommaplistbox.map_url)){
-							$this.$message({
-							    showClose: true,
-								type: 'error',
-							    message: '服务地址,格式不正确'
-							});
-							return false;
-						}
-						if($this.$refs.custommaplistbox.isName){
-							$this.$message({
-							    showClose: true,
-								type: 'error',
-							    message: '已有同名服务'
-							});
-							return false;
-						}else{
-							done();
-						}
-						
-					}
-				}
-			}).then(() => {
-				//添加服务 至全局对象
-				var temp = {
-					id:$this.$UUID(),
-					name:"自定义-"+$this.$refs.custommaplistbox.map_name,
-					center: [39.550339, 100.114129],
-					dpi:96,
-					scale:[
-						"1:340097336",
-						"1:170048668",
-						"1:85024334",
-						"1:42512167",
-						"1:21256083",
-						"1:10628041",
-						"1:5314020",
-						"1:2657010",
-						"1:1328505",
-						"1:664252",
-						"1:332126",
-						"1:166063",
-						"1:83031",
-						"1:41515",
-						"1:20757",
-						"1:10378",
-						"1:5189",
-						"1:2594",
-						"1:1297",
-					],
-					isActive:false,
-					isShow:false,
-					minZoom: 3,
-					maxZoom: 18,
-					image:require('../assets/custommaplist/custom.png'),
-					url:"CusTom.Normal."+$this.$refs.custommaplistbox.map_name,
-					realUrl:$this.$refs.custommaplistbox.map_url,
-					imageProvider:{url:$this.$refs.custommaplistbox.map_url},
-				};
-				$this.$store.state.custom_map_list.push(temp);
-				//添加至provider对象
-				L.TileLayer.ChinaProvider.providers.CusTom.Normal[$this.$refs.custommaplistbox.map_name] = $this.$refs.custommaplistbox.map_url;
-				L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
-				//添加服务 至indexed
-				var id = $this.$store.state.custom_map_list_id;
-				$this.myCommon.addIndexedDB(id,temp);
-				$(".mapListBottom span").each(function(){
-					if($(this).text()==="自定义地图列表"){
-						$(this).trigger("click");
-					}
-				});
-				$this.$refs.custommaplistbox.init_custommaplistbox();
-			}).catch(() => {
-				
-			});
-		}else{
-			//功能按钮高亮
-			for(let i=0;i<this.commonPost.length;i++){
-				if(post.name===this.commonPost[i].name){
-					this.commonPost[i].active=true;
-				}else{
-					this.commonPost[i].active=false;
-				}
-			}
-			if(post.name==="百度地图"){
-				this.$store.state.map_container.type="baidu_map";
-				//刷新地图窗口
-				this.reload();
+		// 功能按钮高亮
+		for(let i=0;i<this.commonPost.length;i++){
+			if(post.name===this.commonPost[i].name){
+				this.commonPost[i].active=true;
 			}else{
-				if(this.$store.state.map_container.type!=="common_map"){
-					this.$store.state.map_container.type="common_map";
-					//刷新地图窗口
-					this.reload();
-				}
-				// this.$router.push('/CommonMap');
+				this.commonPost[i].active=false;
 			}
-			this.myCommon.set_down_load_able(post.name);
-			//清空三维图层
-			this.$store.state.viewer.imageryLayers.removeAll();
-			//更新列表
-			var mapList = this.$store.state.mapList;
+		}
+		//更新地理列表显示区域
+		var mapList = this.$store.state.mapList;
+		var custom_map_list = this.$store.state.custom_map_list[0];
+		if(post.name==="我的地图"){
+			custom_map_list.is_show = true;
+			//隐藏固定地图列表
+			for(let i=0;i<mapList.length;i++){
+				mapList[i].isShow = false;
+			}
+		}else{
 			for(let i=0;i<mapList.length;i++){
 				if(mapList[i].name===post.name){
 					mapList[i].isShow=true;
-					for(let j=0;j<mapList[i].urls.length;j++){
-						if(j===0){
-							mapList[i].urls[j].isActive=true;
-							//更新三维场景图层
-							this.$store.state.viewer.imageryLayers.addImageryProvider(mapList[i].urls[j].imageProvider);
-							//更新地图图层
-							var layer = this.myCommon.getLayer();
-							if(layer){
-								layer.remove();
-							}else{
-								return false;
-							}
-							if(post.name.indexOf("必应")!==-1){
-								var options={
-									bingMapsKey:mapList[i].urls[j].key,
-									imagerySet:mapList[i].urls[j].url
-								}
-								layer = L.tileLayer.bing(options).addTo(map);
-							}else{
-								layer = L.tileLayer.chinaProvider(mapList[i].urls[j].url).addTo(map);
-							}
-							this.$store.state.map_container.layer = layer;
-						}else{
-							mapList[i].urls[j].isActive=false;
-						}
-					}
 				}else{
 					mapList[i].isShow=false;
 				}
 			}
-			//设置地图缩放级别
-			//this.myCommon.setMapZoom();
-			//更新下载信息
-			this.myCommon.updateNameAndUrl();
+			custom_map_list.is_show = false;
+		}
+		if(post.name==="百度地图"){
+			if(this.$store.state.map_container.type!=="baidu_map"){
+				this.$store.state.map_container.type="baidu_map";
+				if(this.$store.state.tabActionName === "1" || this.$store.state.tabActionName === "first"){
+					//刷新地图窗口
+					this.reload();
+					this.myCommon.clear_layers();
+					this.$store.state.is_init_map = false;
+				}else{
+					this.$store.state.is_init_map = true;
+				}
+			}else{
+				this.$store.state.is_init_map = false;
+			}
+		}else{
+			if(this.$store.state.map_container.type!=="common_map"){
+				this.$store.state.map_container.type="common_map";
+				if(this.$store.state.tabActionName === "1" || this.$store.state.tabActionName === "first"){
+					//刷新地图窗口
+					this.reload();
+					this.myCommon.clear_layers();
+					this.$store.state.is_init_map = false;
+				}else{
+					this.$store.state.is_init_map = true;
+				}
+			}else{
+				this.$store.state.is_init_map = false;
+			}
+			// this.$router.push('/CommonMap');
 		}
 	}
   },

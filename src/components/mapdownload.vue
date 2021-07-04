@@ -54,7 +54,11 @@ export default {
 		if(post.name==="地图下载"){
 			//判断是否有范围
 			if(this.$store.state.scopeInfo.scopeLayer.length===0){
-				this.$alert('当前没有范围', '提示', {confirmButtonText: '确定',}).catch(() => {});
+				$this.$message({
+				    showClose: true,
+					type: 'error',
+				    message: '当前没有范围'
+				});
 				return false;
 			}
 			//更新下载表格数据
@@ -68,12 +72,16 @@ export default {
 				customClass:"mapdownloadClass",
 				beforeClose:function(action, instance, done){
 					if(action==="close"){
-						//初始化矢量下载表单
-						$this.$refs.mapdownloadbox.init_vector();
+						//初始化下载表单
+						$this.$refs.mapdownloadbox.init_poi_panel();
+						$this.$refs.mapdownloadbox.init_tile_panel();
+						$this.$refs.mapdownloadbox.init_dem_panel();
 						done();
 					}else if(action==="cancel"){
-						//初始化矢量下载表单
-						$this.$refs.mapdownloadbox.init_vector();
+						//初始化下载表单
+						$this.$refs.mapdownloadbox.init_poi_panel();
+						$this.$refs.mapdownloadbox.init_tile_panel();
+						$this.$refs.mapdownloadbox.init_dem_panel();
 						done();
 					}else if(action==="confirm"){
 						if($this.$refs.mapdownloadbox.activeName==="1"){
@@ -145,7 +153,7 @@ export default {
 						}else if($this.$refs.mapdownloadbox.activeName==="3"){
 							var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
 							var pathRegex = /[a-zA-Z]:\//;
-							if(!taskRegex.test($this.$refs.mapdownloadbox.vectorNameInput)){
+							if(!taskRegex.test($this.$refs.mapdownloadbox.poi_name)){
 								$this.$message({
 								    showClose: true,
 									type: 'error',
@@ -153,7 +161,15 @@ export default {
 								});
 								return false;
 							}
-							if(!pathRegex.test($this.$refs.mapdownloadbox.vectorDownInput)){
+							if(!taskRegex.test($this.$refs.mapdownloadbox.poi_search_name)){
+								$this.$message({
+								    showClose: true,
+									type: 'error',
+								    message: '搜索关键字不能为空'
+								});
+								return false;
+							}
+							if(!pathRegex.test($this.$refs.mapdownloadbox.poi_save_path)){
 								$this.$message({
 								    showClose: true,
 									type: 'error',
@@ -161,19 +177,11 @@ export default {
 								});
 								return false;
 							}
-							if($this.$refs.mapdownloadbox.is_vector_name){
+							if($this.$refs.mapdownloadbox.is_poi_name){
 								$this.$message({
 								    showClose: true,
 									type: 'error',
 								    message: '该路径下已存在同名文件'
-								});
-								return false;
-							}
-							if($this.$store.state.downloadInfo.vector_load_info.dataset_names.length===0){
-								$this.$message({
-								    showClose: true,
-									type: 'error',
-								    message: '请选择下载图层'
 								});
 								return false;
 							}else{
@@ -196,8 +204,7 @@ export default {
 						//python瓦片下载函数
 						await eel.tile_load(data)();
 					}
-					
-					
+					$this.$refs.mapdownloadbox.init_tile_panel();
 				}else if($this.$refs.mapdownloadbox.activeName==="2"){
 					//更新下载信息
 					$this.myCommon.updateDownLoadInfo($this.$refs.mapdownloadbox);
@@ -211,28 +218,193 @@ export default {
 						//python瓦片下载函数
 						await eel.dem_load(data)();
 					}
-					
+					$this.$refs.mapdownloadbox.init_dem_panel();
 				}else if($this.$refs.mapdownloadbox.activeName==="3"){
-					//更新矢量下载信息
-					var data = $this.$store.state.downloadInfo.vector_load_info;
-					data.scope=$this.$store.state.scopeInfo.geojson;
-					data.taskName=$this.$refs.mapdownloadbox.vectorNameInput;
-					data.savePath=$this.$refs.mapdownloadbox.vectorDownInput;
-					data.saveType=$this.$refs.mapdownloadbox.vectorOptionValue;
-					data.time = $this.getDate();
-					for(let i=0;i<data.dataset_names.length;i++){
-						//更新下载任务表
-						data.downType=data.dataset_names[i].describe+"osm矢量下载";
-						data.id=data.dataset_names[i].id;
-						$this.myCommon.updateTaskTableDatas(data);
+					//构建导出参数对象
+					var info ={
+						savePath:$this.$refs.mapdownloadbox.poi_save_path,
+						taskName:$this.$refs.mapdownloadbox.poi_name,
+						source:"4326",
+						target:"4326",
+						seven:"",
+						features:[],
+						attributes:[],
+						saveType:$this.$refs.mapdownloadbox.poi_save_format,
 					}
-					// 打开任务下载版面
-					$this.myCommon.openTaskTable();
-					//调用后端下载函数
-					vector_load(data);
-					async function vector_load(data){
-						//python瓦片下载函数
-						await eel.vector_load(data)();
+					if($this.$store.state.scopeInfo.isXZQH){
+						get_poi_temp();
+						async function get_poi_temp(){
+							$this.$store.state.loading=true;
+							var data = await get_poi_xzqh();
+							if(data){
+								console.log(data);
+								$this.$store.state.loading=false;
+								// 调用后台导出功能
+								var temp_info={
+									id:$this.$UUID(),
+									downType:"POI下载",
+									taskName:$this.$refs.mapdownloadbox.poi_name,
+									savePath:$this.$refs.mapdownloadbox.poi_save_path,
+									saveType:$this.$refs.mapdownloadbox.poi_save_format,
+									type:"point",
+									source:"4326",
+									target:"4326",
+									seven:"",
+									time:$this.getDate(),
+									features:data.features,
+									attributes:data.attributes,
+								}
+								console.log(temp_info)
+								//更新下载任务表
+								$this.myCommon.updateTaskTableDatas(temp_info);
+								$this.myCommon.openTaskTable();
+								//导出数据
+								export_features(temp_info);
+								async function export_features(temp_info){
+									await eel.export_features(temp_info)();
+								}
+								$this.$refs.mapdownloadbox.init_poi_panel();
+							}
+						}
+						async function get_poi_xzqh(){
+							var url="https://restapi.amap.com/v3/place/text?s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&city="+$this.$store.state.scopeInfo.adcode+"&citylimit=false&extensions=all&language=zh_cn&callback=jsonp_991342_&platform=JS&logversion=2.0&appname=https://lbs.amap.com/api/javascript-api/example/poi-search/keywords-search&csid=B7489A1F-1304-4922-81A1-1E3E4538E28F&sdkversion=1.4.15&keywords="+$this.$refs.mapdownloadbox.poi_search_name;
+							var result = await $this.axios({
+								method: 'get',
+								url: url
+							})
+							var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
+							var page = null;
+							if(temp.count%50===0){
+								page = parseInt(temp.count/50);
+							}else{
+								page = parseInt(temp.count/50)+1;
+							}
+							var select = [];
+							//根据页数进行穷举查询
+							for(let x=1;x<=page;x++){
+								var url="https://restapi.amap.com/v3/place/text?s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page="+x+"&city="+$this.$store.state.scopeInfo.adcode+"&citylimit=false&extensions=all&language=zh_cn&callback=jsonp_991342_&platform=JS&logversion=2.0&appname=https://lbs.amap.com/api/javascript-api/example/poi-search/keywords-search&csid=B7489A1F-1304-4922-81A1-1E3E4538E28F&sdkversion=1.4.15&keywords="+$this.$refs.mapdownloadbox.poi_search_name;
+								var result = await $this.axios({
+									method: 'get',
+									url: url
+								})
+								var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
+								for(let i=0;i<temp.pois.length;i++){
+									var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
+									var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
+									var temp_attribute = {
+										id:temp.pois[i].id,
+										name:temp.pois[i].name,
+										address:temp.pois[i].address,
+										tel:temp.pois[i].tel,
+										timestamp:temp.pois[i].timestamp,
+										type:temp.pois[i].type,
+									};
+									info.attributes.push(temp_attribute);
+									info.features.push([[latlng.lat,latlng.lng]]);
+								}
+							}
+							return info;
+						}
+						
+					}else{
+						var layers = $this.$store.state.scopeInfo.scopeLayer;
+						var bounds = "";
+						if(layers.length>1){
+							for(let i=0;i<layers.length;i++){
+								if(i===0){
+									bounds = layers[i].getBounds();
+								}else{
+									bounds = bounds.extend(layers[i].getBounds());
+								}
+							}
+							var temp_bounds = "";
+							// 获取左上坐标
+							temp_bounds+=bounds.getNorthWest().lng+","+bounds.getNorthWest().lat+";";
+							temp_bounds+=bounds.getSouthEast().lng+","+bounds.getSouthEast().lat;
+							bounds = temp_bounds;
+						}else{
+							var latlngs = layers[0].getLatLngs()[0];
+							for(let i=0;i<latlngs.length;i++){
+								if(i===latlngs.length-1){
+									bounds+=latlngs[i].lng+","+latlngs[i].lat;
+								}else{
+									bounds+=latlngs[i].lng+","+latlngs[i].lat+";";
+								}
+							}
+						}
+						$this.$store.state.loading=true;
+						get_poi_temp();
+						async function get_poi_temp(){
+							var data = await get_poi_xzqh();
+							if(data){
+								console.log(data);
+								$this.$store.state.loading=false;
+								// 调用后台导出功能
+								var temp_info={
+									id:$this.$UUID(),
+									downType:"POI下载",
+									taskName:$this.$refs.mapdownloadbox.poi_name,
+									savePath:$this.$refs.mapdownloadbox.poi_save_path,
+									saveType:$this.$refs.mapdownloadbox.poi_save_format,
+									type:"point",
+									source:"4326",
+									target:"4326",
+									seven:"",
+									time:$this.getDate(),
+									features:data.features,
+									attributes:data.attributes,
+								}
+								console.log(temp_info)
+								//更新下载任务表
+								$this.myCommon.updateTaskTableDatas(temp_info);
+								$this.myCommon.openTaskTable();
+								//导出数据
+								export_features(temp_info);
+								async function export_features(temp_info){
+									await eel.export_features(temp_info)();
+								}
+								$this.$refs.mapdownloadbox.init_poi_panel();
+							}
+						}
+						async function get_poi_xzqh(){
+							var url="https://restapi.amap.com/v3/place/polygon?polygon="+bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+$this.$refs.mapdownloadbox.poi_search_name;
+							var result = await $this.axios({
+							  method: 'get',
+							  url: url
+							})
+							var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
+							var page = null;
+							if(temp.count%50===0){
+								page = parseInt(temp.count/50);
+							}else{
+								page = parseInt(temp.count/50)+1;
+							}
+							var select = [];
+							//根据页数进行穷举查询
+							for(let x=1;x<=page;x++){
+								var url="https://restapi.amap.com/v3/place/polygon?polygon="+bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page="+x+"&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+$this.$refs.mapdownloadbox.poi_search_name;
+								var result = await $this.axios({
+									method: 'get',
+									url: url
+								})
+								var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
+								for(let i=0;i<temp.pois.length;i++){
+									var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
+									var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
+									var temp_attribute = {
+										id:temp.pois[i].id,
+										name:temp.pois[i].name,
+										address:temp.pois[i].address,
+										tel:temp.pois[i].tel,
+										timestamp:temp.pois[i].timestamp,
+										type:temp.pois[i].type,
+									};
+									info.attributes.push(temp_attribute);
+									info.features.push([[latlng.lat,latlng.lng]]);
+								}
+							}
+							return info;
+						}
 					}
 				}
 			}).catch(() => {

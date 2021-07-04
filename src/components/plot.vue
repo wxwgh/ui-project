@@ -55,6 +55,21 @@ export default {
 		}
 		return layer_info;
 	},
+	get_attribute(layer_parent,name,layer_id){
+		var header_keys = layer_parent.header_keys;
+		var attribute = {}
+		for(let i=0;i<header_keys.length;i++){
+			if(header_keys[i]==="Name"||header_keys[i]==="name"){
+				attribute[header_keys[i]]=name;
+			}else if(header_keys[i]==="parentId"){
+				attribute[header_keys[i]]=layer_id;
+			}else{
+				attribute[header_keys[i]]="用户自定义矢量标绘";
+			}
+			
+		}
+		return attribute;
+	},
 	plotClick(post){
 		var $this = this;
 		var map = this.myCommon.getMap();;
@@ -64,7 +79,7 @@ export default {
 		//当前图层类型
 		var type = this.$store.state.layerSelectInfo.type;
 		if(post.name==="点"){
-			if(type!=="Point"){
+			if(type!=="point"){
 				$this.$message({
 				    showClose: true,
 					type: 'error',
@@ -78,31 +93,10 @@ export default {
 			map.on("mousedown",function(e){
 				if(e.originalEvent.button===0){
 					var latlng=e.latlng;
-					var layerPoint = L.circle(latlng, {radius: 1,color:'red',weight:1}).addTo(map);
-					var points=[];
-					points.push(latlng);
-					var coordinate=[points[0].lng,points[0].lat];
-					//获取geojsonid
-					var geojson_id = layer_parent.children.length+1;
-					var geojson={
-						Point:coordinate,
-						id:geojson_id
-					}
-					var header_keys = layer_parent.header_keys;
+					var layer = L.circle(latlng, {radius: 1,color:'red',weight:1}).addTo(map);
+					var features=[[latlng.lat,latlng.lng]];
 					var layer_id = $this.$UUID();
-					var attribute={};
-					for(let i=0;i<header_keys.length;i++){
-						if(header_keys[i]==="id"){
-							attribute[header_keys[i]]=layer_id;
-						}else if(header_keys[i]==="Name"){
-							attribute[header_keys[i]]="点图层";
-						}else if(header_keys[i]==="parentId"){
-							attribute[header_keys[i]]=layer_id;
-						}else{
-							attribute[header_keys[i]]="";
-						}
-						
-					}
+					var attribute=$this.get_attribute(layer_parent,"点图层",layer_id);
 					var option = {
 						id:layer_id,
 						parentId:layer_parent.id,
@@ -114,15 +108,13 @@ export default {
 						isShow:true,
 						icon:"fa fa-eye-slash",
 						isSelect:true,
-						type:"Point",
-						layer:layerPoint,
-						geojson:JSON.stringify(geojson),
+						type:"point",
+						layer:layer,
 						attribute:attribute,
-						points:points,
+						features:features,
 					};
 					//创建图层
 					$this.myCommon.createLayer(option);
-					layer_parent.count+=1;
 				}
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);
@@ -132,7 +124,7 @@ export default {
 				$this.myCommon.switchMouseStyle(false,map);
 			})
 		}else if(post.name==="线"){
-			if(type!=="Line"){
+			if(type!=="line"){
 				$this.$message({
 				    showClose: true,
 					type: 'error',
@@ -151,12 +143,12 @@ export default {
 				if(e.originalEvent.button===0){
 					if(!point_first){
 						point_first=e.latlng;
-						points.push(e.latlng);
+						points.push([e.latlng.lat,e.latlng.lng]);
 					}
 					if(point_first&&point_first!==e.latlng){
 						var tempLine=L.polyline([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]], {color: "red",weight:1}).addTo(map);
 						lines.push(tempLine);
-						points.push(e.latlng);
+						points.push([e.latlng.lat,e.latlng.lng]);
 						point_first=e.latlng;
 					}
 				}
@@ -177,38 +169,14 @@ export default {
 				if(point_first&&point_first!==e.latlng){
 					var tempLine=L.polyline([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]], {color: "red",weight:1}).addTo(map);
 					lines.push(tempLine);
-					points.push(e.latlng);
+					points.push([e.latlng.lat,e.latlng.lng]);
 				}
 				for(let i=0;i<lines.length;i++){
 					lines[i].remove();
 				}
 				var layerLine = L.polyline(points, {color: "red",weight:1}).addTo(map);
-				var coordinates=[];
-				for(let i=0;i<points.length;i++){
-					var coordinate =[points[i].lng,points[i].lat];
-					coordinates.push(coordinate);
-				}
-				//获取geojsonid
-				var geojson_id = layer_parent.children.length+1;
-				var geojson={
-					Line:[coordinates],
-					id:geojson_id
-				}
-				var header_keys = layer_parent.header_keys;
 				var layer_id = $this.$UUID();
-				var attribute={};
-				for(let i=0;i<header_keys.length;i++){
-					if(header_keys[i]==="id"){
-						attribute[header_keys[i]]=layer_id;
-					}else if(header_keys[i]==="Name"){
-						attribute[header_keys[i]]="线图层";
-					}else if(header_keys[i]==="parentId"){
-						attribute[header_keys[i]]=layer_id;
-					}else{
-						attribute[header_keys[i]]="";
-					}
-					
-				}
+				var attribute=$this.get_attribute(layer_parent,"线图层",layer_id);
 				var option = {
 					id:layer_id,
 					parentId:layer_parent.id,
@@ -220,20 +188,18 @@ export default {
 					isShow:true,
 					icon:"fa fa-eye-slash",
 					isSelect:true,
-					type:"Line",
+					type:"line",
 					layer:layerLine,
-					geojson:JSON.stringify(geojson),
 					attribute:attribute,
-					points:points,
+					features:points,
 				};
 				//创建图层
 				$this.myCommon.createLayer(option);
-				layer_parent.count+=1;
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);
 			})
 		}else if(post.name==="面"){
-			if(type!=="Region"){
+			if(type!=="region"){
 				$this.$message({
 				    showClose: true,
 					type: 'error',
@@ -256,12 +222,12 @@ export default {
 					if(point_first===null&&point_end===null){
 						point_first=e.latlng;
 						point_end=e.latlng
-						points.push(point_first);
+						points.push([point_first.lat,point_first.lng]);
 					}
 					if(point_first&&point_first!==e.latlng){
 						var tempLine=L.polyline([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]],{color: "red",weight:1}).addTo(map);
 						lines.push(tempLine);
-						points.push(e.latlng);
+						points.push([e.latlng.lat,e.latlng.lng]);
 						point_first=e.latlng;
 					}
 				}
@@ -294,41 +260,12 @@ export default {
 					var temp2=L.polyline([[point_end.lat,point_end.lng],[e.latlng.lat,e.latlng.lng]], {color: "red",weight:1}).addTo(map);
 					lines.push(temp);
 					lines.push(temp2);
-					points.push(e.latlng);
+					points.push([e.latlng.lat,e.latlng.lng]);
 					for(let i=0;i<lines.length;i++){
 						lines[i].remove();
 					}
-					// 获取geojson
-					var coordinates=[];
-					for(let i=0;i<points.length;i++){
-						var coordinate =[points[i].lng,points[i].lat];
-						coordinates.push(coordinate);
-						if(i===points.length-1){
-							var temp = [points[0].lng,points[0].lat];
-							coordinates.push(temp);
-						}
-					}
-					//获取geojsonid
-					var geojson_id = layer_parent.children.length+1;
-					var geojson={
-						Region:[coordinates],
-						id:geojson_id
-					}
-					var header_keys = layer_parent.header_keys;
 					var layer_id = $this.$UUID();
-					var attribute={};
-					for(let i=0;i<header_keys.length;i++){
-						if(header_keys[i]==="id"){
-							attribute[header_keys[i]]=layer_id;
-						}else if(header_keys[i]==="Name"){
-							attribute[header_keys[i]]="面图层";
-						}else if(header_keys[i]==="parentId"){
-							attribute[header_keys[i]]=layer_id;
-						}else{
-							attribute[header_keys[i]]="";
-						}
-						
-					}
+					var attribute=$this.get_attribute(layer_parent,"面图层",layer_id);
 					var layerPolygon = $this.myCommon.createPolygon(points);
 					var option = {
 						id:layer_id,
@@ -341,15 +278,13 @@ export default {
 						isShow:true,
 						icon:"fa fa-eye-slash",
 						isSelect:true,
-						type:"Region",
+						type:"region",
 						layer:layerPolygon,
-						geojson:JSON.stringify(geojson),
 						attribute:attribute,
-						points:points,
+						features:points,
 					};
 					//创建图层
 					$this.myCommon.createLayer(option);
-					layer_parent.count+=1;
 				}
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);

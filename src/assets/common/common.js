@@ -38,6 +38,33 @@ export default{
 		}
 		$store.state.scopeInfo.scopeLayer.splice(0,$store.state.scopeInfo.scopeLayer.length);
 	},
+	// 清除测量结果
+	clear_measure(){
+		var layers = $store.state.measure_layers;
+		if(layers.length>0){
+			for(let i=0;i<layers.length;i++){
+				layers[i].remove();
+			}
+			layers=[];
+		}
+	},
+	// 隐藏删除所有图层管理器中的图层
+	clear_layers(){
+		var layers = $store.state.layerGroups[0].children;
+		for(let i=0;i<layers.length;i++){
+			layers[i].isSelect=false;
+			layers[i].icon="fa fa-eye";
+			for(let j=0;j<layers[i].children.length;j++){
+				if(layers[i].children[j].isSelect){
+					layers[i].children[j].isSelect=false;
+					layers[i].children[j].icon="fa fa-eye";
+					if(layers[i].children[j].layer){
+						layers[i].children[j].layer.remove();
+					}
+				}
+			}
+		}
+	},
 	updateLayerName(name){
 		var tempData = $store.state.layerGroups[0].children;
 		var option_value = $store.state.layerSelectInfo.option_value;
@@ -54,6 +81,7 @@ export default{
 			for(let i=0;i<$store.state.layerGroups[0].children.length;i++){
 				if($store.state.layerGroups[0].children[i].id===option.parentId){
 					$store.state.layerGroups[0].children[i].children.push(option);
+					$store.state.layerGroups[0].children[i].count=parseInt($store.state.layerGroups[0].children[i].count)+1;
 				}
 			}
 		}
@@ -115,16 +143,13 @@ export default{
 		marker.bindPopup(popup);
 		return marker;
 	},
-	update_scopeInfo(flag,adcode,layer,geojson){
+	update_scopeInfo(flag,adcode,layers){
 		$store.state.scopeInfo.isXZQH=flag;
 		if(adcode){
 			$store.state.scopeInfo.adcode=adcode;
 		}
-		if(layer){
-			$store.state.scopeInfo.scopeLayer.push(layer);
-		}
-		if(geojson){
-			$store.state.scopeInfo.geojson=geojson;
+		for(let i=0;i<layers.length;i++){
+			$store.state.scopeInfo.scopeLayer.push(layers[i]);
 		}
 	},
 	//更新地图名称和任务名称
@@ -269,15 +294,20 @@ export default{
 				dpi=$store.state.mapList[i].dpi;
 			}
 		}
-		var layer = $store.state.scopeInfo.scopeLayer[0];
-		var bounds = layer.getBounds();
+		var layers = $store.state.scopeInfo.scopeLayer;
+		var bounds = "";
+		if(layers.length>1){
+			for(let i=0;i<layers.length;i++){
+				if(i===0){
+					bounds = layers[i].getBounds();
+				}else{
+					bounds = bounds.extend(layers[i].getBounds());
+				}
+			}
+		}else{
+			bounds = layers[0].getBounds();
+		}
 		
-		// var correctLngLatMin = gcj02towgs84(parseFloat(bounds.getWest().toFixed(5)),parseFloat(bounds.getSouth().toFixed(5)));
-		// var correctLngLatMax = gcj02towgs84(parseFloat(bounds.getEast().toFixed(5)),parseFloat(bounds.getNorth().toFixed(5)));
-		// $store.state.downloadInfo.bounds=correctLngLatMin[0].toFixed(5)+","+correctLngLatMin[1].toFixed(5)+","+correctLngLatMax[0].toFixed(5)+","+correctLngLatMax[1].toFixed(5);// var correctLngLatMin = gcj02towgs84(parseFloat(bounds.getWest().toFixed(5)),parseFloat(bounds.getSouth().toFixed(5)));
-		// $store.state.downloadInfo.bounds=bounds.getWest().toFixed(5)+","+bounds.getSouth().toFixed(5)+","+bounds.getEast().toFixed(5)+","+bounds.getNorth().toFixed(5);
-		// $store.state.downloadInfo.url="http://overpass.openstreetmap.ru/cgi/xapi_meta?*[bbox="+$store.state.downloadInfo.bounds+"]";
-		// console.log($store.state.downloadInfo.url);
 		$store.state.downloadInfo.scopeLngLat={
 			minLng:parseInt(bounds.getWest()),
 			minLat:parseInt(bounds.getSouth()),
@@ -379,11 +409,11 @@ export default{
 							shadowSize: [41, 41],
 						});
 						layerGroup[i].children[j].layer.setIcon(myIcon);
-					}else if(layerGroup[i].children[j].type==="Point"&&layerGroup[i].children[j].layer){
+					}else if(layerGroup[i].children[j].type==="point"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({radius: 1,color:'blue',weight:1});
-					}else if(layerGroup[i].children[j].type==="Line"&&layerGroup[i].children[j].layer){
+					}else if(layerGroup[i].children[j].type==="line"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({color:'blue',weight:1});
-					}else if(layerGroup[i].children[j].type==="Region"&&layerGroup[i].children[j].layer){
+					}else if(layerGroup[i].children[j].type==="region"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({color:'blue',weight:1});
 					}
 				}
@@ -407,11 +437,11 @@ export default{
 							shadowSize: [41, 41],
 						});
 						layerGroup[i].children[j].layer.setIcon(myIcon);
-					}else if(layerGroup[i].children[j].type==="Point"&&layerGroup[i].children[j].layer){
+					}else if(layerGroup[i].children[j].type==="point"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({radius: 1,color:'red',weight:1});
-					}else if(layerGroup[i].children[j].type==="Line"&&layerGroup[i].children[j].layer){
+					}else if(layerGroup[i].children[j].type==="line"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({color:'red',weight:1});
-					}else if(layerGroup[i].children[j].type==="Region"&&layerGroup[i].children[j].layer){
+					}else if(layerGroup[i].children[j].type==="region"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({color:'red',weight:1});
 					}
 				}
@@ -470,19 +500,23 @@ export default{
 				}
 			}
 		}
+		//更新表头
+		this.update_attribute_header();
 	},
 	//清空属性表数据
 	clearAttributeTable(){
-		var temp_datas = $store.state.attributeTable;
-		temp_datas.splice(0,temp_datas.length);
+		$store.state.attributeTable.splice(0,$store.state.attributeTable.length);
 	},
 	// 更新表头
 	update_attribute_header(){
+		$store.state.attributeHeader.splice(0,$store.state.attributeHeader.length);
 		var option_value = $store.state.layerSelectInfo.option_value;
 		var temp_datas = $store.state.layerGroups[0].children;
 		for(let i=0;i<temp_datas.length;i++){
 			if(temp_datas[i].label===option_value){
-				$store.state.attributeHeader = temp_datas[i].table_header;
+				for(let j=0;j<temp_datas[i].table_header.length;j++){
+					$store.state.attributeHeader.push(temp_datas[i].table_header[j]);
+				}
 			}
 		}
 	},
@@ -501,6 +535,7 @@ export default{
 	update_select_layer(data){
 		$store.state.layerSelectInfo.option_value=data.label;
 		$store.state.layerSelectInfo.type=data.type;
+		$store.state.layerSelectInfo.coordinate = data.coordinate;
 	},
 	//清空选中图层列表
 	clear_select_layer(){
@@ -584,16 +619,21 @@ export default{
 	},
 	updateTaskIndexedDB(data){
 		var id = $store.state.downLoadTableId;
-		var temp={
-			id:data.id,
-			taskName:data.taskName,
-			mapName:data.mapName,
-			downType:data.downType,
-			time:data.time,
-			savePath:data.savePath,
-			progress:100,
-			exportProgress:100,
-		};
+		var datas =	$store.state.taskTableDatas;
+		var temp ="";
+		for(let i=0;i<datas.length;i++){
+			if(data.id === datas[i].id){
+				temp={
+					id:datas[i].id,
+					taskName:datas[i].taskName,
+					downType:datas[i].downType,
+					time:datas[i].time,
+					savePath:datas[i].savePath,
+					progress:100,
+					exportProgress:100,
+				}
+			}
+		}
 		//更新缓存
 		this.updateIndexedDB(id,temp);
 	},
@@ -736,6 +776,7 @@ export default{
 		for(let i=0;i<tableDatas.length;i++){
 			if(id===tableDatas[i].id){
 				tableDatas[i].exportProgress=exportProgress;
+				this.updateTaskIndexedDB(tableDatas[i])
 			}
 		}
 	},
@@ -774,14 +815,6 @@ export default{
 			id:1
 		};
 		return JSON.stringify(geojson);
-	},
-	update_layer_count(id,count){
-		var layer_group = $store.state.layerGroups[0].children;
-		for(let i=0;i<layer_group.length;i++){
-			if(layer_group[i].id===id){
-				layer_group[i].count=count;
-			}
-		}
 	},
 	//清空自定义地图列表选中状态
 	clear_custom_active(){
@@ -845,17 +878,20 @@ export default{
 		})
 	},
 	set_down_load_able(type){
-		if(type==="谷歌地图"){
-			$store.state.down_load_able.is_vector_able=true;
+		if(type.indexOf("谷歌地图")!=-1){
+			$store.state.down_load_able.is_poi_able=true;
 			$store.state.down_load_able.is_dem_able=false;
-		}else if(type==="OSM地图"){
-			$store.state.down_load_able.is_vector_able=false;
+		}else if(type.indexOf("OSM")!==-1){
+			$store.state.down_load_able.is_poi_able=true;
 			$store.state.down_load_able.is_dem_able=true;
 		}else if(type.indexOf("自定义")!==-1){
-			$store.state.down_load_able.is_vector_able=true;
+			$store.state.down_load_able.is_poi_able=true;
+			$store.state.down_load_able.is_dem_able=true;
+		}else if(type.indexOf("高德")!==-1){
+			$store.state.down_load_able.is_poi_able=false;
 			$store.state.down_load_able.is_dem_able=true;
 		}else{
-			$store.state.down_load_able.is_vector_able=true;
+			$store.state.down_load_able.is_poi_able=true;
 			$store.state.down_load_able.is_dem_able=true;
 		}
 	},

@@ -68,7 +68,7 @@ export default {
 			//清空表数据
 			$this.myCommon.clearAttributeTable();
 			var point_first=null;
-			var rectangle = null;
+			$this.$store.state.peration_rectangle = "";
 			var points = [];
 			map.on("mousedown",function(e){
 				if(e.originalEvent.button===0){
@@ -77,8 +77,8 @@ export default {
 						points.push(e.latlng);
 					}
 					if(point_first&&point_first!==e.latlng){
-						if(rectangle!=null){
-							rectangle.remove();
+						if($this.$store.state.peration_rectangle!=""){
+							$this.$store.state.peration_rectangle.remove();
 						}
 						points.push(e.latlng);
 						var tempRectangle = L.rectangle(points, {color:'#0157F0',weight:1});
@@ -112,9 +112,9 @@ export default {
 						for(let i=0;i<layerGroup.length;i++){
 							for(let j=0;j<layerGroup[i].children.length;j++){
 								if(layerGroup[i].children[j].isSelect){
-									if(layerGroup[i].children[j].type==="Point"){
-										var tempPoints = layerGroup[i].children[j].points;
-										var point = $this.turf.point([tempPoints[0].lng, tempPoints[0].lat]);
+									if(layerGroup[i].children[j].type==="point"){
+										var tempPoints = layerGroup[i].children[j].features;
+										var point = $this.turf.point([tempPoints[0][1], tempPoints[0][0]]);
 										var flag = $this.turf.booleanContains(layer, point);
 										if(flag){
 											layerGroup[i].children[j].isOperation=true;
@@ -122,8 +122,8 @@ export default {
 											index++;
 										}
 									}else if(layerGroup[i].children[j].type==="marker"){
-										var tempPoints = layerGroup[i].children[j].points;
-										var point = $this.turf.point([tempPoints[0].lng, tempPoints[0].lat]);
+										var tempPoints = layerGroup[i].children[j].features;
+										var point = $this.turf.point([tempPoints[0][1], tempPoints[0][0]]);
 										var flag = $this.turf.booleanContains(layer, point);
 										if(flag){
 											layerGroup[i].children[j].isOperation=true;
@@ -139,11 +139,11 @@ export default {
 											index++;
 										}
 										
-									}else if(layerGroup[i].children[j].type==="Line"){
-										var tempPoints = layerGroup[i].children[j].points;
+									}else if(layerGroup[i].children[j].type==="line"){
+										var tempPoints = layerGroup[i].children[j].features;
 										var tempCoordinates =[];
 										for(let s=0;s<tempPoints.length;s++){
-											var tempCoordinate = [tempPoints[s].lng,tempPoints[s].lat];
+											var tempCoordinate = [tempPoints[s][1],tempPoints[s][0]];
 											tempCoordinates.push(tempCoordinate);
 										}
 										var line = $this.turf.lineString(tempCoordinates);
@@ -153,14 +153,14 @@ export default {
 											layerGroup[i].children[j].layer.setStyle({color:"blue"});
 											index++;
 										}
-									}else if(layerGroup[i].children[j].type==="Region"){
-										var tempPoints = layerGroup[i].children[j].points;
+									}else if(layerGroup[i].children[j].type==="region"){
+										var tempPoints = layerGroup[i].children[j].features;
 										var tempCoordinates =[];
 										for(let s=0;s<tempPoints.length;s++){
-											var tempCoordinate = [tempPoints[s].lng,tempPoints[s].lat];
+											var tempCoordinate = [tempPoints[s][1],tempPoints[s][0]];
 											tempCoordinates.push(tempCoordinate);
-											if(s===tempPoints.length-1&&tempPoints[0].lng!==tempPoints[tempPoints.length-1].lng){
-												var temp = [tempPoints[0].lng,tempPoints[0].lat];
+											if(s===tempPoints.length-1&&tempPoints[s][1]!==tempPoints[tempPoints.length-1][0]){
+												var temp = [tempPoints[0][1],tempPoints[0][0]];
 												tempCoordinates.push(temp);
 											}
 										}
@@ -192,36 +192,45 @@ export default {
 						// 根据图层列表 更新表格数据
 						for(let i=0;i<layerGroup.length;i++){
 							if(layerGroup[i].label===layer_list[0].label){
-								//更新表头
-								$this.$store.state.attributeHeader = layerGroup[i].table_header;
 								for(let j=0;j<layerGroup[i].children.length;j++){
 									if(layerGroup[i].children[j].isOperation){
 										//更新表格数据
 										$this.myCommon.setAttributeData(layerGroup[i].children[j].attribute);
+										// 更新表头
+										if(j===0){
+											$this.$store.state.attributeHeader.splice(0,$this.$store.state.attributeHeader.length);
+											for(let x=0;x<layerGroup[i].table_header.length;x++){
+												$this.$store.state.attributeHeader.push(layerGroup[i].table_header[x]);
+											}
+										}
 									}
 								}
 							}
 							
 						}
-						//更新选取图层列表
-						$this.myCommon.update_operation_list(layer_list);
-						
-						$this.myCommon.unbindMapEvent(map);
-						$this.myCommon.switchMouseStyle(false,map);
+						if(index!==0){
+							//更新选取图层列表
+							$this.myCommon.update_operation_list(layer_list);
+							$this.myCommon.unbindMapEvent(map);
+							$this.myCommon.switchMouseStyle(false,map);
+						}else{
+							$this.myCommon.unbindMapEvent(map);
+							$this.myCommon.switchMouseStyle(false,map);
+						}
 					}	
 				}
 			})
 			map.on("mousemove",function(e){
-				if(rectangle!=null){
-					rectangle.remove();
+				if($this.$store.state.peration_rectangle!=""){
+					$this.$store.state.peration_rectangle.remove();
 				}
 				if(point_first){
-					rectangle=L.rectangle([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]], {color:'#0157F0',weight:1}).addTo(map);
+					$this.$store.state.peration_rectangle=L.rectangle([[point_first.lat,point_first.lng],[e.latlng.lat,e.latlng.lng]], {color:'#0157F0',weight:1}).addTo(map);
 				}
 			})
 			map.on("contextmenu",function(e){
-				if(rectangle!=null){
-					rectangle.remove();
+				if($this.$store.state.peration_rectangle!=""){
+					$this.$store.state.peration_rectangle.remove();
 				}
 				$this.myCommon.unbindMapEvent(map);
 				$this.myCommon.switchMouseStyle(false,map);
@@ -262,6 +271,7 @@ export default {
 						if(layerGroup[i].children[j].isOperation){
 							layerGroup[i].children[j].layer.remove();
 							layerGroup[i].children.splice(j,1);
+							layerGroup[i].count-=1;
 							j--;
 						}
 					}
@@ -277,7 +287,6 @@ export default {
 				    message: '当前无选择对象'
 				});
 				return false;
-				// $this.$alert('当前选择对象为空,请选择对象', '提示', {confirmButtonText: '确定',}).catch(() => {});
 			}
 			$this.myCommon.openAttributeTable();
 			

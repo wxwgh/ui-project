@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<el-input v-model="task_name" size="small" placeholder="任务名称" @input="isSameName()"></el-input>
+		<el-input v-model="url_name" size="small" placeholder="计算机物理地址,例如:00-15-5D-16-C2-52" class="aliasInputClass"></el-input>
 		<el-input v-model="save_path" size="small" placeholder="文件保存路径" class="aliasInputClass">
 			<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="savePathChoose()"></i>
 		</el-input>
@@ -15,6 +16,7 @@ export default {
   data(){
     return {
 		task_name:"",
+		url_name:"",
 		save_path:"",
 		value:"",
 		isName:false,
@@ -23,9 +25,9 @@ export default {
   methods:{
 	savePathChoose(){
 	  	var $this =this;
-	  	getSavePath();
-	  	async function getSavePath(){
-	  		$this.save_path =await eel.get_save_path()();
+	  	get_export_path();
+	  	async function get_export_path(){
+	  		$this.save_path =await eel.get_export_path()();
 	  	}
 	},
 	isSameName(){
@@ -33,7 +35,6 @@ export default {
 		var path = this.save_path+"\\"+this.task_name;
 		is_samename(path);
 		async function is_samename(path){
-			//python瓦片下载函数
 			$this.isName =await eel.is_samename(path)();
 		}
 	}

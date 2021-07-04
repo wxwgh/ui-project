@@ -4,7 +4,7 @@
 		<el-input v-model="import_file_path" size="small" @input="input_change()" placeholder="导入文件路径" class="aliasInputClass">
 			<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="importFileChoose()"></i>
 		</el-input>
-		<el-select v-model="option_value" size="mini" class="aliasInputClass" placeholder="源数据坐标系">
+		<el-select v-model="option_value" @change="testChange(option_value)" size="mini" class="aliasInputClass" placeholder="源数据坐标系">
 			<el-option v-for="post in options" :labek="post.label" :value="post.value"></el-option>
 		</el-select>
 		<div class="csv_parent">
@@ -191,268 +191,138 @@ export default {
 				label:"2421"
 			},
 			{
-				value:"Xian 1980",
-				label:"4610"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 13",
-				label:"2327"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 14",
-				label:"2328"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 15",
-				label:"2329"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 16",
-				label:"2330"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 17",
-				label:"2331"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 18",
-				label:"2332"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 19",
-				label:"2333"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 20",
-				label:"2334"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 21",
-				label:"2335"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 22",
-				label:"2336"
-			},
-			{
-				value:"Xian 1980 / Gauss-Kruger zone 23",
-				label:"2337"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 25",
-				label:"2349"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 26",
-				label:"2350"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 27",
-				label:"2351"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 28",
-				label:"2352"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 29",
-				label:"2353"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 30",
-				label:"2354"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 31",
-				label:"2355"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 32",
-				label:"2356"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 33",
-				label:"2357"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 34",
-				label:"2358"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 35",
-				label:"2359"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 36",
-				label:"2360"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 37",
-				label:"2361"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 38",
-				label:"2362"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 39",
-				label:"2363"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 40",
-				label:"2364"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 41",
-				label:"2365"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 42",
-				label:"2366"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 43",
-				label:"2367"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 44",
-				label:"2368"
-			},
-			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 45",
-				label:"2369"
-			},
-			{
-				value:"China Geodetic Coordinate System 2000",
-				label:"4490"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 13",
-				label:"4491"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 14",
-				label:"4492"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 15",
-				label:"4493"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 16",
-				label:"4494"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 17",
-				label:"4495"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 18",
-				label:"4496"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 19",
-				label:"4497"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 20",
-				label:"4498"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 21",
-				label:"4499"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 22",
-				label:"4500"
-			},
-			{
-				value:"CGCS2000 / Gauss-Kruger zone 23",
-				label:"4501"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 25",
-				label:"4513"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 26",
-				label:"4514"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 27",
-				label:"4515"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 28",
-				label:"4516"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 29",
-				label:"4517"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 30",
-				label:"4518"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 31",
-				label:"4519"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 32",
-				label:"4520"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 33",
-				label:"4521"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 34",
-				label:"4522"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 35",
-				label:"4523"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 36",
-				label:"4524"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 37",
-				label:"4525"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 38",
-				label:"4526"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 39",
-				label:"4527"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 40",
-				label:"4528"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 41",
-				label:"4529"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 42",
-				label:"4530"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 43",
-				label:"4531"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 44",
-				label:"4532"
-			},
-			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 45",
-				label:"4533"
+				value:"北京54坐标系高斯投影",
+				label:"Beijing 1954 高斯投影",
+				label:{
+					degree3:{
+						75:"2401",
+						78:"2402",
+						81:"2403",
+						84:"2404",
+						87:"2405",
+						90:"2406",
+						93:"2407",
+						96:"2408",
+						99:"2409",
+						102:"2410",
+						105:"2411",
+						108:"2412",
+						111:"2413",
+						114:"2414",
+						117:"2415",
+						120:"2416",
+						123:"2417",
+						126:"2418",
+						129:"2419",
+						132:"2420",
+						135:"2421",
+					},
+					degree6:{
+						75:"21413",
+						81:"21414",
+						87:"21415",
+						93:"21416",
+						99:"21417",
+						105:"21418",
+						111:"21419",
+						117:"21420",
+						123:"21421",
+						129:"21422",
+						135:"21423",
+					}
+				}
+			},
+			{
+				value:"西安80坐标系经纬度投影",
+				label:"Xian 1980"
+			},
+			{
+				value:"西安80坐标系高斯投影",
+				label:"Xian 1980 高斯投影"
+				// label:{
+				// 	degree3:{
+				// 		75:"2349",
+				// 		78:"2350",
+				// 		81:"2351",
+				// 		84:"2352",
+				// 		87:"2353",
+				// 		90:"2354",
+				// 		93:"2355",
+				// 		96:"2356",
+				// 		99:"2357",
+				// 		102:"2358",
+				// 		105:"2359",
+				// 		108:"2360",
+				// 		111:"2361",
+				// 		114:"2362",
+				// 		117:"2363",
+				// 		120:"2364",
+				// 		123:"2365",
+				// 		126:"2366",
+				// 		129:"2367",
+				// 		132:"2368",
+				// 		135:"2369",
+				// 	},
+				// 	degree6:{
+				// 		75:"2327",
+				// 		81:"2328",
+				// 		87:"2329",
+				// 		93:"2330",
+				// 		99:"2331",
+				// 		105:"2332",
+				// 		111:"2333",
+				// 		117:"2334",
+				// 		123:"2335",
+				// 		129:"2336",
+				// 		135:"2337",
+				// 	}
+				// }
+			},
+			{
+				value:"国家2000坐标系经纬度投影",
+				label:"China Geodetic Coordinate System 2000"
+			},
+			{
+				value:"国家2000坐标系高斯投影",
+				label:"CGCS2000 高斯投影"
+				// label:{
+				// 	degree3:{
+				// 		75:"4513",
+				// 		78:"4514",
+				// 		81:"4515",
+				// 		84:"4516",
+				// 		87:"4517",
+				// 		90:"4518",
+				// 		93:"4519",
+				// 		96:"4520",
+				// 		99:"4521",
+				// 		102:"4522",
+				// 		105:"4523",
+				// 		108:"4524",
+				// 		111:"4525",
+				// 		114:"4526",
+				// 		117:"4527",
+				// 		120:"4528",
+				// 		123:"4529",
+				// 		126:"4530",
+				// 		129:"4531",
+				// 		132:"4532",
+				// 		135:"4533",
+				// 	},
+				// 	degree6:{
+				// 		75:"4491",
+				// 		81:"4492",
+				// 		87:"4493",
+				// 		93:"4494",
+				// 		99:"4495",
+				// 		105:"4496",
+				// 		111:"4497",
+				// 		117:"4498",
+				// 		123:"4499",
+				// 		129:"4500",
+				// 		135:"4501",
+				// 	}
+				// }
 			},
 		],
 		is_model_show:true,
@@ -470,6 +340,14 @@ export default {
 	}
   },
   methods:{
+	testChange(value){
+		debugger
+		for(let i=0;i<this.options.length;i++){
+			if(value === this.options[i].value){
+				console.log(this.options[i].label)
+			}
+		}
+	},
 	input_change(){
 		var $this=this;
 		this.import_format = this.import_file_path.split(".")[1];
@@ -490,6 +368,7 @@ export default {
 		get_file_exists(this.import_file_path);
 		async function get_file_exists(data){
 			var result =await eel.get_file_exists(data)();
+			console.log(result)
 			if(result){
 				var data={
 					file_path:$this.import_file_path,
@@ -500,7 +379,7 @@ export default {
 					var temp_coordinate =await eel.get_import_coordinate(data)();
 					var flag = false;
 					for(let i=0;i<$this.options.length;i++){
-						if(temp_coordinate===$this.options[i].value){
+						if(temp_coordinate===$this.options[i].label){
 							$this.option_value = $this.options[i].value;
 							flag=true;
 							break;
@@ -602,7 +481,7 @@ export default {
 				var temp_coordinate =await eel.get_import_coordinate(data)();
 				var flag = false;
 				for(let i=0;i<$this.options.length;i++){
-					if(temp_coordinate===$this.options[i].value){
+					if(temp_coordinate===$this.options[i].label){
 						$this.option_value = $this.options[i].value;
 						flag=true;
 						break;

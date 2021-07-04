@@ -19,11 +19,9 @@ export default {
   name: 'dfmtransitionbox',
   data(){
     return {
-		dinput:"100.114129",
+		dinput:"100.100000",
 		dfminput:"",
 		// image:require('../assets/maptools/reverse.png'),
-		//方向
-		direction:"e",
 	}
   },
   methods:{
@@ -32,7 +30,7 @@ export default {
 		var reg = /^(-?\d+)\.(\d+)+$/;
 		var flag = reg.test(this.dinput);
 		if(flag&&parseInt(this.dinput)<=180.00&&parseInt(this.dinput)>=-180.00){
-			var dfm = this.duToGpsDMS(this.dinput,this.direction);
+			var dfm = this.duToGpsDMS(this.dinput);
 			this.dfminput=dfm;
 		}else{
 			this.$message({
@@ -45,13 +43,22 @@ export default {
 	},
 	//度分秒 转 度
 	dfm_trans_d(){
-		var du = this.gpsDMSToDu(this.dfminput);
-		this.dinput=du;
+		var reg = /^(-?\d+)\°(\d+)\′(\d+)\.(\d+)\″+$/;
+		var flag = reg.test(this.dfminput);
+		if(flag){
+			var du = this.gpsDMSToDu(this.dfminput);
+			this.dinput=du;
+		}else{
+			this.$message({
+			    showClose: true,
+				type: 'error',
+			    message: '度分秒格式不正确'
+			});
+			return false;
+		}
+		
 	},
-	duToGpsDMS(duStr,duDir){
-	    // duStr=duStr.toLowerCase();
-	    // duStr=duStr.replace(/\s+/g,"");
-	    duDir=duDir.toUpperCase();
+	duToGpsDMS(duStr){
 	    var strLength=duStr.length;
 	    var tempString="";
 	    var tempStrArray=new Array();
@@ -78,9 +85,9 @@ export default {
 	    if(tempPointFlag==1){
 	        var num1=tempStrArray[0];
 	        var num2=parseFloat('0'+tempStrArray[1]+ tempStrArray[2],10)*60;
-	        var num3=parseInt(parseFloat((num2-parseInt(num2,10))*60,10),10);
+	        var num3=parseFloat((num2-parseInt(num2,10))*60,10).toFixed(2);
 	        num2=parseInt(num2,10);
-	        gpsDMS=duDir+" "+num1+"°"+num2+"′"+num3+"″";
+	        gpsDMS=num1+"°"+num2+"′"+num3+"″";
 	    }
 	    return gpsDMS;
 	},
@@ -126,7 +133,6 @@ export default {
 	        var num1=parseInt(tempStrArray[0],10);
 	        var num2=parseInt(tempStrArray[1],10);
 	        var num3=parseInt(tempStrArray[2],10);
-	        // console.log(num1+'  '+num2/60+' '+num3/(60*60));
 	        gpsDu[1]=num1+num2/60+num3/(60*60);
 	        gpsDu[1]=gpsDu[1]*flag;
 	        gpsDu[0]=gpsDir;
@@ -137,7 +143,7 @@ export default {
 	        gpsDu[1]=gpsDu[1]*flag;
 	        gpsDu[0]=gpsDir;
 	    }
-	    return gpsDu[1].toFixed(3)+"";
+	    return gpsDu[1].toFixed(6)+"";
 	},
   },
 }

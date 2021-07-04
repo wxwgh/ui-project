@@ -171,6 +171,7 @@ export default {
 					}else if(action==="confirm"){
 						var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
 						var pathRegex = /[a-zA-Z]:\//;
+						var urlRegex = /[a-zA-Z0-9]+\-[a-zA-Z0-9]+\-[a-zA-Z0-9]+\-[a-zA-Z0-9]+\-[a-zA-Z0-9]+\-[a-zA-Z0-9]+/;
 						if(!taskRegex.test($this.$refs.getlicence.task_name)){
 							$this.$message({
 							    showClose: true,
@@ -184,6 +185,14 @@ export default {
 							    showClose: true,
 								type: 'error',
 							    message: '该路径下已存在同名文件'
+							});
+							return false;
+						}
+						if(!urlRegex.test($this.$refs.getlicence.url_name)){
+							$this.$message({
+							    showClose: true,
+								type: 'error',
+							    message: '计算机物理地址格式不正确'
 							});
 							return false;
 						}
@@ -203,10 +212,12 @@ export default {
 				var time = new Date($this.$refs.getlicence.value);
 				var formatTime=time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate();
 				var temp_base = $this.Base64.encode(formatTime);
+				var temp_url = $this.Base64.encode($this.$refs.getlicence.url_name);
 				var data = {
 					task_name:$this.$refs.getlicence.task_name,
 					save_path:$this.$refs.getlicence.save_path,
 					time:temp_base,
+					url:temp_url,
 				};
 				//调用后端处理函数
 				get_licence(data);
@@ -250,24 +261,31 @@ export default {
 				}
 			}).then(() => {
 				var data={
-					url:$this.$refs.updatelicence.import_file_path
+					url:$this.$refs.updatelicence.import_file_path,
 				}
 				//调用后端处理函数
 				update_licence(data);
 				async function update_licence(data){
-					var content = await eel.update_licence(data)();
-					console.log(content);
-					var time = $this.Base64.decode(content);
-					$this.$store.state.administratorInfo.time = time;
-					var temp = {
-						id: $this.$store.state.administratorInfo.user_id,
-						name: "限时用户",
-						describe: "无需登录,更新许可即可使用本应用",
-						isAdmin: false,
-						time: time
-					};
-					var id = $this.$store.state.user_table_id;
-					$this.myCommon.updateIndexedDB(id,temp);
+					var result = await eel.update_licence(data)();
+					if(!result.url_correct){
+						$this.$message({
+						    showClose: true,
+							type: 'error',
+						    message: '计算机物理地址不匹配,请更换正确许可'
+						});
+					}else{
+						var time = result.time;
+						$this.$store.state.administratorInfo.time = result.time;
+						var temp = {
+							id: $this.$store.state.administratorInfo.user_id,
+							name: "限时用户",
+							describe: "无需登录,更新许可即可使用本应用",
+							isAdmin: false,
+							time: time
+						};
+						var id = $this.$store.state.user_table_id;
+						$this.myCommon.updateIndexedDB(id,temp);
+					}
 				}
 			}).catch(() => {
 				

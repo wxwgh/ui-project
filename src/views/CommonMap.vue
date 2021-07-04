@@ -15,28 +15,25 @@ export default {
 		var height = parseInt(window.innerHeight)-181;
 		$("#commonMap").css("height",height);
 		var map_container = this.$store.state.map_container;
-		var map_list = this.$store.state.mapList;
 		if(map_container.type==="common_map"){
 			map_container.map=L.map("commonMap",{
-				center: map_list[0].center,
-				zoom: map_list[0].urls[0].minZoom,
-				minZoom:map_list[0].urls[0].minZoom,
-				maxZoom: map_list[0].urls[0].maxZoom,
+				center: [39.550339, 100.114129],
+				zoom: 3,
+				minZoom:3,
+				maxZoom: 18,
 				zoomControl: false,
 				attributionControl: false,
 			});
-			map_container.layer = L.tileLayer.chinaProvider(map_list[0].urls[0].url).addTo(map_container.map);
 		}else if(map_container.type==="baidu_map"){
 			map_container.map=L.map("commonMap",{
-				crs:map_list[9].crs,
-				center: map_list[9].center,
-				zoom:map_list[9].urls[0].minZoom,
-				minZoom:map_list[9].urls[0].minZoom,
-				maxZoom: map_list[9].urls[0].maxZoom,
+				crs:L.CRS.Baidu,
+				center:[39.550339, 100.114129],
+				zoom:3,
+				minZoom:3,
+				maxZoom: 18,
 				zoomControl: false,
 				attributionControl: false,
 			});
-			map_container.layer = L.tileLayer.chinaProvider(map_list[9].urls[0].url).addTo(map_container.map);
 		}
 		// 初始化地图事件
 		this.myCommon.init_map_event();
@@ -47,6 +44,11 @@ export default {
 			//地图窗口大小
 			map_container.map.invalidateSize(true);
 		}
+		$this.$message({
+			showClose: true,
+			type: 'warning',
+			message: '地图窗口已初始化'
+		});
 	}
   },
 }

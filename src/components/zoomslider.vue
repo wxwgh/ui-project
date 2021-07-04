@@ -325,7 +325,7 @@ export default {
 	position: absolute;
 	right: 40px;
 	top:30px;
-	z-index:100000;
+	z-index:1000;
 }
 .panClass{
 	position: relative;
@@ -395,7 +395,7 @@ export default {
 	position: absolute;
 	width: 12px;
 	background: url(../assets/zoomslider/zoombar.png) -14px 0;
-	z-index:1000000;
+	z-index:1001;
 	cursor:pointer;
 }
 .zoom_cursor{
@@ -404,7 +404,7 @@ export default {
 	height: 12px;
 	left: -6px;
 	background: url(../assets/zoomslider/zoomslider.png) -127px -164px;
-	z-index:2000000;
+	z-index:1002;
 	cursor:pointer;
 }
 .zoom_sub{

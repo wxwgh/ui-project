@@ -26,12 +26,12 @@ export default {
   data(){
     return {
 		coordinatePost:[
-			{
-				name:"投影转换",
-				url:require('../assets/maptools/coordinate.png'),
-				isShow:false,
+			// {
+			// 	name:"投影转换",
+			// 	url:require('../assets/maptools/coordinate.png'),
+			// 	isShow:false,
 				
-			},
+			// },
 			{
 				name:"度分转换",
 				url:require('../assets/maptools/limit.png'),
@@ -56,8 +56,8 @@ export default {
 			}).catch(() => {
 				
 			});
-		}else if(post.name==="坐标转换"){
-			$this.$confirm(<coordinatetransitionbox ref='coordinatetransitionbox'/>, '坐标转换', {
+		}else if(post.name==="投影转换"){
+			$this.$confirm(<coordinatetransitionbox ref='coordinatetransitionbox'/>, '投影转换', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				closeOnClickModal:false,
@@ -71,6 +71,7 @@ export default {
 					}else if(action==="confirm"){
 						var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
 						var pathRegex = /[a-zA-Z]:\//;
+						var importRegex = /(\.tif)/;
 						if(!taskRegex.test($this.$refs.coordinatetransitionbox.task_name)){
 							$this.$message({
 							    showClose: true,
@@ -79,7 +80,7 @@ export default {
 							});
 							return false;
 						}
-						if(!pathRegex.test($this.$refs.coordinatetransitionbox.import_file_path)){
+						if(!importRegex.test($this.$refs.coordinatetransitionbox.import_file_path)){
 							$this.$message({
 							    showClose: true,
 								type: 'error',
@@ -92,6 +93,22 @@ export default {
 							    showClose: true,
 								type: 'error',
 							    message: '该路径下已存在同名文件'
+							});
+							return false;
+						}
+						if($this.$refs.coordinatetransitionbox.option_value===""){
+							$this.$message({
+							    showClose: true,
+								type: 'error',
+							    message: '源坐标系不能为空'
+							});
+							return false;
+						}
+						if($this.$refs.coordinatetransitionbox.option_value2===""){
+							$this.$message({
+							    showClose: true,
+								type: 'error',
+							    message: '目标坐标系不能为空'
 							});
 							return false;
 						}
@@ -108,23 +125,38 @@ export default {
 					}
 				}
 			}).then(() => {
-				//更新下载信息
-				var data = $this.$store.state.downloadInfo.coordinate_trans_info;
-				data.id=$this.$UUID();
-				data.url=$this.$refs.coordinatetransitionbox.import_file_path;
-				data.downType="坐标转换";
-				data.taskName=$this.$refs.coordinatetransitionbox.task_name;
-				data.savePath=$this.$refs.coordinatetransitionbox.save_path;
-				data.coordinate = $this.$refs.coordinatetransitionbox.option_label;
-				data.saveType=$this.$refs.coordinatetransitionbox.saveType;
-				data.time=$this.myCommon.getDate();
+				var source = ""
+				for(let i=0;i<$this.$refs.coordinatetransitionbox.options.length;i++){
+					if($this.$refs.coordinatetransitionbox.option_value===$this.$refs.coordinatetransitionbox.options[i].value){
+						source = $this.$refs.coordinatetransitionbox.options[i].label;
+					}
+				}
+				var target=""
+				for(let i=0;i<$this.$refs.coordinatetransitionbox.options2.length;i++){
+					if($this.$refs.coordinatetransitionbox.option_value2===$this.$refs.coordinatetransitionbox.options2[i].value){
+						target = $this.$refs.coordinatetransitionbox.options2[i].label;
+					}
+				}
+				// 坐标转换功能参数
+				var info={
+					id:$this.$UUID(),
+					import_file_path:$this.$refs.coordinatetransitionbox.import_file_path,
+					downType:"投影转换",
+					taskName:$this.$refs.coordinatetransitionbox.task_name,
+					savePath:$this.$refs.coordinatetransitionbox.save_path,
+					source:source,
+					target:target,
+					export_format:$this.$refs.coordinatetransitionbox.export_format,
+					time:$this.myCommon.getDate(),
+				}
+				console.log(info);
 				//更新下载任务表
-				$this.myCommon.updateTaskTableDatas(data);
+				$this.myCommon.updateTaskTableDatas(info);
 				$this.myCommon.openTaskTable();
 				//调用后端处理函数
-				coordinateTransition(data);
-				async function coordinateTransition(data){
-					await eel.coordinate_transition(data)();
+				tif_coordinate_trans(info);
+				async function tif_coordinate_trans(info){
+					await eel.tif_coordinate_trans(info)();
 				}
 			}).catch(() => {
 				

@@ -41,12 +41,6 @@ import 'cesium/Widgets/widgets.css';
 import {gcj02towgs84} from './assets/plugins/correct.js';
 import {Base64} from 'js-base64';
 
-//引入漫游插件
-// import './assets/plugins/L.Control.Zoomslider.css';
-// import './assets/plugins/L.Control.Zoomslider.js';
-//引入移动面板插件
-// import './assets/plugins/pancontrol/L.Control.Pan.css';
-// import './assets/plugins/pancontrol/L.Control.Pan.js';
 //引入解析shp文件插件
 import './assets/plugins/analyzeshapefile/shapefile.js';
 
@@ -65,6 +59,11 @@ Vue.prototype.$UUID = function () {
 
     return (S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4())
 }
+Vue.prototype.getDate = function(){
+	var time=new Date().getFullYear() +"/" + (new Date().getMonth()+1)+"/"+new Date().getDate()+" "+new Date().getHours() +":"+ new Date().getMinutes()+":"+new Date().getSeconds();
+	return time;
+}
+
 new Vue({
     router,
     store,

@@ -153,8 +153,28 @@ export default new Vuex.Store({
 	//共享数据
     state: {
 		viewer:"",
+		loading:false,
+		// 选择框
+		peration_rectangle:"",
+		//三维场景样式
+		material:"",
+		// 量算图层列表
+		measure_layers:[],
+		// 地图窗口选项卡
+		tabActionName:"1",
+		// 是否需要初始化地图窗口
+		is_init_map:false,
 		// 自定义地图列表
-		custom_map_list:[],
+		custom_map_list:[
+			{
+				id: UUID(),
+				label: '我的地图',
+				count:0,
+				index:"1",
+				is_show:false,
+				children: [],
+			},
+		],
 		navigation_tree:[],
 		layer_delete_options:[],
 		zoom_slider_info:{
@@ -162,7 +182,7 @@ export default new Vuex.Store({
 			cursor_top:""
 		},
 		down_load_able:{
-			is_vector_able:true,
+			is_poi_able:true,
 			is_dem_able:true,
 		},
 		//测试单位
@@ -175,6 +195,7 @@ export default new Vuex.Store({
 		//当前选中图层参数
 		layerSelectInfo:{
 			option_value:"",
+			coordinate:"",
 			type:"",
 			options:[]
 		},
@@ -246,7 +267,7 @@ export default new Vuex.Store({
 					{
 						id:UUID(),
 						name:"高德地图-街道",
-						isActive:true,
+						isActive:false,
 						isShow:false,
 						minZoom: 3,
 						maxZoom: 18,
@@ -1041,7 +1062,7 @@ export default new Vuex.Store({
 		gaodeKey:"0244190557d71e34ec9394db3d75ce32",
 		downLoadTableId:"dc876853-e318-4e16-a962-f002e8f9cdce",
 		user_table_id:"befa2a7b-4a45-4e5d-8fe8-8d700cfbf64c",
-		custom_map_list_id:"071b43fb-b357-4424-9220-44ba186818b7",
+		custom_map_list_id:"mymap071b43fbb3574424922044ba186818b7",
 		scopeInfo:{
 			isXZQH:"",
 			adcode:"",

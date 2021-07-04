@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<el-input v-model="layer_name" size="small" @input="isSameName()" placeholder="图层名称"></el-input>
 		<el-input v-model="import_file_path" size="small" @input="input_change()" placeholder="导入文件路径" class="aliasInputClass">
 			<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="importFileChoose()"></i>
 		</el-input>
@@ -11,24 +10,12 @@
 			<div class="title_class"><span>CSV格式设置</span></div>
 			<div class="csv_radio">
 				<span>对象类型:</span>
-				<el-radio v-model="radio" label="点" class="radio" @change="radio_change">点</el-radio>
-				<el-radio v-model="radio" label="线" class="radio" @change="radio_change">线</el-radio>
-				<el-radio v-model="radio" label="面" class="radio" @change="radio_change">面</el-radio>
-			</div>
-			<div class="geo_class">
-				<span class="geo_span">经度:</span>
-				<el-input v-model="lng" :disabled="is_point" size="mini" placeholder="填写列数,如1" class="geo_input"></el-input>
-				<span>横坐标所在列</span>
-			</div>
-			<div class="geo_class">
-				<span class="geo_span">纬度:</span>
-				<el-input v-model="lat" :disabled="is_point" size="mini" placeholder="填写列数,如2" class="geo_input"></el-input>
-				<span>纵坐标所在列</span>
+				<el-radio v-model="radio" label="面" class="radio">面</el-radio>
 			</div>
 			<div class="geo_class">
 				<span class="geo_span">空间对象:</span>
-				<el-input v-model="geometry" :disabled="is_line_region" size="mini" placeholder="填写列数,如3" class="geo_input"></el-input>
-				<span>线面对象填写空间对象列</span>
+				<el-input v-model="geometry" size="mini" placeholder="填写列数,如3" class="geo_input"></el-input>
+				<span>填写空间对象列</span>
 			</div>
 			<div class="geo_model" v-if="is_model_show"></div>
 		</div>
@@ -38,12 +25,10 @@
 <script>
 import $store from '@/store/index.js';
 export default {
-  name: 'layertreeimportbox',
+  name: 'scopesetimport',
   data(){
     return {
-		layer_name:"",
 		import_file_path:"",
-		isName:false,
 		option_value:"",
 		options:[
 			{
@@ -456,16 +441,13 @@ export default {
 			},
 		],
 		is_model_show:true,
-		radio:"点",
-		lng:"",
-		lat:"",
+		radio:"面",
 		geometry:"",
-		is_point:false,
-		is_line_region:true,
 		//导入类型
 		import_format:"",
 		//矢量类型
-		feature_type:"点",
+		feature_type:"region",
+		//文件是否存在
 		is_exists:true,
 	}
   },
@@ -530,49 +512,14 @@ export default {
 	},
 	init_panel(){
 		this.option_value="";
-		this.layer_name="";
 		this.import_file_path="";
-		this.lng="";
-		this.lat="";
 		this.geometry="";
-		this.radio="点";
 		this.is_model_show=true;
-		this.is_point=false;
-		this.is_line_region=true;
 		this.import_format="";
-		this.feature_type="点";
 		this.is_exists=true;
 	},
 	init_csv_panel(){
-		this.radio="点";
-		this.feature_type = "point";
-		this.is_point=false;
-		this.lng="";
-		this.lat="";
 		this.geometry="";
-		this.is_line_region=true;
-	},
-	radio_change(label){
-		if(label==="点"){
-			this.feature_type = "point";
-			this.is_point=false;
-			this.geometry="";
-			this.is_line_region=true;
-		}else if(label ==="线"){
-			this.feature_type = "line";
-			this.is_point=true;
-			this.lng="";
-			this.lat="";
-			this.geometry="";
-			this.is_line_region=false;
-		}else if(label ==="面"){
-			this.feature_type = "region";
-			this.is_point=true;
-			this.lng="";
-			this.lat="";
-			this.geometry="";
-			this.is_line_region=false;
-		}
 	},
 	importFileChoose(){
 		var $this =this;
@@ -618,15 +565,6 @@ export default {
 				}else{
 					$this.is_exists = true;
 				}
-			}
-		}
-	},
-	isSameName(){
-		this.isName=false;
-		var temp_child = $store.state.layerGroups[0].children;
-		for(let i=0;i<temp_child.length;i++){
-			if(temp_child[i].label===this.layer_name){
-				this.isName=true;
 			}
 		}
 	},

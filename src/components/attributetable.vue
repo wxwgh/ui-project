@@ -1,8 +1,8 @@
 <template>
 	<div class="tableParent">
-		<el-table :cell-class-name="tableCellClassName" @cell-click="tableClick" :data="get_data" border size="mini" :height="tableHeight">
+		<el-table :cell-class-name="tableCellClassName" :row-style="table_row" @cell-click="tableClick" :data="get_data" border size="mini" :height="tableHeight">
 			<template v-for="p in get_header">
-				<el-table-column min-width="150" :prop="p.name" :label="p.alias" v-if="p.name!=='parentId'">
+				<el-table-column min-width="150" show-overflow-tooltip :prop="p.name" :label="p.alias" v-if="p.name!=='parentId'">
 					<template slot-scope="scope">
 						<span v-if="scope.row.index === rowIndex && scope.column.index === columnIndex">
 							<el-input v-model="scope.row[p.name]" size="mini" @blur="update_attribute(scope)"/>
@@ -15,15 +15,15 @@
 		<div class="attributeButtonParent">
 			<span class="attributeSelectClass">
 				<i class="el-icon-my-point" v-if="get_type==='marker'"></i>
-				<i class="el-icon-my-point" v-else-if="get_type==='Point'"></i>
-				<i class="el-icon-my-line" v-else-if="get_type==='Line'"></i>
-				<i class="el-icon-my-polygon" v-else-if="get_type==='Region'"></i>
+				<i class="el-icon-my-point" v-else-if="get_type==='point'"></i>
+				<i class="el-icon-my-line" v-else-if="get_type==='line'"></i>
+				<i class="el-icon-my-polygon" v-else-if="get_type==='region'"></i>
 				<el-select :value="get_value" size="mini" @change="attributeSelectChange">
 					<el-option v-for="post in get_options" :labek="post.label" :value="post.value">
 						<i class="el-icon-my-point" v-if="post.type==='marker'"></i>
-						<i class="el-icon-my-point" v-else-if="post.type==='Point'"></i>
-						<i class="el-icon-my-line" v-else-if="post.type==='Line'"></i>
-						<i class="el-icon-my-polygon" v-else-if="post.type==='Region'"></i>
+						<i class="el-icon-my-point" v-else-if="post.type==='point'"></i>
+						<i class="el-icon-my-line" v-else-if="post.type==='line'"></i>
+						<i class="el-icon-my-polygon" v-else-if="post.type==='region'"></i>
 						<span>{{post.label}}</span>
 					</el-option>
 				</el-select>
@@ -50,6 +50,7 @@ export default {
 		rowIndex:"",
 		columnIndex:"",
 		tableHeight:"100%",
+		table_key:1,
 	}
   },
   computed:{
@@ -74,6 +75,14 @@ export default {
 	$(".tableParent").css("height",height);
   },
   methods:{
+	// 行样式回调
+	table_row({row, rowIndwx}){
+		var style={
+			"height":"35px",
+			"line-height":"35px"
+		};
+		return style;
+	},
 	//更新属性
 	update_attribute(data){
 		//input失去焦点进行属性更新
@@ -103,18 +112,30 @@ export default {
 			if(layerGroup[i].label===name){
 				//清空表格数据
 				$this.myCommon.clearAttributeTable();
-				// 更新表头
-				$this.$store.state.attributeHeader = layerGroup[i].table_header;
 				//设置选取图层列表当前选中
 				$this.$store.state.layerOperationInfo.option_value=name;
 				$this.$store.state.layerOperationInfo.type=layerGroup[i].type;
+				// 是否更新过表头
+				var flag = false;
 				//更新表格数据
 				for(let j=0;j<layerGroup[i].children.length;j++){
-					if(layerGroup[i].children[j].isOperation){
-						//更新表格数据
-						$this.myCommon.setAttributeData(layerGroup[i].children[j].attribute);
+					if(name === layerGroup[i].label){
+						if(layerGroup[i].children[j].isOperation){
+							//更新表格数据
+							$this.myCommon.setAttributeData(layerGroup[i].children[j].attribute);
+							// 更新表头
+							if(!flag){
+								$this.$store.state.attributeHeader.splice(0,$this.$store.state.attributeHeader.length);
+								for(let x=0;x<layerGroup[i].table_header.length;x++){
+									$this.$store.state.attributeHeader.push(layerGroup[i].table_header[x]);
+								}
+								flag=true;
+							}
+						}
 					}
+					
 				}
+
 			}
 		}
 	},
@@ -174,6 +195,7 @@ export default {
 	},
 	//添加字段和属性
 	add_header_attribute(name){
+		var $this = this;
 		//获取当前选中图层
 		var layer_name = this.$store.state.layerOperationInfo.option_value;
 		var layer_group = this.$store.state.layerGroups[0].children;
@@ -191,9 +213,32 @@ export default {
 				}
 			}
 		}
+		var flag = false;
+		for(let i=0;i<layer_group.length;i++){
+			if(layer_group[i].label===layer_name){
+				//清空表格数据
+				this.myCommon.clearAttributeTable();
+				//更新表格数据
+				for(let j=0;j<layer_group[i].children.length;j++){
+					if(layer_group[i].children[j].isOperation){
+						//更新表格数据
+						$this.myCommon.setAttributeData(layer_group[i].children[j].attribute);
+						// 更新表头
+						if(!flag){
+							$this.$store.state.attributeHeader.splice(0,$this.$store.state.attributeHeader.length);
+							for(let x=0;x<layer_group[i].table_header.length;x++){
+								$this.$store.state.attributeHeader.push(layer_group[i].table_header[x]);
+							}
+							flag=true;
+						}
+					}
+				}
+			}
+		}
 	},
 	//删除字段和属性
 	delete_header_attribute(name){
+		var $this =this;
 		//获取当前选中图层
 		var layer_name = this.$store.state.layerOperationInfo.option_value;
 		var layer_group = this.$store.state.layerGroups[0].children;
@@ -207,6 +252,29 @@ export default {
 				}
 				for(let j=0;j<layer_group[i].children.length;j++){
 					delete layer_group[i].children[j].attribute[name];
+				}
+			}
+		}
+		//更新表格
+		var flag = false;
+		for(let i=0;i<layer_group.length;i++){
+			if(layer_group[i].label===layer_name){
+				//清空表格数据
+				this.myCommon.clearAttributeTable();
+				//更新表格数据
+				for(let j=0;j<layer_group[i].children.length;j++){
+					if(layer_group[i].children[j].isOperation){
+						//更新表格数据
+						$this.myCommon.setAttributeData(layer_group[i].children[j].attribute);
+						// 更新表头
+						if(!flag){
+							$this.$store.state.attributeHeader.splice(0,$this.$store.state.attributeHeader.length);
+							for(let x=0;x<layer_group[i].table_header.length;x++){
+								$this.$store.state.attributeHeader.push(layer_group[i].table_header[x]);
+							}
+							flag=true;
+						}
+					}
 				}
 			}
 		}
@@ -281,8 +349,8 @@ export default {
 	display: flex;
 	flex-direction: row;
 	justify-content:space-between;
-	line-height: 48px;
-	height: 48px;
+	line-height: 39.67px;
+	height: 39.67px;
 }
 .attributeRadioClass{
 	margin-left: 10px;
@@ -292,5 +360,10 @@ export default {
 }
 .attributeSelectClass{
 	margin-left: 5px;
+}
+.el-tooltip__popper.is-dark{
+	background:#fff;
+	color:#2c3e50;
+	border: 1px solid #303133;
 }
 </style>

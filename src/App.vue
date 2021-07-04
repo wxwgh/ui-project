@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-loading.fullscreen.lock="get_loading" element-loading-text="请稍等" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
 	<el-row type="flex" >
 	  <el-col :span="24">
 		  <el-tabs v-model="activeName" type="card" :before-leave="tabBeforeClick">
@@ -9,8 +9,8 @@
 		  			<onlinemap></onlinemap>
 		  			<!-- 范围设置 -->
 		  			<scopeset></scopeset>
-					<!-- 显示设置 -->
-					<showset></showset>
+					<!-- 分幅设置 -->
+					<!-- <showset></showset> -->
 		  			<!-- 下载相关 -->
 		  			<mapdownload></mapdownload>
 		  		</div>
@@ -107,14 +107,14 @@
 		downloadattribute,
 		mapcesium,
 		userinfo,
-		zoomslider
+		zoomslider,
 	},
     data() {
       return {
 		//顶部选项卡标识
         activeName: 'first',
 		//地图窗口选项卡 标识
-		tabActionName:"1",
+		tabActionName:this.$store.state.tabActionName,
 		is_router_show:true,
       };
     },
@@ -145,21 +145,22 @@
 	created:function(){
 		$("body").css("height",window.innerHeight);
 	},
+	computed:{
+		  get_loading:function(){
+			  return this.$store.state.loading;
+		  }
+	},
     methods: {
 		reload(){
 			this.is_router_show = false;
 			this.$nextTick(() => {
-			   this.is_router_show = true;
+			    this.is_router_show = true;
+				//清空范围
+				this.myCommon.clearScope();
+				//清空测量结果
+				this.myCommon.clear_measure();
 		    })
 		},
-		// return_home(){
-		// 	var $this =this;
-		// 	window.addEventListener('load',function(){
-		// 		if($this.$router.path!=='/'){
-		// 			$this.$router.replace('/');
-		// 		}
-		// 	})
-		// },
 		initProgress(){
 			var $this = this;
 			window["updateProgress"] =function(id,progress){
@@ -193,8 +194,8 @@
 					return data.flag
 				}
 			}
-			if(activeName==="1"){
-				//刷新地图窗口
+			this.$store.state.tabActionName = activeName;
+			if(this.$store.state.is_init_map&&activeName==="1"){
 				this.reload();
 			}
 		},
@@ -252,7 +253,7 @@
 						id:$this.$UUID(),
 				  		name:"限时用户",
 				  		describe:"无需登录,更新许可即可使用本应用",
-				  		time:"2023/3/17",
+				  		time:"2021/6/10",
 				  		isAdmin:false
 				  	};
 				  	var administratorInfo={
@@ -355,7 +356,9 @@
 					if(result){
 						var temp = {
 							id:result.value.id,
-							name:result.value.name,
+							label:result.value.label,
+							index:result.value.index,
+							type:result.value.type,
 							center:result.value.center,
 							dpi:result.value.dpi,
 							scale:result.value.scale,
@@ -368,10 +371,13 @@
 							realUrl:result.value.realUrl,
 							imageProvider:result.value.imageProvider,
 						};
-						$this.$store.state.custom_map_list.push(temp);
-						//添加至provider对象
-						L.TileLayer.ChinaProvider.providers.CusTom.Normal[result.value.name] = result.value.realUrl;
-						L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
+						$this.$store.state.custom_map_list[0].children.push(temp);
+						$this.$store.state.custom_map_list[0].count = $this.$store.state.custom_map_list[0].children.length;
+						if(temp.type === "wmts"){
+							//添加至provider对象
+							L.TileLayer.ChinaProvider.providers.CusTom.Normal[temp.label] = temp.realUrl.split(":")[1];
+							L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
+						}
 						//将游标按它的方向移动到下一个位置，到其健与可选健参数匹配的项
 						result.continue();
 					}
@@ -505,5 +511,10 @@ input,select{font-family:"微软雅黑";}
 	/* 定义子元素在 纵轴方向的对齐方式  此处为居中*/
 	align-items:flex-start;
 }
-
+.el-loading-spinner .el-loading-text{
+	color:#fff
+}
+.el-loading-spinner i{
+	color:#fff
+}
 </style>

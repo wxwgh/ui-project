@@ -27,8 +27,19 @@ export default {
 			homeButton:false,//右上角家功能
 	        imageryProvider : new Cesium.UrlTemplateImageryProvider({
 	            url: "http://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-	        })
+	        }),
+			terrainProvider:new Cesium.CesiumTerrainProvider({
+				//CesiumLab提供的世界12级地形
+				// url:"https://lab.earthsdk.com/terrain/42752d50ac1f11e99dbd8fd044883638"
+				//CesiumLab提供的中国14级地形
+				url:"https://lab.earthsdk.com/terrain/577fd5b0ac1f11e99dbd8fd044883638",
+				requestVertexNormals: true,
+				requestWaterMask: true
+			})
 	    });
+		//开启深度测试
+		this.$store.state.viewer.scene.globe.enableLighting = true;
+		this.$store.state.material = this.$store.state.viewer.scene.globe.material;
 		//隐藏logo
 		$(".cesium-viewer-bottom").css("display","none");
 		this.$store.state.viewer.camera.setView({

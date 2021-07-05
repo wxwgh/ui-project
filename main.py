@@ -1,18 +1,11 @@
+# -- coding:utf-8 --
 import eel
 import os
 import shutil
-import tkinter as tk
-from tkinter import filedialog
 from loadserver import download
 from loadserver import analyze
 from loadserver import importandexport
 from loadserver import userlicence
-from osgeo import ogr
-from osgeo import osr
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-import sys
 
 eel.init('web')
 
@@ -114,41 +107,6 @@ def delete_file(path):
 @eel.expose
 def open_file(path):
     os.startfile(path)
-#获取存储路径
-@eel.expose
-def get_save_path():
-    root= tk.Tk()
-    root.withdraw()
-    # 将窗口显示在所有其他窗口之上
-    root.attributes("-topmost", True)
-    # 获取文件夹路径
-    Folderpath = filedialog.askdirectory()
-    root.destroy()
-    return Folderpath
-#获取栅格文件路径
-@eel.expose
-def get_grid_path():
-    root= tk.Tk()
-    root.withdraw()
-    # 获取文件夹路径
-    file_path = filedialog.askopenfilename(filetypes=[('grid','*.tif;*.img')])
-    return file_path
-# 提取等值
-@eel.expose
-def get_contour_line(info):
-    analyze.get_contour_line(info)
-# 提取等面
-@eel.expose
-def get_contour_polygon(info):
-    analyze.get_contour_polygon(info)
-# 坡度分析
-@eel.expose
-def get_slope(info):
-    analyze.get_slope(info)
-# 坡向分析
-@eel.expose
-def get_aspect(info):
-    analyze.get_aspect(info)
 # 坐标转换
 @eel.expose
 def coordinate_transition(info):

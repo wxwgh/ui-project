@@ -40,6 +40,7 @@ def get_licence(info):
     file.write(info["url"])
     file.close()
 # 更新许可
+from psutil import net_if_addrs
 def update_licence(info):
     file_path = info["url"]
     # 打开文件
@@ -52,18 +53,17 @@ def update_licence(info):
             time = base64.b64decode(content[i].strip()).decode()
         else:
             url = base64.b64decode(content[i].strip()).decode()
-    print(url)
     file.close()
-    node = uuid.getnode()
-    macHex = uuid.UUID(int=node).hex[-12:]
-    mac = []
-    str_mac = ""
-    for i in range(len(macHex))[::2]:
-        mac.append(macHex[i:i + 2])
-    str_mac = '-'.join(mac).upper()
-    print(str_mac)
+    flag = False
+    for k,v in net_if_addrs().items():
+        for item in v:
+            address=item[1]
+            if '-' in address and len(address)==17:
+                print(address)
+                if address == url:
+                    flag = True
     result={}
-    if url == str_mac:
+    if flag:
         result["url_correct"] = True
         result["time"] = time
     else:

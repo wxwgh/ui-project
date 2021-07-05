@@ -1,5 +1,4 @@
 # -- coding:utf-8 --
-import iobjectspy
 import os
 import eel
 from concurrent.futures import ThreadPoolExecutor

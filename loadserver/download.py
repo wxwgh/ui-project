@@ -6,10 +6,7 @@ import math
 from PIL import Image
 import shutil
 import requests
-import iobjectspy
 from contextlib import closing
-from pathlib import Path
-import uuid
 
 #创建线程池
 thread_pool = ThreadPoolExecutor(10)
@@ -25,12 +22,7 @@ def down_load(info):
             thread_pool.submit(map_load, info)
     elif info["downType"].find("高程下载") != -1:
         thread_pool.submit(dem_load, info)
-    elif info["downType"].find("矢量下载") != -1:
-        dataset_names = info["dataset_names"]
-        for i in range(len(dataset_names)):
-            info["dataset_name"]=dataset_names[i]["dataset_name"]
-            info["id"]=dataset_names[i]["id"]
-            thread_pool.submit(vector_load, info)
+
 # 瓦片下载
 def tile_load(info):
     # 是否拼接标识xx
@@ -181,66 +173,66 @@ def map_load(info):
     eel.updateTaskProgress(progressDict)
 
 #矢量下载
-def vector_load(info):
-    progressDict = {}
-    progressDict["id"] = info["id"]
-    progressDict["progress"] = 0
-    progressDict["exportProgress"] = 0
-    progressDict["message"] = ""
-
-    # 下载进度--导入进度--分析进度
-    def import_progress(step_event):
-        if step_event.message == "正往数据集里添加记录...":
-            if step_event.percent <= 100:
-                print(step_event.message)
-                progressDict["progress"] = step_event.percent
-                eel.updateTaskProgress(progressDict)
-            elif step_event.percent > 100:
-                progressDict["progress"] = 100
-                eel.updateTaskProgress(progressDict)
-    # 导出进度
-    def export_progress(step_event):
-        if step_event.percent <= 100:
-            progressDict["exportProgress"] = step_event.percent
-            eel.updateTaskProgress(progressDict)
-        elif step_event.percent > 100:
-            progressDict["exportProgress"] = 100
-            eel.updateTaskProgress(progressDict)
-    # 存储目录
-    save_dir = os.path.join(info["savePath"],info["taskName"])
-    file_dir = Path(save_dir)
-    if file_dir.is_dir():
-        print(info["dataset_name"]+"目录已存在")
-    else:
-        # 创建目录
-        os.makedirs(save_dir)
-    # 下载地址
-    url = info["url"]
-    dataset_name = info["dataset_name"]
-    temp_str = dataset_name + "." + info["saveType"]
-    # 保存文件路径
-    file_path = os.path.join(save_dir, temp_str)
-    # 连接信息
-    connectInfo = iobjectspy.data.DatasourceConnectionInfo(url)
-    # 打开数据源
-    data_source = iobjectspy.data.Datasource.open(connectInfo)
-    # 创建内存数据源
-    temp_udb = iobjectspy.data.create_datasource(":memory:")
-    print(info["scope"])
-    dataset_overlay = iobjectspy.data.Geometry.from_json(info["scope"])
-    # 获取数据集
-    dataset = data_source.get_dataset(dataset_name)
-    # 叠加分析-矢量剪裁
-    try:
-        result_vector = iobjectspy.analyst.overlay(dataset,[dataset_overlay] , iobjectspy.enums.OverlayMode.CLIP,
-                                                   out_data=temp_udb, out_dataset_name=dataset_name, progress=import_progress)
-    except:
-        # 返回错误信息
-        progressDict["message"]=info["downType"]+"矢量数据下载失败,该范围下载无数据"
-        eel.updateTaskProgress(progressDict)
-    else:
-        # 导出文件
-        iobjectspy.conversion.export_to_shape(result_vector, file_path, progress=export_progress)
+# def vector_load(info):
+#     progressDict = {}
+#     progressDict["id"] = info["id"]
+#     progressDict["progress"] = 0
+#     progressDict["exportProgress"] = 0
+#     progressDict["message"] = ""
+#
+#     # 下载进度--导入进度--分析进度
+#     def import_progress(step_event):
+#         if step_event.message == "正往数据集里添加记录...":
+#             if step_event.percent <= 100:
+#                 print(step_event.message)
+#                 progressDict["progress"] = step_event.percent
+#                 eel.updateTaskProgress(progressDict)
+#             elif step_event.percent > 100:
+#                 progressDict["progress"] = 100
+#                 eel.updateTaskProgress(progressDict)
+#     # 导出进度
+#     def export_progress(step_event):
+#         if step_event.percent <= 100:
+#             progressDict["exportProgress"] = step_event.percent
+#             eel.updateTaskProgress(progressDict)
+#         elif step_event.percent > 100:
+#             progressDict["exportProgress"] = 100
+#             eel.updateTaskProgress(progressDict)
+#     # 存储目录
+#     save_dir = os.path.join(info["savePath"],info["taskName"])
+#     file_dir = Path(save_dir)
+#     if file_dir.is_dir():
+#         print(info["dataset_name"]+"目录已存在")
+#     else:
+#         # 创建目录
+#         os.makedirs(save_dir)
+#     # 下载地址
+#     url = info["url"]
+#     dataset_name = info["dataset_name"]
+#     temp_str = dataset_name + "." + info["saveType"]
+#     # 保存文件路径
+#     file_path = os.path.join(save_dir, temp_str)
+#     # 连接信息
+#     connectInfo = iobjectspy.data.DatasourceConnectionInfo(url)
+#     # 打开数据源
+#     data_source = iobjectspy.data.Datasource.open(connectInfo)
+#     # 创建内存数据源
+#     temp_udb = iobjectspy.data.create_datasource(":memory:")
+#     print(info["scope"])
+#     dataset_overlay = iobjectspy.data.Geometry.from_json(info["scope"])
+#     # 获取数据集
+#     dataset = data_source.get_dataset(dataset_name)
+#     # 叠加分析-矢量剪裁
+#     try:
+#         result_vector = iobjectspy.analyst.overlay(dataset,[dataset_overlay] , iobjectspy.enums.OverlayMode.CLIP,
+#                                                    out_data=temp_udb, out_dataset_name=dataset_name, progress=import_progress)
+#     except:
+#         # 返回错误信息
+#         progressDict["message"]=info["downType"]+"矢量数据下载失败,该范围下载无数据"
+#         eel.updateTaskProgress(progressDict)
+#     else:
+#         # 导出文件
+#         iobjectspy.conversion.export_to_shape(result_vector, file_path, progress=export_progress)
 # 老版本互联网矢量下载
 def vector_load2(info):
     progressDict = {}

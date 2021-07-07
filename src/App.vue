@@ -10,7 +10,7 @@
 		  			<!-- 范围设置 -->
 		  			<scopeset></scopeset>
 					<!-- 分幅设置 -->
-					<!-- <showset></showset> -->
+					<showset></showset>
 		  			<!-- 下载相关 -->
 		  			<mapdownload></mapdownload>
 		  		</div>

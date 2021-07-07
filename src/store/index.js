@@ -156,6 +156,19 @@ export default new Vuex.Store({
 		loading:false,
 		// 选择框
 		peration_rectangle:"",
+		// 分幅设置
+		show_set:{
+			grid_layers:"",
+			text_layers:[],
+			grid_geojson:{
+				type: "FeatureCollection",
+				features: [],
+			},
+			text_geojson:{
+				type: "FeatureCollection",
+				features: [],
+			},
+		},
 		//三维场景样式
 		material:"",
 		// 量算图层列表

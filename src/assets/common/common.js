@@ -870,6 +870,7 @@ export default{
 	init_map_event(){
 		var $this =this;
 		var map = $store.state.map_container.map;
+		map.off();
 		map.on("zoomlevelschange",function(){
 			$this.init_change_slider();
 		})

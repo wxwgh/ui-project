@@ -159,7 +159,7 @@ export default {
 										for(let s=0;s<tempPoints.length;s++){
 											var tempCoordinate = [tempPoints[s][1],tempPoints[s][0]];
 											tempCoordinates.push(tempCoordinate);
-											if(s===tempPoints.length-1&&tempPoints[s][1]!==tempPoints[tempPoints.length-1][0]){
+											if(s===tempPoints.length-1){
 												var temp = [tempPoints[0][1],tempPoints[0][0]];
 												tempCoordinates.push(temp);
 											}

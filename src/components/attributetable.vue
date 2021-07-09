@@ -2,10 +2,10 @@
 	<div class="tableParent">
 		<el-table :cell-class-name="tableCellClassName" :row-style="table_row" @cell-click="tableClick" :data="get_data" border size="mini" :height="tableHeight">
 			<template v-for="p in get_header">
-				<el-table-column min-width="150" show-overflow-tooltip :prop="p.name" :label="p.alias" v-if="p.name!=='parentId'">
+				<el-table-column min-width="150" :key="p.id" show-overflow-tooltip :prop="p.name" :label="p.alias" v-if="p.name!=='parentId'">
 					<template slot-scope="scope">
 						<span v-if="scope.row.index === rowIndex && scope.column.index === columnIndex">
-							<el-input v-model="scope.row[p.name]" size="mini" @blur="update_attribute(scope)"/>
+							<el-input v-model="scope.row[p.name]" size="mini" @blur="update_attribute(scope)"></el-input>
 						</span>
 						<span v-else>{{scope.row[p.name]}}</span>
 					</template>
@@ -85,6 +85,7 @@ export default {
 	},
 	//更新属性
 	update_attribute(data){
+		console.log(data);
 		//input失去焦点进行属性更新
 		//获取当前选中图层
 		var layer_name = this.$store.state.layerOperationInfo.option_value;

@@ -118,7 +118,6 @@ export default {
 				return ramp;
 			}
 			this.$store.state.viewer.scene.globe.material = material;
-		}else if(post.name==="提等值面"){
 		}else if(post.name==="坡度分析"){
 			var material = Cesium.Material.fromType('SlopeRamp');
 			var shadingUniforms = material.uniforms;

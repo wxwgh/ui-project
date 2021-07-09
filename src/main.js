@@ -17,6 +17,8 @@ import $ from 'jquery';
 //引入leaflet
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+//引入wmts引入插件
+import './assets/plugins/leaflet-tilelayer-wmts-src.js'
 //引入地图纠偏插件
 import './assets/plugins/leaflet.mapCorrection.min.js';
 //引入加载第三方地图需要的Proj4

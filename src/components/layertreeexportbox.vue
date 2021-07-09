@@ -628,6 +628,8 @@ export default {
 				target_coordinate = this.options2[i].label;
 			}
 		}
+		console.log(source_coordinate);
+		console.log(target_coordinate);
 		//判断是否是 相同基准坐标系
 		is_same_geo(source_coordinate,target_coordinate);
 		async function is_same_geo(source_coordinate,target_coordinate){

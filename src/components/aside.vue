@@ -159,14 +159,20 @@ export default {
 				if(data.id === map_list[i].id){
 					map_list[i].isActive = true;
 					if(map_list[i].type === "wmts"){
-						layer = L.tileLayer.chinaProvider(map_list[i].url).addTo(map);
+						console.log(map_list[i].realUrl)
+						layer = new L.TileLayer.WMTS(map_list[i].realUrl,{
+							layer: "WGS84",
+							format: 'image/jpeg',
+							tilematrixSet:"satImage",
+							attribution: "Weather data © 2012 IEM Nexrad"
+						}).addTo(map);
+						console.log(map_list[i].imageProvider);
 						//更新三维场景图层
-						this.$store.state.viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider(map_list[i].imageProvider));
+						this.$store.state.viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider(map_list[i].imageProvider));
 					}else if(map_list[i].type === "wms"){
-						var layer_name = map_list[i].realUrl.slice(map_list[i].realUrl.lastIndexOf("/")+1,map_list[i].realUrl.length);
 						layer = L.tileLayer.wms(map_list[i].realUrl, {
-						    layers: layer_name,
-						    format: 'image/png',
+						    layers: "WGS84",
+						    format: 'image/jpeg',
 						    transparent: true,
 						    attribution: "Weather data © 2012 IEM Nexrad"
 						}).addTo(map);
@@ -234,22 +240,26 @@ export default {
 			// 判断地址类型
 			var type ="";
 			var imageProvider="";
-			if($this.$refs.custommaplistbox.map_url.indexOf("{x}")!=-1){
+			if($this.$refs.custommaplistbox.map_url.indexOf("wmts")!=-1){
 				type = "wmts";
 				//添加至provider对象
-				L.TileLayer.ChinaProvider.providers.CusTom.Normal["自定义-"+$this.$refs.custommaplistbox.map_name] = $this.$refs.custommaplistbox.map_url.split(":")[1];
-				L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
+				// L.TileLayer.ChinaProvider.providers.CusTom.Normal["自定义-"+$this.$refs.custommaplistbox.map_name] = $this.$refs.custommaplistbox.map_url.split(":")[1];
+				// L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
 				imageProvider={
 					url:$this.$refs.custommaplistbox.map_url,
+					layer:"WGS84",
+					style:"default",
+					format:"image/jpeg",
+					tileMatrixSetID:"satImage",
+					attribution: "Weather data © 2012 IEM Nexrad"
 				};
-			}else{
+			}else if($this.$refs.custommaplistbox.map_url.indexOf("wms")!=-1){
 				type = "wms";
-				var layer_name = $this.$refs.custommaplistbox.map_url.slice($this.$refs.custommaplistbox.map_url.lastIndexOf("/")+1,$this.$refs.custommaplistbox.map_url.length);
 				imageProvider={
 					url:$this.$refs.custommaplistbox.map_url,
-					layers:layer_name,
+					layers:"WGS84",
 					parameters:{
-						format:'image/png',
+						format:'image/jpeg',
 						transparent: true,
 						attribution: "Weather data © 2012 IEM Nexrad"
 					}
@@ -289,7 +299,8 @@ export default {
 				minZoom: 3,
 				maxZoom: 18,
 				image:require('../assets/custommaplist/custom.png'),
-				url:"CusTom.Normal."+"自定义-"+$this.$refs.custommaplistbox.map_name,
+				url:$this.$refs.custommaplistbox.map_url,
+				// url:"CusTom.Normal."+"自定义-"+$this.$refs.custommaplistbox.map_name,
 				realUrl:$this.$refs.custommaplistbox.map_url,
 				imageProvider:imageProvider,
 			};

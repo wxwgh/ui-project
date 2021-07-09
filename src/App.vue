@@ -253,7 +253,7 @@
 						id:$this.$UUID(),
 				  		name:"限时用户",
 				  		describe:"无需登录,更新许可即可使用本应用",
-				  		time:"2021/6/10",
+				  		time:"2022/6/10",
 				  		isAdmin:false
 				  	};
 				  	var administratorInfo={
@@ -373,11 +373,11 @@
 						};
 						$this.$store.state.custom_map_list[0].children.push(temp);
 						$this.$store.state.custom_map_list[0].count = $this.$store.state.custom_map_list[0].children.length;
-						if(temp.type === "wmts"){
-							//添加至provider对象
-							L.TileLayer.ChinaProvider.providers.CusTom.Normal[temp.label] = temp.realUrl.split(":")[1];
-							L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
-						}
+						// if(temp.type === "wmts"){
+						// 	//添加至provider对象
+						// 	L.TileLayer.ChinaProvider.providers.CusTom.Normal[temp.label] = temp.realUrl.split(":")[1];
+						// 	L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
+						// }
 						//将游标按它的方向移动到下一个位置，到其健与可选健参数匹配的项
 						result.continue();
 					}
@@ -411,7 +411,7 @@
 html,body{
   height:100%;
   width:100%;
-  overflow:auto;
+  overflow:hidden;
   -webkit-user-select:none;
   font-size: 16px;
   color: #2c3e50;

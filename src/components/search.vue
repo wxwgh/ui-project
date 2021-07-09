@@ -23,7 +23,7 @@ export default {
   data(){
     return {
 		selectLength:10,
-		fontLength:10,
+		fontLength:7,
 		pageNum:50,
 		searchPost:[
 			{
@@ -38,12 +38,6 @@ export default {
 				isShow:false,
 				
 			},
-			// {
-			// 	name:"poi搜索",
-			// 	url:require('../assets/vectorplot/search.png'),
-			// 	isShow:false,
-				
-			// },
 		],
 	}
   },
@@ -237,52 +231,6 @@ export default {
 				var value = $this.$refs.searchplacebox.place_name;
 				$this.searchResult(value);
 				$this.$refs.searchplacebox.place_name="";
-			}).catch(() => {
-				
-			});
-		}else if(post.name==="poi搜索"){
-			if($this.$store.state.scopeInfo.scopeLayer.length===0){
-				$this.$message({
-				    showClose: true,
-					type: 'error',
-				    message: '当前没有范围'
-				});
-				return false;
-			}
-			$this.$confirm(<searchpoibox ref='searchpoibox'/>, 'poi搜索', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				closeOnClickModal:false,
-				beforeClose:function(action, instance, done){
-					if(action==="close"){
-						done();
-					}else if(action==="cancel"){
-						done();
-					}else if(action==="confirm"){
-						var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
-						if(!taskRegex.test($this.$refs.searchpoibox.poi_name)){
-							$this.$message({
-							    showClose: true,
-								type: 'error',
-							    message: 'poi关键字格式不正确'
-							});
-							return false;
-						}
-						if($this.$refs.searchpoibox.isName){
-							$this.$message({
-							    showClose: true,
-								type: 'error',
-							    message: '已有同名图层,请重命名搜索结果图层'
-							});
-							return false;
-						}else{
-							done();
-						}
-					}
-				}
-			}).then(() => {
-				var value = $this.$refs.searchpoibox.poi_name;
-				$this.searchResult(value);
 			}).catch(() => {
 				
 			});
@@ -525,7 +473,7 @@ export default {
 								tel:temp.pois[i].tel,
 								timestamp:temp.pois[i].timestamp,
 								type:temp.pois[i].type,
-								parentId:layer_parent.id,
+								parentId:layer_id.id,
 							};
 							if(temp.pois[i].address instanceof Array){
 								attribute.address="";

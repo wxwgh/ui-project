@@ -3,6 +3,9 @@ import os
 import eel
 import json
 import math
+import sys
+proj_str = os.path.dirname(sys.argv[0])+'/proj'
+os.environ['PROJ_LIB'] = proj_str
 from osgeo import ogr
 from osgeo import osr
 from osgeo import gdal
@@ -10,7 +13,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import numpy as np
-import sys
+
 import csv
 #线程池
 from concurrent.futures import ThreadPoolExecutor
@@ -78,6 +81,7 @@ def is_same_geo(source,target):
     target_coordinate.ImportFromEPSG(int(target))
     # 判断是否是相同的椭球基准面
     is_same = source_coordinate.IsSameGeogCS(target_coordinate)
+    print(is_same)
     return is_same
 # 获取坐标系转换对象
 def get_coordinate_trans(source,target,x,y,seven):

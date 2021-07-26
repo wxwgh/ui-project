@@ -21,12 +21,13 @@ export default {
 				zoom: 3,
 				minZoom:3,
 				maxZoom: 18,
-				maxBounds: L.latLngBounds([
-					[-90, -180],
-					[90, 180]
-				]),
+				// maxBounds: L.latLngBounds([
+				// 	[-90, -180],
+				// 	[90, 180]
+				// ]),
 				zoomControl: false,
 				attributionControl: false,
+				keyboard:false
 			});
 		}else if(map_container.type==="baidu_map"){
 			map_container.map=L.map("commonMap",{
@@ -35,12 +36,13 @@ export default {
 				zoom:3,
 				minZoom:3,
 				maxZoom: 18,
-				maxBounds: L.latLngBounds([
-					[-90, -180],
-					[90, 180]
-				]),
+				// maxBounds: L.latLngBounds([
+				// 	[-90, -180],
+				// 	[90, 180]
+				// ]),
 				zoomControl: false,
 				attributionControl: false,
+				keyboard:false
 			});
 		}
 		// 初始化地图事件
@@ -48,7 +50,7 @@ export default {
 		//初始化级别指示条
 		this.myCommon.init_zoom_slider();
 		this.myCommon.unbindMapEvent(map_container.map);
-		L.control.scale({metric:true,imperial:false}).addTo(map_container.map);
+		// L.control.scale({maxWidth:100,metric:true,imperial:false}).addTo(map_container.map);
 		window.onresize=function(){
 			//地图窗口大小
 			map_container.map.invalidateSize(true);

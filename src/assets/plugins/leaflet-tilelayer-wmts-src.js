@@ -56,7 +56,7 @@ L.TileLayer.WMTS = L.TileLayer.extend({
         var tilecol=Math.floor((nw.x-X0)/tilewidth);
         var tilerow=-Math.floor((nw.y-Y0)/tilewidth);
         var url = L.Util.template(this._url, {s: this._getSubdomain(coords)});
-        return url + L.Util.getParamString(this.wmtsParams, url) + "&tilematrix=" + ident + "&tilerow=" + tilerow +"&tilecol=" + tilecol;
+        return url + L.Util.getParamString(this.wmtsParams, url) + "&tilematrix=" + tilematrix + "&tilerow=" + tilerow +"&tilecol=" + tilecol;
     },
 
     setParams: function (params, noRedraw) {

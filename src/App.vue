@@ -32,7 +32,7 @@
 		  			<!-- 地形分析 -->
 		  			<analyze />
 		  			<!-- 坐标转换 -->
-		  			<coordinate></coordinate>
+		  			<!-- <coordinate></coordinate> -->
 		  		</div>
 		  	</el-tab-pane>
 		      <el-tab-pane label="许可中心" name="fourth">
@@ -130,8 +130,6 @@
 		this.initUser();
 		//初始化下载任务 表格数据
 		this.initDownLoadTableDatas();
-		//初始化地图名和下载地址
-		this.myCommon.updateNameAndUrl();
 		//初始化快速导航树
 		this.initNavigationTree();
 		//进度条更新方法 挂载到windows对象上
@@ -140,6 +138,8 @@
 		this.init_map_list();
 		//页面刷新返回首页
 		// this.return_home();
+		//测试查询
+		this.test_search();
 	},
 	// 页面创建时
 	created:function(){
@@ -151,6 +151,13 @@
 		  }
 	},
     methods: {
+		test_search(){
+			var baidu_key = "vxwj4Dqt5ovzpxPGOKasZPvSwfutW9E8";
+			var url="http://api.map.baidu.com/place/v2/search?coord_type=1&page_size=20&page_num=0&extensions_adcode=true&scope=2&query=村&tag=行政地标&region=菏泽市&citylimit=true&output=json&ak=vxwj4Dqt5ovzpxPGOKasZPvSwfutW9E8";
+			this.$jsonp(url).then(function(result){
+				console.log(result)
+			})
+		},
 		reload(){
 			this.is_router_show = false;
 			this.$nextTick(() => {
@@ -321,7 +328,6 @@
 							id:result.value.id,
 							taskName:result.value.taskName,
 							mapName:result.value.mapName,
-							downType:result.value.downType,
 							time:result.value.time,
 							savePath:result.value.savePath,
 							progress:result.value.progress,

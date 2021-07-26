@@ -30,6 +30,16 @@ export default{
 	mouseLeave(post){
 		post.isShow=false;
 	},
+	// 清除分幅图层
+	clear_show_set_layer(){
+		for(let i=0;i<$store.state.show_set.grid_layer.length;i++){
+			$store.state.show_set.grid_layer[i].remove();
+		}
+		$store.state.show_set.grid_layer.splice(0,$store.state.show_set.grid_layer.length);
+		//清空geojson
+		$store.state.show_set.grid_geojson="";
+		$store.state.show_set.zoom="";
+	},
 	clearScope(){
 		$store.state.scopeInfo.isXZQH="";
 		$store.state.scopeInfo.adcode="";
@@ -143,7 +153,7 @@ export default{
 		marker.bindPopup(popup);
 		return marker;
 	},
-	update_scopeInfo(flag,adcode,layers){
+	update_scopeInfo(flag,adcode,layers,geojson){
 		$store.state.scopeInfo.isXZQH=flag;
 		if(adcode){
 			$store.state.scopeInfo.adcode=adcode;
@@ -151,49 +161,13 @@ export default{
 		for(let i=0;i<layers.length;i++){
 			$store.state.scopeInfo.scopeLayer.push(layers[i]);
 		}
-	},
-	//更新地图名称和任务名称
-	updateNameAndUrl(){
-		var mapList = $store.state.mapList;
-		for(let i=0;i<mapList.length;i++){
-			if(mapList[i].isShow){
-				$store.state.downloadInfo.mapName=mapList[i].name;
-				for(let j=0;j<mapList[i].urls.length;j++){
-					if(mapList[i].urls[j].isActive){
-						// $store.state.downloadInfo.taskName=mapList[i].urls[j].name;
-						$store.state.downloadInfo.url=mapList[i].urls[j].realUrl;
-					}
-				}
-			}
+		if(geojson){
+			$store.state.scopeInfo.geojson = geojson;
 		}
 	},
 	//清空表格
 	clearDownLoadTableAndScope(){
 		$store.state.downloadTableDatas.splice(0,$store.state.downloadTableDatas.length);
-		$store.state.downloadInfo.scope.splice(0,$store.state.downloadInfo.scope.length);
-	},
-	//更新zoom和分辨率
-	updateZoomAndResolution(datas){
-		for(let i=0;i<datas.length;i++){
-			$store.state.downloadInfo.zoom.push(datas[i].level);
-			var temp_scale=parseInt(datas[i].scale.split(":")[1]);
-			var temp_dpi=datas[i].dpi
-			var temp_resolution=Math.round(0.0254*temp_scale/temp_dpi);
-			$store.state.downloadInfo.resolution.push(temp_resolution);
-		}
-	},
-	//清空zoom和分辨率数组
-	clearZoomAndResolution(){
-		$store.state.downloadInfo.zoom.splice(0,$store.state.downloadInfo.zoom.length);
-		$store.state.downloadInfo.resolution.splice(0,$store.state.downloadInfo.resolution.length);
-	},
-	updateTotal(datas){
-		for(let i=0;i<datas.length;i++){
-			$store.state.downloadInfo.total+=datas[i].total;
-		}
-	},
-	clearTotal(){
-		$store.state.downloadInfo.total=0;
 	},
 	//更新下载信息
 	updateDownLoadInfo(data){
@@ -212,68 +186,6 @@ export default{
 			$store.state.downloadInfo.savePath=data.demDownInput;
 			$store.state.downloadInfo.saveType=data.demOptionValue;
 			$store.state.downloadInfo.url="../dem";
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.activeName==="3"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="osm矢量下载";
-			$store.state.downloadInfo.taskName=data.vectorNameInput;
-			$store.state.downloadInfo.savePath=data.vectorDownInput;
-			$store.state.downloadInfo.saveType=data.vectorOptionValue;
-			$store.state.downloadInfo.url="../osm/osm.udbx";
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.type==="contourline"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="提取等值线";
-			$store.state.downloadInfo.taskName=data.task_name;
-			$store.state.downloadInfo.savePath=data.save_path;
-			$store.state.downloadInfo.saveType=data.option_value;
-			$store.state.downloadInfo.url=data.import_file_path;
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.type==="contourpolygon"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="提取等值面";
-			$store.state.downloadInfo.taskName=data.task_name;
-			$store.state.downloadInfo.savePath=data.save_path;
-			$store.state.downloadInfo.saveType=data.option_value;
-			$store.state.downloadInfo.url=data.import_file_path;
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.type==="coordinate"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="坐标转换";
-			$store.state.downloadInfo.taskName=data.task_name;
-			$store.state.downloadInfo.savePath=data.save_path;
-			for(let i =0;i<data.options.length;i++){
-				if(data.options[i].value===data.option_value){
-					$store.state.downloadInfo.coordinate=data.options[i].label
-				}
-			}
-			$store.state.downloadInfo.saveType=data.saveType;
-			$store.state.downloadInfo.url=data.import_file_path;
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.type==="slopebox"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="坡度分析";
-			$store.state.downloadInfo.taskName=data.task_name;
-			$store.state.downloadInfo.savePath=data.save_path;
-			$store.state.downloadInfo.saveType=data.option_value;
-			$store.state.downloadInfo.url=data.import_file_path;
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.type==="aspectbox"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="坡向分析";
-			$store.state.downloadInfo.taskName=data.task_name;
-			$store.state.downloadInfo.savePath=data.save_path;
-			$store.state.downloadInfo.saveType=data.option_value;
-			$store.state.downloadInfo.url=data.import_file_path;
-			$store.state.downloadInfo.time=this.getDate();
-		}else if(data.type==="export"){
-			$store.state.downloadInfo.id=this.UUID();
-			$store.state.downloadInfo.downType="导出矢量";
-			$store.state.downloadInfo.taskName=data.task_name;
-			$store.state.downloadInfo.savePath=data.save_path;
-			$store.state.downloadInfo.saveType=data.option_value;
-			$store.state.downloadInfo.type=$store.state.layerSelectInfo.type;
-			$store.state.downloadInfo.coordinate = data.option_value2;
 			$store.state.downloadInfo.time=this.getDate();
 		}
 	},
@@ -643,9 +555,17 @@ export default{
 		var temp={
 			id:data.id,
 			taskName:data.taskName,
-			downType:data.downType,
 			time:data.time,
 			savePath:data.savePath,
+			//当前瓦片下载物理进度信息
+			progress_info:{
+				//级别
+				z:"",
+				//列号
+				x:"",
+				//行号
+				y:"",
+			},
 			progress:0,
 			exportProgress:0,
 		};
@@ -867,15 +787,16 @@ export default{
 		//设置cursor位置
 		$store.state.zoom_slider_info.cursor_top = (max_zoom-current_zoom)*step_top;
 	},
+	//初始化地图事件
 	init_map_event(){
 		var $this =this;
 		var map = $store.state.map_container.map;
-		map.off();
 		map.on("zoomlevelschange",function(){
 			$this.init_change_slider();
 		})
 		map.on("zoomend",function(){
 			$this.init_zoom_slider();
+			
 		})
 	},
 	set_down_load_able(type){

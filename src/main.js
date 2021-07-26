@@ -46,6 +46,9 @@ import {Base64} from 'js-base64';
 //引入解析shp文件插件
 import './assets/plugins/analyzeshapefile/shapefile.js';
 
+import { VueJsonp } from 'vue-jsonp'
+Vue.use(VueJsonp)
+
 Vue.prototype.gcj02towgs84=gcj02towgs84;
 Vue.prototype.Base64=Base64;
 Vue.prototype.Cesium=Cesium;

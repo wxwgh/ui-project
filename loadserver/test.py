@@ -14,314 +14,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from openpyxl import load_workbook
 import pymysql
+import math
 # iobjectspy.set_iobjects_java_path('E:\SuperMapDemo\yaogan\javaforobject\Bin')
 
 
-def test_mac():
-    ip = socket.gethostbyname(socket.gethostname())
-    name = socket.getfqdn(socket.gethostname())
-    node = uuid.getnode()
-    macHex = uuid.UUID(int=node).hex[-12:]
-    mac = []
-    str_mac=""
-    for i in range(len(macHex))[::2]:
-        mac.append(macHex[i:i + 2])
-    str_mac = '-'.join(mac).upper()
-    print('IP:', ip)
-    print('name',name)
-    print(str_mac)
-def test_file():
-    file_path = "D:/SuperMap DownLoad/许可文件时间/测试物理地址2/测试物理地址2.sm1x"
-    # 打开文件
-    file = open(file_path, mode="r", encoding="utf-8")
-    content = file.readlines()
-    time = ""
-    url = ""
-    for i in range(len(content)):
-        if i == 0:
-            time = base64.b64decode(content[i].strip()).decode()
-        else:
-            url = base64.b64decode(content[i].strip()).decode()
-    file.close()
-    node = uuid.getnode()
-    macHex = uuid.UUID(int=node).hex[-12:]
-    mac = []
-    str_mac = ""
-    for i in range(len(macHex))[::2]:
-        mac.append(macHex[i:i + 2])
-    str_mac = '-'.join(mac).upper()
-    if str_mac == url:
-        print("相等")
-    print(time)
-    print(url)
-    print(str_mac)
-def test_import_features():
-    path = r"D:/SuperMap DownLoad/临时/QueryResult_region_bz.csv"
-    import_type = "csv"
-    feature_type = "region"
-    x = 2
-    y = 3
-    driver_name=""
-    if import_type == "kml":
-        driver_name = "KML"
-    elif import_type == "shp":
-        driver_name = "ESRI Shapefile"
-    if import_type == "csv":
-        # 创建结果字典
-        result = {}
-        result["data"] = []
-        result["is_load"] = False
-        if feature_type == "point":
-            # 获取数据源坐标系
-            source_coordinate = osr.SpatialReference()
-            source_coordinate.ImportFromEPSG(4610)
-            # 设置目标坐标系为WGS84
-            target_coordinate = osr.SpatialReference()
-            target_coordinate.ImportFromEPSG(4326)
-            # 创建坐标转换对象
-            transform = osr.CoordinateTransformation(source_coordinate, target_coordinate)
-            with open(path,'r') as f:
-                reader = list(csv.reader(f))
-                field_keys=""
-                for row in range(len(reader)):
-                    features_json = {}
-                    features_json["features"] = []
-                    features_json["attributes"] = {}
-                    if row ==0:
-                        field_keys = reader[row]
-                    else:
-                        coords = transform.TransformPoint(float(reader[row][x]),float(reader[row][y]))
-                        temp_coord = [coords[0], coords[1]]
-                        features_json["features"].append(temp_coord)
-                        for i in range(len(reader[row])):
-                            features_json["attributes"][field_keys[i]] = reader[row][i]
-                        result["data"].append(features_json)
-            f.close()
-            print(result)
-        elif feature_type == "line":
-            # 获取数据源坐标系
-            source_coordinate = osr.SpatialReference()
-            source_coordinate.ImportFromEPSG(4610)
-            print(source_coordinate.GetName())
-            # 设置目标坐标系为WGS84
-            target_coordinate = osr.SpatialReference()
-            target_coordinate.ImportFromEPSG(4326)
-            print(target_coordinate.GetName())
-            # 创建坐标转换对象
-            transform = osr.CoordinateTransformation(source_coordinate, target_coordinate)
-            geometry_col = 4
-            with open(path,'r') as f:
-                reader = list(csv.reader(f))
-                field_keys=""
-                for row in range(len(reader)):
-                    features_json = {}
-                    features_json["features"] = []
-                    features_json["attributes"] = {}
-                    if row ==0:
-                        field_keys = reader[row]
-                        print(field_keys)
-                    else:
-                        temp_geometry = reader[row][geometry_col]
-                        temp_index = temp_geometry.find("(")
-                        temp_type = temp_geometry[0:temp_index].rstrip()
-                        temp_str = temp_geometry[temp_index+1:len(temp_geometry)-1]
-                        temp_list = temp_str.split(",")
-                        for i in range(len(temp_list)):
-                            str_coord = temp_list[i].lstrip().split(" ")
-                            coords = transform.TransformPoint(float(str_coord[1]),float(str_coord[0]))
-                            temp_coord = [coords[0], coords[1]]
-                            features_json["features"].append(temp_coord)
-                        for i in range(len(reader[row])):
-                            if i != geometry_col:
-                                features_json["attributes"][field_keys[i]] = reader[row][i]
-                        result["data"].append(features_json)
-            f.close()
-            print(result)
-        elif feature_type == "region":
-            # 获取数据源坐标系
-            source_coordinate = osr.SpatialReference()
-            source_coordinate.ImportFromEPSG(4490)
-            # 设置目标坐标系为WGS84
-            target_coordinate = osr.SpatialReference()
-            target_coordinate.ImportFromEPSG(4326)
-            # 创建坐标转换对象
-            transform = osr.CoordinateTransformation(source_coordinate, target_coordinate)
-            geometry_col = 2
-            with open(path,'r') as f:
-                reader = list(csv.reader(f))
-                field_keys=""
-                for row in range(len(reader)):
-                    features_json = {}
-                    features_json["features"] = []
-                    features_json["attributes"] = {}
-                    if row ==0:
-                        field_keys = reader[row]
-                    else:
-                        temp_geometry = reader[row][geometry_col]
-                        temp_index = temp_geometry.find("(")
-                        temp_type = temp_geometry[0:temp_index].rstrip()
-                        if temp_type == "MULTIPOLYGON":
-                            temp_str = json.loads(temp_geometry[temp_index:len(temp_geometry)].replace(" ",",").replace(",,",",").replace("(","[").replace(")","]"))
-                            temp_parent=[]
-                            for i in range(len(temp_str)):
-                                temp_i=[]
-                                for m in range(len(temp_str[i])):
-                                    temp_m = []
-                                    temp_n = []
-                                    for n in range(len(temp_str[i][m])):
-                                        if len(temp_n) < 2:
-                                            temp_n.append(temp_str[i][m][n])
-                                        else:
-                                            coords = transform.TransformPoint(float(temp_n[1]),float(temp_n[0]))
-                                            temp_coord = [coords[0], coords[1]]
-                                            temp_m.append(temp_coord)
-                                            temp_n = []
-                                            temp_n.append(temp_str[i][m][n])
-                                    temp_i.append(temp_m)
-                                features_json["features"].append(temp_i)
-                            for i in range(len(reader[row])):
-                                if i != geometry_col:
-                                    features_json["attributes"][field_keys[i]] = reader[row][i]
-                            result["data"].append(features_json)
-                        elif temp_type == "POLYGON":
-                            temp_str = json.loads(temp_geometry[temp_index:len(temp_geometry)].replace(" ", ",").replace(",,",",").replace("(","[").replace(")", "]"))
-                            for i in range(len(temp_str)):
-                                temp_m = []
-                                temp_n = []
-                                for m in range(len(temp_str[i])):
-                                    if len(temp_n) < 2:
-                                        temp_n.append(temp_str[i][m])
-                                    else:
-                                        coords = transform.TransformPoint(float(temp_n[1]), float(temp_n[0]))
-                                        temp_coord = [coords[0], coords[1]]
-                                        temp_m.append(temp_coord)
-                                        temp_n = []
-                                        temp_n.append(temp_str[i][m])
-                                features_json["features"].append(temp_m)
-                            for i in range(len(reader[row])):
-                                if i != geometry_col:
-                                    features_json["attributes"][field_keys[i]] = reader[row][i]
-                            result["data"].append(features_json)
-            f.close()
-            result["code"] = 200
-            result["message"] = "数据获取成功"
-            print(result)
-                            # 写入csv
-                            # header = field_keys
-                            # data = [
-                            #     ['山东省', 0, temp_type+" "+json.dumps(temp_parent)],
-                            # ]
-                            # save_path=r"D:/SuperMap DownLoad/临时/QueryResult_region_bz_my.csv"
-                            # with open(save_path, 'w', encoding='utf-8-sig', newline='') as f:
-                            #     writer = csv.writer(f)
-                            #     writer.writerow(header)
-                            #     writer.writerows(data)
-    else:
-        # 注册所有数据类型驱动
-        ogr.RegisterAll()
-        # 获取驱动
-        driver = ogr.GetDriverByName(driver_name)
-        # 支持中文路径
-        # gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "NO")
-        # 支持属性表字段为中文
-        # gdal.SetConfigOption("SHAPE_ENCODING", "")
-
-        # 0为以只读方式打开矢量文件 返回数据源
-        data_source = driver.Open(path,0)
-        # 获取图层总数量
-        # layer_count = data_source.GetLayerCount()
-        #获取第一张图层
-        layer = data_source.GetLayer(0)
-        # 获取数据源坐标系
-        source_coordinate = osr.SpatialReference()
-        source_coordinate.SetGeocCS("Xian 1980")
-        # 设置目标坐标系为WGS84
-        target_coordinate = osr.SpatialReference()
-        target_coordinate.SetGeocCS("WGS 84")
-        # 创建坐标转换对象
-        transform = osr.CoordinateTransformation(source_coordinate, target_coordinate)
-        # 创建结果字典
-        result={}
-        result["data"]=[]
-        result["is_load"]=False
-        #获取要素总数
-        feature_count = layer.GetFeatureCount(1)
-        for i in range(feature_count):
-            features_json = {}
-            features_json["features"] = []
-            features_json["attributes"] = {}
-            feature = layer.GetFeature(i)
-            # 获取空间对象
-            geometry = feature.GetGeometryRef()
-            # 获取要素类型 POINT LINESTRING MULTIPOLYGON
-            geometry_type = geometry.GetGeometryName()
-            features_json["type"] = geometry_type
-            if geometry_type == "POINT":
-                coords = transform.TransformPoint(geometry.GetX(0),geometry.GetY(0))
-                temp_coord = [coords[0],coords[1]]
-                features_json["features"].append(temp_coord)
-            elif geometry_type == "LINESTRING":
-                feature_points = geometry.GetPoints()
-                temp_coord=[]
-                for x in range(len(feature_points)):
-                    point = list(feature_points[x])
-                    # 坐标转换
-                    coords = transform.TransformPoint(point[0], point[1])
-                    temp_coord.append([coords[0], coords[1]])
-                features_json["features"].append(temp_coord)
-            # 多个面集合
-            elif geometry_type == "MULTIPOLYGON":
-                temp_json = json.loads(geometry.ExportToJson())
-                temp_coords = temp_json["coordinates"]
-                for f in range(len(temp_coords)):
-                    temp_parent=[]
-                    for m in range(len(temp_coords[f])):
-                        temp_coord=[]
-                        for n in range(len(temp_coords[f][m])):
-                            # 坐标转换
-                            coords = transform.TransformPoint(temp_coords[f][m][n][0], temp_coords[f][m][n][1])
-                            temp_coord.append([coords[0], coords[1]])
-                        temp_parent.append(temp_coord)
-                    features_json["features"].append(temp_parent)
-
-            # 简单面
-            elif geometry_type == "POLYGON":
-                temp_json = json.loads(geometry.ExportToJson())
-                temp_coords = temp_json["coordinates"]
-                for f in range(len(temp_coords)):
-                    temp_coord = []
-                    for m in range(len(temp_coords[f])):
-                        # 坐标转换
-                        coords = transform.TransformPoint(temp_coords[f][m][0], temp_coords[f][m][1])
-                        temp_coord.append([coords[0], coords[1]])
-                    features_json["features"].append(temp_coord)
-            # 获取字段列表
-            feature_keys = feature.keys()
-            for j in range(len(feature_keys)):
-                # 获取字段类型
-                field_info = feature.GetFieldDefnRef(j)
-                field_type = field_info.GetTypeName()
-                field = ""
-                if field_type == "String":
-                    field = feature.GetFieldAsString(feature_keys[j])
-                elif field_type == "Integer":
-                    field = feature.GetFieldAsInteger(feature_keys[j])
-                elif field_type == "Double":
-                    field = feature.GetFieldAsDouble(feature_keys[j])
-                elif field_type == "DateTime":
-                    field = feature.GetFieldAsDateTime(feature_keys[j])
-                elif field_type == "Binary":
-                    field = feature.GetFieldAsBinary(feature_keys[j])
-                features_json["attributes"][feature_keys[j]] = field
-            result["data"].append(features_json)
-            result["is_load"]=True
-        print(result)
-        # keys = feature.keys()
-        # print(keys)
-        # print(type(keys))
-        # field = feature.GetFieldAsInteger("userid")
-        # print(field)
-        # print(type(field))
 maxInt = sys.maxsize
 decrement = True
 while decrement:
@@ -331,50 +27,6 @@ while decrement:
     except OverflowError:
         maxInt = int(maxInt/10)
         decrement = True
-def test_import_path():
-    app = QApplication(sys.argv)
-    # 桌面经典窗口类
-    rans = QWidget()
-    rans.setStyleSheet("background-color:black;")
-    rans.setWindowOpacity(0.5)
-    # 删除title栏
-    rans.setWindowFlags(Qt.FramelessWindowHint|Qt.WindowStaysOnTopHint)
-    # 获取桌面
-    desktop = QApplication.desktop()
-    # 设置宽高
-    rans.setFixedSize(desktop.width(), desktop.height())
-    rans.show()
-    path = QFileDialog.getOpenFileName(rans, "请选择要添加的文件", "D:/SuperMap DownLoad/临时", "Shape File (*.shp);;KML (*.kml);;CSV (*.csv)")
-    file_path = path[0]
-    result = {}
-    if file_path == "":
-        result["file_path"] = file_path
-        result["coordinate"] = ""
-    else:
-        temp_str = file_path.split(".")[1]
-        if temp_str == "shp":
-            # 获取坐标系
-            coordinate = get_shp_coordinate(file_path)
-            result["file_path"] = file_path
-            result["coordinate"] = coordinate
-        else:
-            result["file_path"] = file_path
-            result["coordinate"]="WGS 84"
-    print(result)
-    # app.exec_()
-def get_shp_coordinate(path):
-    # 注册所有数据类型驱动
-    ogr.RegisterAll()
-    # 获取驱动
-    driver = ogr.GetDriverByName("ESRI Shapefile")
-    # 0为以只读方式打开矢量文件 返回数据源
-    data_source = driver.Open(path, 0)
-    # 获取第一张图层
-    layer = data_source.GetLayer(0)
-    # 获取数据源坐标系
-    source_coordinate = layer.GetSpatialRef()
-    return source_coordinate.GetName()
-
 # BP能源导入
 def test_import_excel():
     conn = pymysql.connect(
@@ -1215,132 +867,301 @@ def test_import_excel12():
                 conn.commit()
             print(temp_file_path + "插入成功")
     conn.close()
-def get_export_path():
-    app = QApplication(sys.argv)
-    # 桌面经典窗口类
-    rans = QWidget()
-    rans.setStyleSheet("background-color:black;")
-    rans.setWindowOpacity(0.1)
-    # 删除title栏
-    rans.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-    # 获取桌面
-    desktop = QApplication.desktop()
-    # 设置宽高
-    rans.setFixedSize(desktop.width(), desktop.height())
-    rans.show()
-    path = QFileDialog.getExistingDirectory(rans,"请选择保存路径","D:/")
-    print(path)
-def get_coordinate_trans(source,target):
-    # 设置源数据坐标系
-    source_coordinate = osr.SpatialReference()
-    source_coordinate.ImportFromEPSG(int(source))
-    # 设置目标坐标系为WGS84
-    target_coordinate = osr.SpatialReference()
-    target_coordinate.ImportFromEPSG(int(target))
-    # 创建坐标转换对象
-    transform = osr.CoordinateTransformation(source_coordinate, target_coordinate)
-    return transform
-def text_export():
-    info = {'id': 'b84a4c46e6515a37ef8cdb8733838252', 'downType': '导出矢量', 'taskName': '444', 'savePath': 'D:/SuperMap DownLoad/临时', 'saveType': 'shp', 'type': 'point', 'coordinate': '4326', 'time': '2021/6/17 11:38:44', 'features': [[[39.232253141714914, 87.81173553467306]], [[36.87962060502676, 89.21821200009381]]], 'attributes': [{'name': '点图层', 'parentId': 'f5c033a0ae2629d6e918004520c43438', 'mydescribe': '用户自定义矢量标绘', 'index': 0}, {'name': '点图层', 'parentId': '625b487db14bfeeead3d3df705819e7b', 'mydescribe': '用户自定义矢量标绘', 'index': 1}]}
-    file_path = os.path.join(info["savePath"],info["taskName"])
-    coordinate = info["coordinate"]
-    features = info["features"]
-    atrributes = info["attributes"]
-    transform = get_coordinate_trans("4326",coordinate)
-    # 设置windows环境下识别中文
-    gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
-    gdal.SetConfigOption("SHAPE_ENCODING", "CP936")
-    if info["saveType"] == "csv":
-        print()
+def get_geojson(scale,zoom):
+    lngDiff=0;
+    latDiff=0;
+    scaleCode='';
+    if scale == 1000000:
+        lngDiff=6
+        latDiff=4
+    elif scale == 500000:
+        lngDiff=3
+        latDiff=2
+        scaleCode='B'
+    elif scale == 250000:
+        lngDiff=1.5
+        latDiff=1
+        scaleCode='C'
+    elif scale==100000:
+        lngDiff=0.5
+        latDiff=1/3
+        scaleCode='D'
+    elif scale==50000:
+        lngDiff=0.25
+        latDiff=1/6
+        scaleCode='E'
+    elif scale==25000:
+        lngDiff=0.125
+        latDiff=1/12
+        scaleCode='F'
+    elif scale==10000:
+        lngDiff=0.0625
+        latDiff=1/24
+        scaleCode='G'
+    elif scale==5000:
+        lngDiff=0.03125
+        latDiff=1/48
+        scaleCode='H'
+    GridX0=-180
+    GridX1=180
+    GridY0=-88
+    GridY1=88
+    x0 = max(GridX0,73)
+    y0 = max(GridY0,3)
+    x1 = min(GridX1,136)
+    y1 = min(GridY1,54)
+    if (x1-x0)<lngDiff or (y1-y0)<latDiff:
+        return None;
+    features=[]
+    #计算标准分幅网格行列范围
+    col0=int((x0-GridX0)/lngDiff)
+    col1=int((x1-GridX0)/lngDiff)
+    row0=int((y0-GridY0)/latDiff)
+    row1=int((y1-GridY0)/latDiff)
+    millionRowCode='ABCDEFGHIJKLMNOPQRSTUV'
+    for row0 in range(row1):
+        gy0=GridY0+row0*latDiff
+        gy1=gy0+latDiff
+        gcy=(gy0+gy1)*0.5
+        millionRow=int((gy0-0)/4)
+        Hemisphere=''
+        if millionRow<0:
+            millionRow = -1-millionRow
+            Hemisphere = 'S'
+        for col0 in range(col1):
+            gx0 = GridX0 + col0*lngDiff
+            gx1 = gx0 + lngDiff
+            gcx = (gx0+gx1)*0.5
+            millionCol = int((gcx-GridX0)/6)+1
+            coordinates=[[
+                [gx0,gy0],
+                [gx1,gy0],
+                [gx1,gy1],
+                [gx0,gy1],
+                [gx0,gy0]
+            ]];
+            if millionCol<10:
+                millionCol = '0'+str(millionCol)
+            else:
+                millionCol = millionCol
+            gridID=str(Hemisphere)+str(millionRowCode[millionRow])+str(millionCol)
+            if scaleCode!="":
+                colID=int((fractional((gcx-GridX0)/6)*6)/lngDiff)+1
+                rowID=int((fractional((GridY1-gcy)/4)*4)/latDiff)+1
+                gridID+=scaleCode+formatInt(rowID,3)+formatInt(colID,3)
+            feature={
+                "type":"Feature",
+                "geometry":{
+                    "type":"Polygon",
+                    "coordinates":coordinates
+                },
+                "properties":{
+                    "id":gridID
+                }
+            }
+            features.append(feature)
+    data = {
+        "type":"FeatureCollection",
+        "features":features
+    }
+    with open("../public/showset/"+str(scale)+"-"+str(zoom)+".json","w",encoding="utf-8") as f:
+        json.dump(data,f)
+        print("已完成"+str(scale)+"比例尺分幅写入")
+def fractional(x):
+    x=abs(x)
+    return x-math.floor(x)
+def formatInt(x,length):
+    result=''+str(x);
+    length=length-len(result)
+    while length>0:
+        result = '0'+result
+        length-=1
+    return result
+def test_get_geojson():
+    temp=[
+        10000,
+        5000
+    ]
+    for i in range(len(temp)):
+        get_geojson(temp[i],i+3)
+
+def test_request():
+    return1=os.system('ping 8.8.8.8')
+    if return1:
+        print('ping fail')
     else:
-        data_source = ""
-        layer = ""
-        if info["saveType"] == "shp":
-            driver = ogr.GetDriverByName("ESRI Shapefile")
-            data_source = driver.CreateDataSource(file_path + ".shp")
-        elif info["saveType"] == "kml":
-            driver = ogr.GetDriverByName("KML")
-            data_source = driver.CreateDataSource(file_path + ".kml")
-        # 设置坐标系
-        srs = osr.SpatialReference()
-        srs.ImportFromEPSG(int(coordinate))
-        if info["type"] == "point":
-            layer = data_source.CreateLayer(info["taskName"], srs, ogr.wkbPoint)
-        elif info["type"] == "line":
-            layer = data_source.CreateLayer(info["taskName"], srs, ogr.wkbLineString)
-        elif info["type"] == "region":
-            layer = data_source.CreateLayer(info["taskName"], srs, ogr.wkbMultiPolygon)
+        print('ping ok')
+import requests
+def test_request2():
+    proxies={"http":None,"https":None}
+    url="http://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x=46&y=23&z=6"
+    result=requests.get(url,stream=True,proxies=proxies)
+    print(result)
 
-        # 设置表头
-        for key in atrributes[0]:
-            if key != "parentId" and key != "index":
-                field_name = ogr.FieldDefn(key, ogr.OFTString)
-                field_name.SetWidth(30)
-                layer.CreateField(field_name)
-        # 获取空间对象类
-        feature = ogr.Feature(layer.GetLayerDefn())
-        # 设置要素属性字段
-        for i in range(len(atrributes)):
-            for key in atrributes[i]:
-                if key != "parentId" and key != "index":
-                    feature.SetField(key, str(atrributes[i][key]))
 
-        for j in range(len(features)):
-            # 插入空间对象
-            if info["type"] == "point":
-                # 坐标转换
-                temp_feature = transform.TransformPoint(features[j][0][0], features[j][0][1])
-                temp_tup = (temp_feature[0], temp_feature[1])
-                wkt = "POINT(" + str(temp_tup[0]) +" "+ str(temp_tup[1]) + ")"
-                point = ogr.CreateGeometryFromWkt(wkt)
-                feature.SetGeometry(point)
-                layer.CreateFeature(feature)
-            elif info["type"] == "line":
-                wkt = "LINESTRING("
-                for s in range(len(features[j])):
-                    temp_feature = transform.TransformPoint(features[j][s][0], features[j][s][1])
-                    temp_tup = (temp_feature[0], temp_feature[1])
-                    if s == len(features[j])-1:
-                        wkt += str(temp_tup[0]) + " " + str(temp_tup[1]) + ")"
-                    else:
-                        wkt += str(temp_tup[0]) + " " + str(temp_tup[1]) + ","
-                print(wkt)
-                line = ogr.CreateGeometryFromWkt(wkt)
-                feature.SetGeometry(line)
-                layer.CreateFeature(feature)
-            elif info["type"] == "region":
-                print(info)
-                return False
-                wkt = ""
-                # 判断数组维数,4维则是多面类型
-                if features[j].ndim == 4:
-                    wkt = "MULTIPOLYGON(("
-                # 判断数组维数,3维则是简单面类型
-                elif features[j].ndim == 3:
-                    wkt = "POLYGON("
-                region = ogr.CreateGeometryFromWkt(wkt)
-                feature.SetGeometry(region)
-                layer.CreateFeature(feature)
-        # 关闭资源
-        feature = None
-        data_source = None
-def get_list_dim(datas,index):
-    try:
-        if len(datas) !=0:
-            index+=1
-            print(index)
-            get_list_dim(datas[0],index)
+from PIL import Image
+import numpy as np
+# 经纬度转墨卡托坐标系
+def lnglat_to_Mercator(north_west):
+    lng = north_west["lng"]*20037508.34/180
+    lat = math.log(math.tan((90 + north_west["lat"]) * math.pi / 360)) / (math.pi / 180)
+    return {
+        "lng":lng,
+        "lat":lat
+    }
+def test_get_file():
+    file_paths=[
+        {
+            "url":"D:/SuperMap DownLoad/dedewdw/自绘多边形/8",
+            "north_west":{
+                "lat":31.615965936476076,
+                "lng":106.27157278517511
+            },
+            "resolution":599.3022267885217,
+            "zoom":"8"
+        }
+    ]
+    # 遍历文件地址集合
+    for s in range(len(file_paths)):
+        new_image_path=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".png"
+        new_tif_path=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".tif"
+        new_image_prj=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".prj"
+        new_image_tfw=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".tfw"
+        resolution = file_paths[s]["resolution"]
+        north_west  = file_paths[s]["north_west"]
+        images=[]
+        # 获取瓦片拼接存储地址
+        for item in os.listdir(file_paths[s]["url"]):
+            temp_images=[]
+            if os.path.isdir(file_paths[s]["url"]+"/"+item):
+                for item2 in os.listdir(file_paths[s]["url"]+"/"+item):
+                    # 瓦片拼接 如果是百度地图则从下至上 否则从上至下
+                    print(file_paths[s]["url"]+"/"+item+"/"+item2)
+                    image_content=Image.open(file_paths[s]["url"]+"/"+item+"/"+item2)
+                    temp_images.append(image_content)
+                images.append(temp_images)
+        pass
+        # 获取图片总宽度和高度
+        total_width=len(images)*256
+        total_height=len(images[0])*256
+        new_image=Image.new("RGB",(total_width,total_height))
+        for f in range(len(images)):
+            # x偏移量
+            x_off=f*256
+            for c in range(len(images[f])):
+                #y偏移量
+                y_off=c*256
+                new_image.paste(images[f][c],(x_off,y_off))
+        # 参数quality将影响图片质量95为最好质量
+        new_image.save(new_image_path,quality=95)
+        # 创建tfw文件 用于标识tif的位置
+        fd=open(new_image_tfw,mode="w",encoding="utf-8")
+        # 写入x方向 像素分辨率
+        fd.write(str(resolution)+'\r')
+        # 写入平移量
+        fd.write('0.0000000000\r')
+        # 写入旋转角度
+        fd.write('0.0000000000\r')
+        # 写入y方向 像素分辨率
+        fd.write("-"+str(resolution)+'\r')
+        # 写入图像左上角x坐标
+        fd.write(str(north_west["lng"])+'\r')
+        # 写入图像左上角y坐标
+        fd.write(str(north_west["lat"])+'\r')
+        fd.close()
+
+        # 生成坐标系文件
+        # 创建prj文件 用于标识tif的位置
+        prj=open(new_image_prj,mode="w",encoding="utf-8")
+        # 坐标系字符串
+        prj.write(
+            'PROJCS["WGS_1984_Web_Mercator_Auxiliary_Sphere",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator_Auxiliary_Sphere"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],PARAMETER["Auxiliary_Sphere_Type",0.0],UNIT["Meter",1.0],EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"]]')
+        prj.close()
+        driver=gdal.GetDriverByName('GTiff')
+        in_ds=gdal.Open(new_image_path)
+        #  获取仿射矩阵信息,投影信息
+        im_geotrans=in_ds.GetGeoTransform()
+        im_proj=in_ds.GetProjection()
+        data_width=in_ds.RasterXSize
+        data_height=in_ds.RasterYSize
+        im_data=in_ds.ReadAsArray(0,0,data_width,data_height)
+        if 'int8' in im_data.dtype.name:
+            datatype=gdal.GDT_Byte
+        elif 'int16' in im_data.dtype.name:
+            datatype=gdal.GDT_UInt16
         else:
-            print("结束")
-    except TypeError:
-        print("已到达末端")
-    return index
+            datatype=gdal.GDT_Float32
+        if len(im_data.shape)==2:
+            im_data=np.array([im_data])
+        im_bands, im_height, im_width = im_data.shape
+        # 创建tif文件
+        out_ds=driver.Create(new_tif_path,im_width,im_height,im_bands,datatype)
+        out_ds.SetGeoTransform(im_geotrans)  # 写入仿射变换参数
+        out_ds.SetProjection(im_proj)  # 写入投影
+        for c in range(im_bands):
+            out_ds.GetRasterBand(c+1).WriteArray(im_data[c])
+        # in_files =[]
+            # print(root)
+        # in_fn=in_files[0]
+        # #获取待镶嵌栅格的最大最小的坐标值
+        # min_x,max_y,max_x,min_y=GetExtent(in_fn)
+        # for in_fn in in_files[1:]:
+        #     minx,maxy,maxx,miny=GetExtent(in_fn)
+        #     min_x=min(min_x,minx)
+        #     min_y=min(min_y,miny)
+        #     max_x=max(max_x,maxx)
+        #     max_y=max(max_y,maxy)
+        # #计算镶嵌后影像的行列号
+        # in_ds=gdal.Open(in_files[0])
+        # in_ds.SetProjection("EPSG:3857")
+        # geotrans=list(in_ds.GetGeoTransform())
+        # width=geotrans[1]
+        # height=geotrans[5]
+        # columns=math.ceil((max_x-min_x)/width)
+        # rows=math.ceil((max_y-min_y)/(-height))
+        # print(columns)
+        # print(rows)
+        # in_band=in_ds.GetRasterBand(1)
+        # print(in_band)
+        # driver=gdal.GetDriverByName('GTiff')
+        # if os.path.exists(file_paths[s]+'/mosaiced_image.tif'):
+        #     os.remove(file_paths[s]+'/mosaiced_image.tif')
+        # out_ds=driver.Create(file_paths[s]+'/mosaiced_image.tif',768,768,1,in_band.DataType)
+        # out_ds.SetProjection("EPSG:3857")
+        # geotrans[0]=min_x
+        # geotrans[3]=max_y
+        # out_ds.SetGeoTransform(geotrans)
+        # out_band=out_ds.GetRasterBand(1)
+        # #定义仿射逆变换
+        # inv_geotrans=gdal.InvGeoTransform(geotrans)
+        # #开始逐渐写入
+        # for in_fns in in_files:
+        #     in_ds2=gdal.Open(in_fns)
+        #     in_ds2.SetProjection("EPSG:4326")
+        #     in_gt=in_ds2.GetGeoTransform()
+        #     #仿射逆变换
+        #     offset=gdal.ApplyGeoTransform(inv_geotrans,in_gt[0],in_gt[3])
+        #     x,y=map(int,offset)
+        #     # print(x,y)
+        #     # trans=gdal.Transformer(in_ds2,out_ds,[])  #in_ds是源栅格，out_ds是目标栅格
+        #     # success,xyz=trans.TransformPoint(False,0,0)  #计算in_ds中左上角像元对应out_ds中的行列号
+        #     # x,y,z=map(int,xyz)
+        #     # print(x,y,z)
+        #     data=in_ds2.GetRasterBand(1).ReadAsArray()
+        #     out_band.WriteArray(data,0,1)  #x，y是开始写入时左上角像元行列号
+        # del in_ds,out_band,out_ds
 
-from psutil import net_if_addrs
-def get_mac():
-    for k,v in net_if_addrs().items():
-        for item in v:
-            address=item[1]
-            if '-' in address and len(address)==17:
-                print(address)
-get_mac()
+#获取影像的左上角和右下角坐标
+def GetExtent(in_fn):
+    ds=gdal.Open(in_fn)
+    ds.SetProjection("EPSG:4326")
+    geotrans=list(ds.GetGeoTransform())
+    xsize=ds.RasterXSize
+    ysize=ds.RasterYSize
+    min_x=geotrans[0]
+    max_y=geotrans[3]
+    max_x=geotrans[0]+xsize*geotrans[1]
+    min_y=geotrans[3]+ysize*geotrans[5]
+    ds=None
+    return min_x,max_y,max_x,min_y
+test_get_file()

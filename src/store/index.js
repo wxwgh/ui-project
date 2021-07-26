@@ -158,16 +158,15 @@ export default new Vuex.Store({
 		peration_rectangle:"",
 		// 分幅设置
 		show_set:{
-			grid_layers:"",
-			text_layers:[],
-			grid_geojson:{
-				type: "FeatureCollection",
-				features: [],
-			},
-			text_geojson:{
-				type: "FeatureCollection",
-				features: [],
-			},
+			grid_layer:[],
+			grid_geojson:"",
+			zoom:"",
+		},
+		scopeInfo:{
+			isXZQH:"",
+			adcode:"",
+			scopeLayer:[],
+			geojson:"",
 		},
 		//三维场景样式
 		material:"",
@@ -234,20 +233,6 @@ export default new Vuex.Store({
 			layer:"",
 			type:"common_map",
 		},
-		mapContainer:[
-			{
-				type:"commonMap",
-				isShow:true,
-				map:"",
-				layer:"",
-			},
-			{
-				type:"baiduMap",
-				isShow:false,
-				map:"",
-				layer:"",
-			}
-		],
 		mapList:[
 			{
 				id:UUID(),
@@ -1076,12 +1061,6 @@ export default new Vuex.Store({
 		downLoadTableId:"dc876853-e318-4e16-a962-f002e8f9cdce",
 		user_table_id:"befa2a7b-4a45-4e5d-8fe8-8d700cfbf64c",
 		custom_map_list_id:"mymap071b43fbb3574424922044ba186818b7",
-		scopeInfo:{
-			isXZQH:"",
-			adcode:"",
-			scopeLayer:[],
-			geojson:"",
-		},
 		downloadInfo:{
 			vector_load_info:{
 				id:"",

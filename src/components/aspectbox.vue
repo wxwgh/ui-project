@@ -14,44 +14,43 @@
 </template>
 
 <script>
-export default {
-  name: 'aspectbox',
-  data(){
-    return {
-		type:"aspectbox",
-		task_name:"",
-		import_file_path:"",
-		save_path:"",
-		option_value:"tif",
-		options:[
-			{
-				value:"tif",
-				label:"tif"
+	export default {
+		name: 'aspectbox',
+		data() {
+			return {
+				type: "aspectbox",
+				task_name: "",
+				import_file_path: "",
+				save_path: "",
+				option_value: "tif",
+				options: [{
+						value: "tif",
+						label: "tif"
+					},
+					{
+						value: "img",
+						label: "img"
+					},
+				],
+			}
+		},
+		methods: {
+			savePathChoose() {
+				var $this = this;
+				getSavePath();
+				async function getSavePath() {
+					$this.save_path = await eel.get_save_path()();
+				}
 			},
-			{
-				value:"img",
-				label:"img"
+			importFileChoose() {
+				var $this = this;
+				getFilePath();
+				async function getFilePath() {
+					$this.import_file_path = await eel.get_grid_path()();
+				}
 			},
-		],
+		},
 	}
-  },
-  methods:{
-	savePathChoose(){
-		var $this =this;
-		getSavePath();
-		async function getSavePath(){
-			$this.save_path =await eel.get_save_path()();
-		}
-	},
-	importFileChoose(){
-		var $this =this;
-		getFilePath();
-		async function getFilePath(){
-			$this.import_file_path =await eel.get_grid_path()();
-		}
-	},
-  },
-}
 </script>
 
 <style lang="less">

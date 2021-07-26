@@ -64,7 +64,7 @@ export default {
 			//更新下载表格数据
 			this.myCommon.updateDownLoadTable();
 			//清空下载级别和比例尺
-			this.myCommon.clearZoomAndResolution();
+			// this.myCommon.clearZoomAndResolution();
 			this.$confirm(<mapdownloadbox ref="mapdownloadbox" />, '地图下载', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
@@ -103,7 +103,7 @@ export default {
 								});
 								return false;
 							}
-							if($this.$store.state.downloadInfo.zoom.length===0){
+							if($this.$refs.mapdownloadbox.$refs.down_table.selection.length===0){
 								$this.$message({
 								    showClose: true,
 									type: 'error',
@@ -192,19 +192,48 @@ export default {
 				}
 			}).then(() => {
 				if($this.$refs.mapdownloadbox.activeName==="1"){
-					//更新下载信息
-					$this.myCommon.updateDownLoadInfo($this.$refs.mapdownloadbox);
-					var data = $this.$store.state.downloadInfo;
-					//更新下载任务表
-					$this.myCommon.updateTaskTableDatas(data);
+					var mapList = $this.$store.state.mapList;
+					var map_name = "";
+					var url = "";
+					for(let i=0;i<mapList.length;i++){
+						if(mapList[i].isShow){
+							map_name=mapList[i].name;
+							for(let j=0;j<mapList[i].urls.length;j++){
+								if(mapList[i].urls[j].isActive){
+									url=mapList[i].urls[j].realUrl;
+								}
+							}
+						}
+					}
+					//构建影像下载信息
+					var data = {
+						id:$this.$UUID(),
+						downType:map_name+"影像下载",
+						map_name:map_name,
+						taskName:$this.$refs.mapdownloadbox.tileNameInput,
+						savePath:$this.$refs.mapdownloadbox.tileDownInput,
+						tile_is_clip:$this.$refs.mapdownloadbox.tile_is_clip,
+						is_joint:$this.$refs.mapdownloadbox.tile_radio,
+						url:url,
+						scope:$this.$store.state.scopeInfo.geojson,
+						time:$this.getDate(),
+						zoom:[],
+						total:0
+					};
+					var selection = $this.$refs.mapdownloadbox.$refs.down_table.selection;
+					for(let i=0;i<selection.length;i++){
+						data.zoom.push(selection[i].level);
+						data.total=data.total+selection[i].total;
+					}
+					console.log(data);
 					$this.myCommon.openTaskTable();
 					//调用后端下载函数
-					downLoad(data);
-					async function downLoad(data){
+					tile_load(data);
+					async function tile_load(data){
 						//python瓦片下载函数
 						await eel.tile_load(data)();
+						$this.$refs.mapdownloadbox.init_tile_panel();
 					}
-					$this.$refs.mapdownloadbox.init_tile_panel();
 				}else if($this.$refs.mapdownloadbox.activeName==="2"){
 					//更新下载信息
 					$this.myCommon.updateDownLoadInfo($this.$refs.mapdownloadbox);
@@ -213,12 +242,13 @@ export default {
 					$this.myCommon.updateTaskTableDatas(data);
 					$this.myCommon.openTaskTable();
 					//调用后端下载函数
-					demLoad(data);
-					async function demLoad(data){
+					dem_load(data);
+					async function dem_load(data){
 						//python瓦片下载函数
 						await eel.dem_load(data)();
+						$this.$refs.mapdownloadbox.init_dem_panel();
 					}
-					$this.$refs.mapdownloadbox.init_dem_panel();
+					
 				}else if($this.$refs.mapdownloadbox.activeName==="3"){
 					//构建导出参数对象
 					var info ={
@@ -262,8 +292,8 @@ export default {
 								export_features(temp_info);
 								async function export_features(temp_info){
 									await eel.export_features(temp_info)();
+									$this.$refs.mapdownloadbox.init_poi_panel();
 								}
-								$this.$refs.mapdownloadbox.init_poi_panel();
 							}
 						}
 						async function get_poi_xzqh(){
@@ -362,8 +392,9 @@ export default {
 								export_features(temp_info);
 								async function export_features(temp_info){
 									await eel.export_features(temp_info)();
+									$this.$refs.mapdownloadbox.init_poi_panel();
 								}
-								$this.$refs.mapdownloadbox.init_poi_panel();
+								
 							}
 						}
 						async function get_poi_xzqh(){
@@ -420,10 +451,10 @@ export default {
 	mouseLeave(post){
 		this.myCommon.mouseLeave(post);
 	},
-	getDate(){
-		var time=new Date().getFullYear() +"/" + (new Date().getMonth()+1)+"/"+new Date().getDate()+" "+new Date().getHours() +":"+ new Date().getMinutes()+":"+new Date().getSeconds();
-		return time;
-	},
+	// getDate(){
+	// 	var time=new Date().getFullYear() +"/" + (new Date().getMonth()+1)+"/"+new Date().getDate()+" "+new Date().getHours() +":"+ new Date().getMinutes()+":"+new Date().getSeconds();
+	// 	return time;
+	// },
   },
 }
 </script>

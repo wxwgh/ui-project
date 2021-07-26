@@ -36,6 +36,8 @@ def get_file_exists(info):
     result = importandexport.get_file_exists(info)
     return result
 
+
+
 # 图层管理器 导出相关
 # 获取导出路径
 @eel.expose
@@ -58,6 +60,8 @@ def is_same_geo(source,target):
     is_same = importandexport.is_same_geo(source,target)
     return is_same
 
+
+
 # 坐标转换相关
 # 获取导入tif路径
 @eel.expose
@@ -69,29 +73,46 @@ def get_tif_path():
 def tif_coordinate_trans(info):
     analyze.tif_coordinate_trans(info)
 
+
+
 # 用户许可相关
 # 获取许可文件路径
 @eel.expose
 def get_licence_path():
     file_path = userlicence.get_licence_path()
     return file_path
-
-
-
-# 导出shp矢量
+# 生成许可
 @eel.expose
-def export_shape(info):
-    importandexport.export_shape(info)
-#使用装饰器 类似flask里面对路由的定义
+def get_licence(info):
+    userlicence.get_licence(info)
+# 更新许可
+@eel.expose
+def update_licence(info):
+    result = userlicence.update_licence(info)
+    return result
+
+
+
+#范围设置相关
+@eel.expose
+def import_scope(info):
+    result = importandexport.import_scope(info)
+    return result
+
+
+
+# 地图下载相关
+# 影像街道瓦片下载
 @eel.expose
 def tile_load(info):
-    download.down_load(info)
-@eel.expose
-def vector_load(info):
-    download.down_load(info)
+    download.tile_load(info)
+
 @eel.expose
 def dem_load(info):
     download.down_load(info)
+
+
+# 下载任务相关
 # 删除文件夹
 @eel.expose
 def delete_file(path):
@@ -107,19 +128,7 @@ def delete_file(path):
 @eel.expose
 def open_file(path):
     os.startfile(path)
-# 坐标转换
-@eel.expose
-def coordinate_transition(info):
-    analyze.analyze(info)
-# 生成许可
-@eel.expose
-def get_licence(info):
-    userlicence.get_licence(info)
-# 更新许可
-@eel.expose
-def update_licence(info):
-    result = userlicence.update_licence(info)
-    return result
+
 
 
 eel.start('index.html',port=18099,size=(1920,1080),chromeFlags=['-kiosk'])

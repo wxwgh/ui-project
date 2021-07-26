@@ -1,15 +1,16 @@
 <template>
 	<el-tabs v-model="activeName">
-	    <el-tab-pane label="瓦片下载" name="1">
+	    <el-tab-pane label="影像下载" name="1">
 			<el-input id="tileNameId" v-model="tileNameInput" @input="isSameName()" size="small" placeholder="任务名称" class="downnameClass"></el-input>
 			<el-input v-model="tileDownInput" size="small" placeholder="存储目录" class="downloadClass">
 				<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="fileChoose()"></i>
 			</el-input>
-			<el-checkbox v-model="tileChecked" @change="isJoin()">拼接大图</el-checkbox>
-			<el-select v-model="tileOptionValue" size="mini" class="tileSelectClass">
-				<el-option v-for="post in tileOptions" :labek="post.label" :value="post.value"></el-option>
-			</el-select>
-			<el-table border :data="tableDatas" ref="down_table" size="mini" max-width="100%" :max-height="tableHeight" @select-all="tileSelectAll" @select="tileSelect">
+			<div class="radio_checkbox_parent">
+				<el-checkbox v-model="tile_is_clip">边界剪裁</el-checkbox>
+				<el-radio v-model="tile_radio" label="原始瓦片">原始瓦片</el-radio>
+				<el-radio v-model="tile_radio" label="拼接大图">拼接大图</el-radio>
+			</div>
+			<el-table border :data="tableDatas" ref="down_table" size="mini" max-width="100%" :max-height="tableHeight">
 				<el-table-column type="selection" width="40"></el-table-column>
 				<el-table-column prop="level" label="级别" width="50"></el-table-column>
 				<el-table-column prop="scale" label="比例尺" min-width="80"></el-table-column>
@@ -28,7 +29,7 @@
 				<el-option v-for="post in demOptions" :labek="post.label" :value="post.value"></el-option>
 			</el-select>
 		</el-tab-pane>
-	    <el-tab-pane label="POI下载" name="3" :disabled="get_poi_able">
+	    <!-- <el-tab-pane label="POI下载" name="3" :disabled="get_poi_able">
 			<el-input v-model="poi_name" @input="isSameName()" size="small" placeholder="任务名称" class="downnameClass"></el-input>
 			<el-input v-model="poi_save_path" size="small" placeholder="存储目录" class="downloadClass">
 				<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="fileChoose()"></i>
@@ -38,7 +39,7 @@
 			<el-select v-model="poi_save_format" size="mini" class="poi_select_class">
 				<el-option v-for="post in poi_save_format_options" :labek="post.label" :value="post.value"></el-option>
 			</el-select>
-		</el-tab-pane>
+		</el-tab-pane> -->
     </el-tabs>
 </template>
 
@@ -53,17 +54,11 @@ export default {
 		isName:false,
 		tileNameInput:"",
 		tileDownInput:"D:/SuperMap DownLoad",
-		tileChecked:false,
-		tileOptionValue:"png",
+		tile_is_clip:false,
+		tile_radio:"原始瓦片",
 		demNameInput:"",
 		demDownInput:"D:/SuperMap DownLoad",
 		demOptionValue:"img",
-		tileOptions:[
-			{
-				value:"png",
-				label:"png"
-			}
-		],
 		demOptions:[
 			{
 				value:"img",
@@ -110,11 +105,11 @@ export default {
 		this.is_poi_name=false;
 		this.poi_search_name="";
 	},
-	//初始化瓦片下载面板
+	//初始化影像下载面板
 	init_tile_panel(){
 		this.tileNameInput="";
 		this.tileDownInput="D:/SuperMap DownLoad";
-		this.tileChecked=false;
+		this.tile_is_clip=false;
 		this.tileOptionValue="png";
 		this.tileOptions=[
 			{
@@ -143,42 +138,6 @@ export default {
 				$this.poi_save_path =await eel.get_export_path()();
 			}
 		}
-	},
-	isJoin(){
-		this.tileOptions=[];
-		if(this.tileChecked){
-			var temp={
-				value:"tif",
-				label:"tif"
-			}
-			this.tileOptions.push(temp);
-			this.tileOptionValue="tif";
-		}else{
-			var temp={
-				value:"png",
-				label:"png"
-			}
-			this.tileOptions.push(temp);
-			this.tileOptionValue="png";
-		}
-	},
-  	tileSelect(selection,row){
-		// console.log(selection)
-		//清空zoom数组
-		this.myCommon.clearZoomAndResolution();
-		//更新zoom
-		this.myCommon.updateZoomAndResolution(selection);
-		//更新瓦片总数
-		this.myCommon.clearTotal();
-		this.myCommon.updateTotal(selection);
-  	},
-	tileSelectAll(selection){
-		//清空zoom数组
-		this.myCommon.clearZoomAndResolution();
-		//更新zoom
-		this.myCommon.updateZoomAndResolution(selection);
-		this.myCommon.clearTotal();
-		this.myCommon.updateTotal(selection);
 	},
 	mouseOver(post){
 		this.myCommon.mouseOver(post);
@@ -212,6 +171,10 @@ export default {
 </script>
 
 <style lang="less">
+.radio_checkbox_parent{
+	line-height:40px;
+	border-top: 1px solid #DCDFE6;
+}
 .downnameClass{
 	margin-top: 15px;
 }

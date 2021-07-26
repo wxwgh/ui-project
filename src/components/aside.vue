@@ -373,7 +373,7 @@ export default {
 			}
 		}
 		//更新下载信息
-		this.myCommon.updateNameAndUrl();
+		// this.myCommon.updateNameAndUrl();
 	},
 	mapListBottomClick(post){
 		if(post.name==="图层管理"){

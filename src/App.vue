@@ -139,7 +139,7 @@
 		//页面刷新返回首页
 		// this.return_home();
 		//测试查询
-		this.test_search();
+		// this.test_search();
 	},
 	// 页面创建时
 	created:function(){
@@ -178,6 +178,14 @@
 			}
 			window["updateTaskIndexedDB"] =function(data){
 				$this.myCommon.updateTaskIndexedDB(data);
+			}
+			window["lat_lng_to_tile_gaode"]=function(lat,lng,level){
+				var data = $this.myCommon.lat_lng_to_tile_gaode(lat,lng,level);
+				return data;
+			}
+			window["lat_lng_to_tile_baidu"]=function(lat,lng,level){
+				var data = $this.myCommon.lat_lng_to_tile_baidu(lat,lng,level);
+				return data;
 			}
 		},
 		initNavigationTree(){

@@ -53,11 +53,11 @@ export default {
 		tableHeight:"223",
 		isName:false,
 		tileNameInput:"",
-		tileDownInput:"D:/SuperMap DownLoad",
+		tileDownInput:"E:/SuperMapDownLoad",
 		tile_is_clip:false,
 		tile_radio:"原始瓦片",
 		demNameInput:"",
-		demDownInput:"D:/SuperMap DownLoad",
+		demDownInput:"E:/SuperMapDownLoad",
 		demOptionValue:"img",
 		demOptions:[
 			{
@@ -108,7 +108,7 @@ export default {
 	//初始化影像下载面板
 	init_tile_panel(){
 		this.tileNameInput="";
-		this.tileDownInput="D:/SuperMap DownLoad";
+		this.tileDownInput="E:/SuperMapDownLoad";
 		this.tile_is_clip=false;
 		this.tileOptionValue="png";
 		this.tileOptions=[
@@ -122,7 +122,7 @@ export default {
 	//初始化高程下载面板
 	init_dem_panel(){
 		this.demNameInput="";
-		this.demDownInput="D:/SuperMap DownLoad";
+		this.demDownInput="E:/SuperMapDownLoad";
 		this.demOptionValue="img";
 	},
 	//文件路径选取

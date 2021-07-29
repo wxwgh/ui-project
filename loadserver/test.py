@@ -1001,10 +1001,11 @@ def test_request2():
 
 from PIL import Image
 import numpy as np
-# 经纬度转墨卡托坐标系
+# 高德,谷歌,OSM经纬度转墨卡托坐标系
 def lnglat_to_Mercator(north_west):
     lng = north_west["lng"]*20037508.34/180
-    lat = math.log(math.tan((90 + north_west["lat"]) * math.pi / 360)) / (math.pi / 180)
+    temp_lat = math.log(math.tan((90 + north_west["lat"]) * math.pi / 360)) / (math.pi / 180)
+    lat = temp_lat * 20037508.34 / 180
     return {
         "lng":lng,
         "lat":lat
@@ -1012,33 +1013,46 @@ def lnglat_to_Mercator(north_west):
 def test_get_file():
     file_paths=[
         {
-            "url":"D:/SuperMap DownLoad/dedewdw/自绘多边形/8",
+            "url":"E:/SuperMapDownLoad/3/自绘多边形/11",
             "north_west":{
-                "lat":31.615965936476076,
-                "lng":106.27157278517511
+                "lat":39.8970943726005,
+                "lng":116.2314059485339
             },
-            "resolution":599.3022267885217,
-            "zoom":"8"
+            "resolution": -44.858507300860694,
+            "zoom":"11"
+        }
+    ]
+    file_paths2 = [
+        {
+            "url": "E:/SuperMapDownLoad/2/自绘多边形/8",
+            "north_west": {
+                "lat": 31.06401549873301,
+                "lng": 100.57002337462964
+            },
+            "resolution": 574.0211126682296,
+            "zoom": "8"
         }
     ]
     # 遍历文件地址集合
     for s in range(len(file_paths)):
-        new_image_path=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".png"
+        new_image_path=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".jpg"
         new_tif_path=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".tif"
         new_image_prj=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".prj"
-        new_image_tfw=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".tfw"
+        new_image_tfw=file_paths[s]["url"]+"/"+file_paths[s]["zoom"]+".jgw"
         resolution = file_paths[s]["resolution"]
-        north_west  = file_paths[s]["north_west"]
+        north_west  = lnglat_to_Mercator(file_paths[s]["north_west"])
+        print(north_west)
         images=[]
         # 获取瓦片拼接存储地址
         for item in os.listdir(file_paths[s]["url"]):
             temp_images=[]
             if os.path.isdir(file_paths[s]["url"]+"/"+item):
                 for item2 in os.listdir(file_paths[s]["url"]+"/"+item):
-                    # 瓦片拼接 如果是百度地图则从下至上 否则从上至下
                     print(file_paths[s]["url"]+"/"+item+"/"+item2)
                     image_content=Image.open(file_paths[s]["url"]+"/"+item+"/"+item2)
                     temp_images.append(image_content)
+                # 瓦片拼接 如果是百度地图则从下至上 否则从上至下
+                temp_images.reverse()
                 images.append(temp_images)
         pass
         # 获取图片总宽度和高度
@@ -1063,7 +1077,7 @@ def test_get_file():
         # 写入旋转角度
         fd.write('0.0000000000\r')
         # 写入y方向 像素分辨率
-        fd.write("-"+str(resolution)+'\r')
+        fd.write(str(resolution)+'\r')
         # 写入图像左上角x坐标
         fd.write(str(north_west["lng"])+'\r')
         # 写入图像左上角y坐标
@@ -1081,6 +1095,7 @@ def test_get_file():
         in_ds=gdal.Open(new_image_path)
         #  获取仿射矩阵信息,投影信息
         im_geotrans=in_ds.GetGeoTransform()
+        print(im_geotrans)
         im_proj=in_ds.GetProjection()
         data_width=in_ds.RasterXSize
         data_height=in_ds.RasterYSize

@@ -26,6 +26,7 @@ def tile_load(info):
 def map_load(info):
     # 地图名称
     map_name = info["map_name"]
+    print(map_name)
     # 是否边界剪裁
     tile_is_clip=info["tile_is_clip"]
     # 是否拼接
@@ -75,20 +76,32 @@ def map_load(info):
         }
         # 根据zoom下载散列瓦片
         for j in range(len(zooms)):
+            resolution =""
+            tile1=""
+            tile2=""
+            if map_name == "百度地图":
+                resolution = get_resolution_baidu(north_west,zooms[j])
+                # 通过左上 级别获取瓦片范围
+                tile1 = eel.lat_lng_to_tile_baidu(north_west["lat"],north_west["lng"],zooms[j])()
+                # 通过右下 级别获取瓦片范围
+                tile2 = eel.lat_lng_to_tile_baidu(south_east["lat"], south_east["lng"], zooms[j])()
+            else:
+                resolution =get_resolution_gaode(north_west,zooms[j])
+                # 通过左上 级别获取瓦片范围
+                tile1 = eel.lat_lng_to_tile_gaode(north_west["lat"], north_west["lng"], zooms[j])()
+                # 通过右下 级别获取瓦片范围
+                tile2 = eel.lat_lng_to_tile_gaode(south_east["lat"], south_east["lng"], zooms[j])()
             temp_info={
                 "url":polygon_path+"/"+str(zooms[j]),
                 "north_west":north_west,
-                "resolution":get_resolution(north_west,zooms[j])
+                "resolution":resolution,
+                "zoom":zooms[j]
             }
             file_paths.append(temp_info)
-            # 通过左上 级别获取瓦片范围
-            tile1=lat_lng_to_tile_gaode(north_west["lat"],north_west["lng"],zooms[j])
-            # 通过右下 级别获取瓦片范围
-            tile2=lat_lng_to_tile_gaode(south_east["lat"],south_east["lng"],zooms[j])
-            minX =tile1["tile_x"] if(tile1["tile_x"]<tile2["tile_x"]) else tile2["tile_x"]
-            maxX = tile1["tile_x"] if (tile1["tile_x"]>tile2["tile_x"]) else tile2["tile_x"]
-            minY = tile1["tile_y"] if (tile1["tile_y"]<tile2["tile_y"]) else tile2["tile_y"]
-            maxY = tile1["tile_y"] if (tile1["tile_y"]>tile2["tile_y"]) else tile2["tile_y"]
+            minX =tile1["tileX"] if(tile1["tileX"]<tile2["tileX"]) else tile2["tileX"]
+            maxX = tile1["tileX"] if (tile1["tileX"]>tile2["tileX"]) else tile2["tileX"]
+            minY = tile1["tileY"] if (tile1["tileY"]<tile2["tileY"]) else tile2["tileY"]
+            maxY = tile1["tileY"] if (tile1["tileY"]>tile2["tileY"]) else tile2["tileY"]
             while minX<=maxX:
                 x_path = polygon_path+"/"+str(zooms[j])+"/"+str(minX)
                 os.makedirs(x_path)
@@ -138,12 +151,16 @@ def map_load(info):
     #     print("原始瓦片导出成功")
 
 
-# 获取分辨率
-def get_resolution(north_west,level):
+# 获取高德,谷歌,OSM分辨率
+def get_resolution_gaode(north_west,level):
     num = math.pow(2, level)
     resolution=6378137.0*2*math.pi*math.cos(north_west["lat"])/256/num
     return resolution
-# 经纬度坐标转瓦片坐标
+# 获取百度分辨率
+def get_resolution_baidu(north_west,level):
+    resolution = math.pow(2, (18 - level)) * math.cos(north_west["lat"])
+    return resolution
+# 经纬度坐标转高德,谷歌,OSM瓦片坐标
 def lat_lng_to_tile_gaode(lat,lng,level):
     # 某一瓦片等级下瓦片地图X轴(Y轴)上的瓦片数目
     tile_num = math.pow(2,level)

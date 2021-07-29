@@ -287,6 +287,20 @@ export default{
 			$store.state.downloadTableDatas.push(tableData);
 		}
 	},
+	// 高德,谷歌,OSM经纬度转瓦片坐标
+	lat_lng_to_tile_gaode(lat,lng,level){
+		var TileLnglatTransformGaode = transform.TileLnglatTransformGaode;
+		console.log(TileLnglatTransformGaode);
+		var data = TileLnglatTransformGaode.lnglatToTile(lng,lat,level);
+		console.log(data);
+		return data;
+	},
+	//百度经纬度转瓦片坐标
+	lat_lng_to_tile_baidu(lat,lng,level){
+		var TileLnglatTransformBaidu = transform.TileLnglatTransformBaidu;
+		var data = TileLnglatTransformBaidu.lnglatToTile(lng,lat,level);
+		return data;
+	},
 	latLngToTile(latLng,level){
 		var TileLnglatTransformGaode = transform.TileLnglatTransformGaode;
 		var data = TileLnglatTransformGaode.lnglatToTile(latLng.lng,latLng.lat,level);

@@ -275,6 +275,14 @@ export default{
 				total:num,
 				downsize:downsize,
 				dpi:dpi,
+				progress_info:{
+					//级别
+					z:i,
+					//列号
+					x:minX,
+					//行号
+					y:minY,
+				},
 			};
 			var tempScope={}
 			tempScope[i]={
@@ -543,49 +551,12 @@ export default{
 		map.setMinZoom(minZoom);
 		map.setMaxZoom(maxZoom);
 	},
-	updateTaskIndexedDB(data){
-		var id = $store.state.downLoadTableId;
-		var datas =	$store.state.taskTableDatas;
-		var temp ="";
-		for(let i=0;i<datas.length;i++){
-			if(data.id === datas[i].id){
-				temp={
-					id:datas[i].id,
-					taskName:datas[i].taskName,
-					downType:datas[i].downType,
-					time:datas[i].time,
-					savePath:datas[i].savePath,
-					progress:100,
-					exportProgress:100,
-				}
-			}
-		}
-		//更新缓存
-		this.updateIndexedDB(id,temp);
-	},
 	updateTaskTableDatas(data){
-		var $this = this;
 		var id = $store.state.downLoadTableId;
-		var temp={
-			id:data.id,
-			taskName:data.taskName,
-			time:data.time,
-			savePath:data.savePath,
-			//当前瓦片下载物理进度信息
-			progress_info:{
-				//级别
-				z:"",
-				//列号
-				x:"",
-				//行号
-				y:"",
-			},
-			progress:0,
-			exportProgress:0,
-		};
-		$store.state.taskTableDatas.push(temp);
+		//更新下载任务表全局字典
+		$store.state.taskTableDatas.push(data);
 		//下载任务添加入缓存
-		$this.addIndexedDB(id,temp);
+		this.addIndexedDB(id,data);
 		
 	},
 	deleteTaskTableDatas(data){
@@ -628,31 +599,6 @@ export default{
 					db.close();
 				}
 			}
-		};
-	},
-	updateIndexedDB(id,data){
-		//打开一个数据库 并指定名称
-		// let id = this.$data.mapContainer[0].tableId;
-		var request = indexedDB.open("download",1);
-		//成功回调函数
-		request.onsuccess = function(e) {
-			var db = e.target.result;
-			//创建一个事务对象 指定表名 和操作模式
-			var trans = db.transaction(id,"readwrite");
-			//获取表格对象
-			var store = trans.objectStore(id);
-			//获取游标对象
-			var objCursor = store.openCursor();
-			objCursor.onsuccess = function(e){
-				var cursor = e.target.result;
-				if(cursor){
-					if(cursor.value.id===data.id){
-						cursor.update(data);
-					}
-					cursor.continue();
-				}
-			}
-			db.close();
 		};
 	},
 	//获取用户许可时间
@@ -710,10 +656,78 @@ export default{
 		for(let i=0;i<tableDatas.length;i++){
 			if(id===tableDatas[i].id){
 				tableDatas[i].exportProgress=exportProgress;
-				this.updateTaskIndexedDB(tableDatas[i])
 			}
 		}
 	},
+	//更新进度信息
+	update_progress_info(id,progress_info){
+		var tableDatas= $store.state.taskTableDatas;
+		for(let i=0;i<tableDatas.length;i++){
+			if(id===tableDatas[i].id){
+				tableDatas[i].progress_info=progress_info;
+			}
+		}
+	},
+	//更新缓存
+	update_task_indexeddb(progress_id){
+		var id = $store.state.downLoadTableId;
+		var datas =	$store.state.taskTableDatas;
+		var temp ="";
+		for(let i=0;i<datas.length;i++){
+			if(progress_id === datas[i].id){
+				temp=datas[i]
+			}
+		}
+		//更新缓存
+		this.updateIndexedDB(id,temp);
+	},
+	updateIndexedDB(id,data){
+		//打开一个数据库 并指定名称
+		// let id = this.$data.mapContainer[0].tableId;
+		var request = indexedDB.open("download",1);
+		//成功回调函数
+		request.onsuccess = function(e) {
+			var db = e.target.result;
+			//创建一个事务对象 指定表名 和操作模式
+			var trans = db.transaction(id,"readwrite");
+			//获取表格对象
+			var store = trans.objectStore(id);
+			//获取游标对象
+			var objCursor = store.openCursor();
+			objCursor.onsuccess = function(e){
+				var cursor = e.target.result;
+				if(cursor){
+					if(cursor.value.id===data.id){
+						cursor.update(data);
+					}
+					cursor.continue();
+				}
+			}
+			db.close();
+		};
+	},
+	// updateTaskIndexedDB(data){
+	// 	var id = $store.state.downLoadTableId;
+	// 	var datas =	$store.state.taskTableDatas;
+	// 	var temp ="";
+	// 	for(let i=0;i<datas.length;i++){
+	// 		if(data.id === datas[i].id){
+	// 			temp={
+	// 				id:datas[i].id,
+	// 				taskName:datas[i].taskName,
+	// 				downType:datas[i].downType,
+	// 				time:datas[i].time,
+	// 				savePath:datas[i].savePath,
+	// 				task_flag:datas[i].task_flag,
+	// 				task_disable:datas[i].task_disable,
+	// 				progress:datas[i].progress,
+	// 				exportProgress:datas[i].exportProgress,
+	// 			}
+	// 		}
+	// 	}
+	// 	//更新缓存
+	// 	this.updateIndexedDB(id,temp);
+	// },
 	isLoginAndTime(){
 		var data = {
 			options:{},

@@ -30,8 +30,11 @@
 				if(data.id===window.progress[i].id){
 					window.updateProgress(data.id,data.progress);
 					window.updateExportProgress(data.id,data.exportProgress);
+					//更新瓦片下载进度信息
+					window.update_progress_info(data.id,data.progress_info);
+					//进度信息存入indexed
+					window.update_task_indexeddb(data.id);
 					if(data.exportProgress===100){
-						window.updateTaskIndexedDB(data);
 						window.progress.splice(i,1);
 					}
 				}

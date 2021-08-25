@@ -218,16 +218,36 @@ export default {
 						scope:$this.$store.state.scopeInfo.geojson,
 						time:$this.getDate(),
 						zoom:[],
-						total:0
+						total:0,
+						//当前瓦片下载进度信息
+						progress_info:{
+							//级别
+							z:"",
+							//列号
+							x:"",
+							//行号
+							y:"",
+						},
+						//开始暂停标识
+						task_flag:true,
+						task_disable:false,
+						progress:0,
+						exportProgress:0,
 					};
 					var selection = $this.$refs.mapdownloadbox.$refs.down_table.selection;
 					for(let i=0;i<selection.length;i++){
 						data.zoom.push(selection[i].level);
 						data.total=data.total+selection[i].total;
+						//初始化瓦片下载进度信息
+						data.progress_info=selection[i].progress_info;
 					}
-					console.log(data);
+					//对级别数组进行排序
+					data.zoom = data.zoom.sort(function(a, b){return a - b});
+					
+					//更新下载任务表
+					$this.myCommon.updateTaskTableDatas(data);
 					$this.myCommon.openTaskTable();
-					//调用后端下载函数
+					// 调用后端下载函数
 					tile_load(data);
 					async function tile_load(data){
 						//python瓦片下载函数

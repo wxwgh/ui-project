@@ -332,16 +332,18 @@
 					var result = e.target.result;
 					//查询数据
 					if(result){
-						var tempData={
-							id:result.value.id,
-							taskName:result.value.taskName,
-							mapName:result.value.mapName,
-							time:result.value.time,
-							savePath:result.value.savePath,
-							progress:result.value.progress,
-							exportProgress:result.value.exportProgress,
-						};
-						$this.$store.state.taskTableDatas.push(tempData);
+						// var tempData={
+						// 	id:result.value.id,
+						// 	taskName:result.value.taskName,
+						// 	mapName:result.value.mapName,
+						// 	time:result.value.time,
+						// 	savePath:result.value.savePath,
+						// 	task_flag:result.task_flag,
+						// 	task_disable:result.task_disable,
+						// 	progress:result.value.progress,
+						// 	exportProgress:result.value.exportProgress,
+						// };
+						$this.$store.state.taskTableDatas.push(result.value);
 						//将游标按它的方向移动到下一个位置，到其健与可选健参数匹配的项
 						result.continue();
 					}

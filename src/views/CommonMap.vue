@@ -42,7 +42,9 @@ export default {
 				// ]),
 				zoomControl: false,
 				attributionControl: false,
-				keyboard:false
+				keyboard:false,
+				//开启convas
+				preferCanvas: true
 			});
 		}
 		// 初始化地图事件

@@ -32,7 +32,9 @@ export default {
 				//CesiumLab提供的世界12级地形
 				// url:"https://lab.earthsdk.com/terrain/42752d50ac1f11e99dbd8fd044883638"
 				//CesiumLab提供的中国14级地形
-				url:"https://lab.earthsdk.com/terrain/577fd5b0ac1f11e99dbd8fd044883638",
+				// url:"https://lab.earthsdk.com/terrain/577fd5b0ac1f11e99dbd8fd044883638",
+				//本地 地形切片服务 全国90米
+				url:"http://localhost:18080/yaogandem",
 				requestVertexNormals: true,
 				requestWaterMask: true
 			})

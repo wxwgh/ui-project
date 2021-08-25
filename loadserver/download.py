@@ -19,11 +19,28 @@ from osgeo import gdal
 #创建线程池
 thread_pool = ThreadPoolExecutor(5)
 
+# 当前运行的线程集合
+thread_list={}
+
+# 停止线程
+def stop_thread(id):
+    thread_list[id].cancel()
+    # 在集合中清除此线程
+    del thread_list[id]
+# 开启新线程
+def start_thread(info):
+    temp_thread = thread_pool.submit(map_load, info)
+    thread_list[info["id"]] = temp_thread
+
+
 def tile_load(info):
     # 开启线程
-    thread_pool.submit(map_load, info)
+    temp_thread = thread_pool.submit(map_load, info)
+    thread_list[info["id"]] = temp_thread
 # 影像下载
 def map_load(info):
+    # 获取下载进度信息
+    progress_info = info["progress_info"]
     # 地图名称
     map_name = info["map_name"]
     print(map_name)
@@ -49,7 +66,7 @@ def map_load(info):
     # eel.updateTaskProgress(progress)
     features=scope["features"]
     file_paths=[]
-    # 循环多面
+    # 循环多记录面
     for i in range(len(features)):
         # 单个面路径
         polygon_path = ""
@@ -76,6 +93,9 @@ def map_load(info):
         }
         # 根据zoom下载散列瓦片
         for j in range(len(zooms)):
+            # 判断级别
+            if zooms[j] < progress_info["z"]:
+                continue
             resolution =""
             tile1=""
             tile2=""
@@ -103,10 +123,16 @@ def map_load(info):
             minY = tile1["tileY"] if (tile1["tileY"]<tile2["tileY"]) else tile2["tileY"]
             maxY = tile1["tileY"] if (tile1["tileY"]>tile2["tileY"]) else tile2["tileY"]
             while minX<=maxX:
+                # 判断列号
+                if j==0 and minX < progress_info["x"]:
+                    continue
                 x_path = polygon_path+"/"+str(zooms[j])+"/"+str(minX)
                 os.makedirs(x_path)
                 index=minY
                 while index<=maxY:
+                    # 判断行号
+                    if j==0 and index <= progress_info["y"]:
+                        continue
                     y_path = x_path +"/"+str(index)+".png"
                     print(y_path)
                     url=info["url"].replace("{z}",str(zooms[j])).replace("{x}",str(minX)).replace("{y}",str(index))
@@ -120,6 +146,12 @@ def map_load(info):
                                 tileIndex+=1
                                 temp_progress=math.floor((tileIndex/total)*100)
                                 progress["progress"]=temp_progress
+                                # 当前瓦片进度信息
+                                progress["progress_info"]={
+                                    "z":zooms[j],
+                                    "x":minX,
+                                    "y":index
+                                }
                                 eel.updateTaskProgress(progress)
                                 f.close()
                             index+=1

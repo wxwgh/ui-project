@@ -129,6 +129,12 @@ def delete_file(path):
 def open_file(path):
     os.startfile(path)
 
+# 终止线程
+def stop_thread(id):
+    download.stop_thread(id)
+# 开启下载线程
+def start_thread(info):
+    download.start_thread(info)
 
 
 eel.start('index.html',port=18099,size=(1920,1080),chromeFlags=['-kiosk'])

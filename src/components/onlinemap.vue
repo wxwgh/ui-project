@@ -146,6 +146,12 @@ export default {
 		var mapList = this.$store.state.mapList;
 		var custom_map_list = this.$store.state.custom_map_list[0];
 		if(post.name==="我的地图"){
+			$this.$message({
+				showClose: true,
+				type: 'warning',
+				message: '暂未开发'
+			});
+			return false;
 			custom_map_list.is_show = true;
 			//隐藏固定地图列表
 			for(let i=0;i<mapList.length;i++){

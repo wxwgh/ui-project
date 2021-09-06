@@ -6,6 +6,7 @@ node_modules
 /osm
 /venv
 /build
+/proj
 __pycache__/
 
 # local env files

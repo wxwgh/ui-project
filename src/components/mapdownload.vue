@@ -205,6 +205,12 @@ export default {
 							}
 						}
 					}
+					//判断是否为多记录面
+					var scope_layers = $this.$store.state.scope_layers;
+					var multirecord_flag=false;
+					if(scope_layers.length>1){
+						multirecord_flag=true;
+					}
 					//构建影像下载信息
 					var data = {
 						id:$this.$UUID(),
@@ -215,22 +221,20 @@ export default {
 						tile_is_clip:$this.$refs.mapdownloadbox.tile_is_clip,
 						is_joint:$this.$refs.mapdownloadbox.tile_radio,
 						url:url,
+						file_paths:[],
 						scope:$this.$store.state.scopeInfo.geojson,
+						break_show_flag:true,
 						time:$this.getDate(),
 						zoom:[],
+						from_index:0,
 						total:0,
-						//当前瓦片下载进度信息
-						progress_info:{
-							//级别
-							z:"",
-							//列号
-							x:"",
-							//行号
-							y:"",
-						},
 						//开始暂停标识
 						task_flag:true,
 						task_disable:false,
+						// 断点续传标识
+						break_flag:false,
+						//是否为多记录面
+						multirecord_flag:multirecord_flag,
 						progress:0,
 						exportProgress:0,
 					};
@@ -238,8 +242,6 @@ export default {
 					for(let i=0;i<selection.length;i++){
 						data.zoom.push(selection[i].level);
 						data.total=data.total+selection[i].total;
-						//初始化瓦片下载进度信息
-						data.progress_info=selection[i].progress_info;
 					}
 					//对级别数组进行排序
 					data.zoom = data.zoom.sort(function(a, b){return a - b});
@@ -255,17 +257,38 @@ export default {
 						$this.$refs.mapdownloadbox.init_tile_panel();
 					}
 				}else if($this.$refs.mapdownloadbox.activeName==="2"){
-					//更新下载信息
-					$this.myCommon.updateDownLoadInfo($this.$refs.mapdownloadbox);
-					var data = $this.$store.state.downloadInfo;
+					//构建地形下载信息
+					var data={
+						id:$this.$UUID(),
+						downType:"dem高程下载",
+						taskName:$this.$refs.mapdownloadbox.demNameInput,
+						savePath:$this.$refs.mapdownloadbox.demDownInput,
+						saveType:$this.$refs.mapdownloadbox.demOptionValue,
+						url:$this.$store.state.dem_url,
+						file_paths:[],
+						break_show_flag:true,
+						scope:$this.$store.state.scopeInfo.geojson,
+						time:$this.getDate(),
+						from_index:0,
+						total:0,
+						//开始暂停标识
+						task_flag:true,
+						task_disable:false,
+						// 断点续传标识
+						break_flag:false,
+						//是否为多记录面
+						multirecord_flag:multirecord_flag,
+						progress:0,
+						exportProgress:0,
+					}
 					//更新下载任务表
 					$this.myCommon.updateTaskTableDatas(data);
 					$this.myCommon.openTaskTable();
 					//调用后端下载函数
-					dem_load(data);
-					async function dem_load(data){
+					tile_load(data);
+					async function tile_load(data){
 						//python瓦片下载函数
-						await eel.dem_load(data)();
+						await eel.tile_load(data)();
 						$this.$refs.mapdownloadbox.init_dem_panel();
 					}
 					

@@ -972,7 +972,9 @@ def import_scope(info):
             geometry_type=geometry.GetGeometryName()
             features={
                 "type":"Feature",
-                "properties":{},
+                "properties":{
+                    "id":"导入范围面"
+                },
                 "geometry":{
                     "type":"",
                     "coordinates":[]

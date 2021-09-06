@@ -1013,13 +1013,13 @@ def lnglat_to_Mercator(north_west):
 def test_get_file():
     file_paths=[
         {
-            "url":"E:/SuperMapDownLoad/3/自绘多边形/11",
+            "url":"E:/SuperMapDownLoad/11/自绘多边形/15",
             "north_west":{
-                "lat":39.8970943726005,
-                "lng":116.2314059485339
+                "lat":39.32579941789298,
+                "lng":114.99689162131573
             },
-            "resolution": -44.858507300860694,
-            "zoom":"11"
+            "resolution": -0.26687106258428456,
+            "zoom":"15"
         }
     ]
     file_paths2 = [
@@ -1052,7 +1052,7 @@ def test_get_file():
                     image_content=Image.open(file_paths[s]["url"]+"/"+item+"/"+item2)
                     temp_images.append(image_content)
                 # 瓦片拼接 如果是百度地图则从下至上 否则从上至下
-                temp_images.reverse()
+                # temp_images.reverse()
                 images.append(temp_images)
         pass
         # 获取图片总宽度和高度

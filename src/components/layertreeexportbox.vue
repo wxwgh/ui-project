@@ -5,7 +5,7 @@
 			<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="exportFileChoose()"></i>
 		</el-input>
 		<el-select v-model="option_value2" @change="is_need_seven(option_value2)" size="mini" class="aliasInputClass">
-			<el-option v-for="post in options2" :label="post.label" :value="post.value" :disabled="post.disabled"></el-option>
+			<el-option v-for="post in options2" :label="post.value" :value="post.label" :disabled="post.disabled"></el-option>
 		</el-select>
 		<div class="seven_title"><span :class="{'on_need':on_need,'off_need':off_need}">七参数设置</span></div>
 		<div class="seven_parent">

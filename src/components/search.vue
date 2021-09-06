@@ -315,19 +315,15 @@ export default {
 					}).then(function(result){
 						var temp = JSON.parse(result.data.substring(result.data.indexOf("(")+1,result.data.length-1));
 						for(let i=0;i<temp.pois.length;i++){
-							// var tempLatlng = temp.pois[i].location.split(",");
 							var temp_lnglat=$this.gcj02towgs84(parseFloat(temp.pois[i].location.split(",")[0]),parseFloat(temp.pois[i].location.split(",")[1]));
 							var latlng = L.latLng(temp_lnglat[1],temp_lnglat[0]);
 							var features=[];
 							features.push([latlng.lat,latlng.lng]);
 							var marker =null;
-							var label=null;
 							var isTip=null;
-							if(temp.pois[i].name.length>$this.fontLength){
-								label = temp.pois[i].name.substring(0,$this.fontLength)+"...";
+							if(temp.pois[i].name.length*16>150){
 								isTip=true;
 							}else{
-								label=temp.pois[i].name;
 								isTip=false;
 							}
 							var isSelect=null;
@@ -362,7 +358,7 @@ export default {
 								id:layer_id,
 								parentId:layer_parent.id,
 								index:"3",
-								label:label,
+								label:temp.pois[i].name,
 								name:temp.pois[i].name,
 								isOperation:false,
 								isTip:isTip,
@@ -382,32 +378,10 @@ export default {
 				}
 			})
 		}else{
-			var layers = $this.$store.state.scopeInfo.scopeLayer;
-			var bounds = "";
-			if(layers.length>1){
-				for(let i=0;i<layers.length;i++){
-					if(i===0){
-						bounds = layers[i].getBounds();
-					}else{
-						bounds = bounds.extend(layers[i].getBounds());
-					}
-				}
-				var temp_bounds = "";
-				// 获取左上坐标
-				temp_bounds+=bounds.getNorthWest().lng+","+bounds.getNorthWest().lat+";";
-				temp_bounds+=bounds.getSouthEast().lng+","+bounds.getSouthEast().lat;
-				bounds = temp_bounds;
-			}else{
-				var latlngs = layers[0].getLatLngs()[0];
-				for(let i=0;i<latlngs.length;i++){
-					if(i===latlngs.length-1){
-						bounds+=latlngs[i].lng+","+latlngs[i].lat;
-					}else{
-						bounds+=latlngs[i].lng+","+latlngs[i].lat+";";
-					}
-				}
-			}
-			var url="https://restapi.amap.com/v3/place/polygon?polygon="+bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
+			var layer = $this.$store.state.scopeInfo.scopeLayer[0];
+			var bounds = layer.getBounds();
+			var temp_bounds=bounds.getNorthWest().lng+","+bounds.getNorthWest().lat+";"+bounds.getSouthEast().lng+","+bounds.getSouthEast().lat;
+			var url="https://restapi.amap.com/v3/place/polygon?polygon="+temp_bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page=1&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
 			$this.axios({
 			  method: 'get',
 			  url: url
@@ -432,7 +406,7 @@ export default {
 				var select = [];
 				//根据页数进行穷举查询
 				for(let x=1;x<=page;x++){
-					var url="https://restapi.amap.com/v3/place/polygon?polygon="+bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page="+x+"&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
+					var url="https://restapi.amap.com/v3/place/polygon?polygon="+temp_bounds+"&s=rsv3&children=&key="+$this.$store.state.gaodeKey+"&offset=50&page="+x+"&extensions=all&language=zh_cn&callback=jsonp_92507_&platform=JS&logversion=2.0&appname=https://developer.amap.com/demo/javascript-api/example/poi-search/polygon-search&csid=58010E3A-66A1-49A4-B134-FF6B6966DF15&sdkversion=1.4.15&keywords="+value;
 					$this.axios({
 						method: 'get',
 						url: url
@@ -444,13 +418,10 @@ export default {
 							var features=[];
 							features.push([latlng.lat,latlng.lng]);
 							var marker =null;
-							var label=null;
 							var isTip=null;
-							if(temp.pois[i].name.length>$this.fontLength){
-								label = temp.pois[i].name.substring(0,$this.fontLength)+"...";
+							if(temp.pois[i].name.length*16>150){
 								isTip=true;
 							}else{
-								label=temp.pois[i].name;
 								isTip=false;
 							}
 							var isSelect=null;
@@ -485,7 +456,7 @@ export default {
 								id:layer_id,
 								parentId:layer_parent.id,
 								index:"3",
-								label:label,
+								label:temp.pois[i].name,
 								name:temp.pois[i].name,
 								isOperation:false,
 								isTip:isTip,

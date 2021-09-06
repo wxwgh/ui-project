@@ -6,7 +6,7 @@
 				<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="fileChoose()"></i>
 			</el-input>
 			<div class="radio_checkbox_parent">
-				<el-checkbox v-model="tile_is_clip">边界剪裁</el-checkbox>
+				<!-- <el-checkbox v-model="tile_is_clip">边界剪裁</el-checkbox> -->
 				<el-radio v-model="tile_radio" label="原始瓦片">原始瓦片</el-radio>
 				<el-radio v-model="tile_radio" label="拼接大图">拼接大图</el-radio>
 			</div>
@@ -110,6 +110,7 @@ export default {
 		this.tileNameInput="";
 		this.tileDownInput="E:/SuperMapDownLoad";
 		this.tile_is_clip=false;
+		this.tile_radio="原始瓦片";
 		this.tileOptionValue="png";
 		this.tileOptions=[
 			{
@@ -187,7 +188,7 @@ export default {
 	margin-bottom: 10px;
 }
 .demSelectClass{
-	margin-bottom: 233px;
+	margin-bottom: 236px;
 }
 
 //poi下载样式

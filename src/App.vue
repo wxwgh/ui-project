@@ -173,12 +173,6 @@
 			window["updateProgress"] =function(id,progress){
 				$this.myCommon.updateProgress(id,progress);
 			}
-			window["updateExportProgress"] =function(id,exportProgress){
-				$this.myCommon.updateExportProgress(id,exportProgress);
-			}
-			window["updateTaskIndexedDB"] =function(data){
-				$this.myCommon.updateTaskIndexedDB(data);
-			}
 			window["lat_lng_to_tile_gaode"]=function(lat,lng,level){
 				var data = $this.myCommon.lat_lng_to_tile_gaode(lat,lng,level);
 				return data;
@@ -332,17 +326,6 @@
 					var result = e.target.result;
 					//查询数据
 					if(result){
-						// var tempData={
-						// 	id:result.value.id,
-						// 	taskName:result.value.taskName,
-						// 	mapName:result.value.mapName,
-						// 	time:result.value.time,
-						// 	savePath:result.value.savePath,
-						// 	task_flag:result.task_flag,
-						// 	task_disable:result.task_disable,
-						// 	progress:result.value.progress,
-						// 	exportProgress:result.value.exportProgress,
-						// };
 						$this.$store.state.taskTableDatas.push(result.value);
 						//将游标按它的方向移动到下一个位置，到其健与可选健参数匹配的项
 						result.continue();

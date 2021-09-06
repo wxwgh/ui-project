@@ -153,6 +153,10 @@ export default new Vuex.Store({
 	//共享数据
     state: {
 		viewer:"",
+		//cesium地形地址
+		cesium_dem_url:"http://localhost:18080/yaogandem",
+		//自建地形服务 地址
+		dem_url:"http://localhost:18080/dem",
 		loading:false,
 		// 选择框
 		peration_rectangle:"",
@@ -168,6 +172,8 @@ export default new Vuex.Store({
 			scopeLayer:[],
 			geojson:"",
 		},
+		//范围设置图层集合
+		scope_layers:[],
 		//三维场景样式
 		material:"",
 		// 量算图层列表

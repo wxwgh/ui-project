@@ -89,6 +89,7 @@ export default {
 		}
 		if(post.name==="矩形"){
 			$this.myCommon.clearScope();
+			$this.myCommon.clear_scope_layers();
 			$this.myCommon.switchMouseStyle(true,map);
 			var point_first=null;
 			var rectangle = null;
@@ -150,6 +151,7 @@ export default {
 										sticky:true,
 										offset:L.point(5,0)
 									})
+									$this.myCommon.update_scope_layers(layer);
 								}
 							}).addTo(map);
 						}else{
@@ -183,6 +185,7 @@ export default {
 										sticky:true,
 										offset:L.point(5,0)
 									})
+									$this.myCommon.update_scope_layers(layer);
 								}
 							}).addTo(map);
 						}
@@ -213,6 +216,7 @@ export default {
 			})
 		}else if(post.name==="多边形"){
 			$this.myCommon.clearScope();
+			$this.myCommon.clear_scope_layers();
 			$this.myCommon.switchMouseStyle(true,map);
 			var point_first=null;
 			var point_end = null;
@@ -303,6 +307,7 @@ export default {
 									sticky:true,
 									offset:L.point(5,0)
 								})
+								$this.myCommon.update_scope_layers(layer);
 							}
 						}).addTo(map);
 					}else{
@@ -336,6 +341,7 @@ export default {
 									sticky:true,
 									offset:L.point(5,0)
 								})
+								$this.myCommon.update_scope_layers(layer);
 							}
 						}).addTo(map);
 					}
@@ -446,6 +452,7 @@ export default {
 					var polygon="";
 					var geojson = "";
 					$this.myCommon.clearScope();
+					$this.myCommon.clear_scope_layers();
 					//判断是否有网格图层
 					if($this.$store.state.show_set.grid_layer.length>0){
 						var intersect_features = $this.is_more_joint(result.data.features);
@@ -477,6 +484,7 @@ export default {
 									sticky:true,
 									offset:L.point(5,0)
 								})
+								$this.myCommon.update_scope_layers(layer);
 							}
 						}).addTo(map);
 					}else{
@@ -496,6 +504,7 @@ export default {
 									sticky:true,
 									offset:L.point(5,0)
 								})
+								$this.myCommon.update_scope_layers(layer);
 							}
 						}).addTo(map);
 					}

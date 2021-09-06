@@ -130,9 +130,11 @@ def open_file(path):
     os.startfile(path)
 
 # 终止线程
+@eel.expose
 def stop_thread(id):
     download.stop_thread(id)
 # 开启下载线程
+@eel.expose
 def start_thread(info):
     download.start_thread(info)
 

@@ -85,11 +85,11 @@
 			test_check_change(value) {
 				var temp_list=[
 					"5000-11.json"
-				]
+				];
 				for(let i=0;i<temp_list.length;i++){
-					var scale = temp_list[i].split("-")[0]
+					var scale = temp_list[i].split("-")[0];
 					var data = this.get_geojson(parseInt(scale));
-					this.save_json(data,temp_list[i]);	
+					this.save_json(data,temp_list[i]);
 				}
 			},
 			//下拉框改变事件
@@ -111,18 +111,18 @@
 						zoom = this.options[i].zoom;
 					}
 				}
-				if(value!=="1:100万"&&value!=="1:50万"){
-					var temp_zoom = map.getZoom();
-					if(temp_zoom<zoom){
-						$this.$message({
-						    showClose: true,
-							type: 'error',
-						    message: '当前比例尺级别过小,请放大地图重试'
-						});
-						$this.option_value = "未选择";
-						return false;
-					}
-				}
+				// if(value!=="1:100万"&&value!=="1:50万"){
+				// 	var temp_zoom = map.getZoom();
+				// 	if(temp_zoom<zoom){
+				// 		$this.$message({
+				// 		    showClose: true,
+				// 			type: 'error',
+				// 		    message: '当前比例尺级别过小,请放大地图重试'
+				// 		});
+				// 		$this.option_value = "未选择";
+				// 		return false;
+				// 	}
+				// }
 				$this.get_layer(scale,zoom);
 				
 			},

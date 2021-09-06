@@ -11,6 +11,7 @@ export default {
   },
   methods:{
   	initMapCesium(){
+		var $this = this;
 		var height = parseInt(window.innerHeight)-181;
 		$("#mapCesium").css("height",height);
 		var Cesium = this.Cesium;
@@ -34,7 +35,7 @@ export default {
 				//CesiumLab提供的中国14级地形
 				// url:"https://lab.earthsdk.com/terrain/577fd5b0ac1f11e99dbd8fd044883638",
 				//本地 地形切片服务 全国90米
-				url:"http://localhost:18080/yaogandem",
+				url:$this.$store.state.cesium_dem_url,
 				requestVertexNormals: true,
 				requestWaterMask: true
 			})

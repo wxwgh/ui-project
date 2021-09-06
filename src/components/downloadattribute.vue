@@ -17,13 +17,18 @@
 				</template>
 			</el-table-column>
 			<el-table-column width="150" min-width="150" label="操作">
-				<template slot-scope="scope">
-					<!-- <el-button icon="el-icon-video-pause" circle size="mini" ></el-button> -->
-					<!-- 标识为true 表示开始状态 显示暂停按钮 -->
-					<el-button icon="el-icon-video-pause" circle size="mini" :disabled="scope.row.task_disable" v-if="scope.row.task_flag" @click="task_stop_click(scope)"></el-button>
-					<el-button icon="el-icon-video-play" circle size="mini" :disabled="scope.row.task_disable" v-else @click="task_start_click(scope)"></el-button>
-					<el-button icon="el-icon-folder" circle size="mini" @click="openDownFile(scope)"></el-button>
-					<el-button icon="el-icon-delete" circle size="mini" @click="deleteTask(scope)"></el-button>
+				<template slot-scope="scope" >
+					<div v-if="scope.row.break_show_flag">
+						<!-- 标识为true 表示开始状态 显示暂停按钮 -->
+						<el-button icon="el-icon-video-pause" circle size="mini" :disabled="scope.row.task_disable" v-if="scope.row.task_flag" @click="task_stop_click(scope)"></el-button>
+						<el-button icon="el-icon-video-play" circle size="mini" :disabled="scope.row.task_disable" v-else @click="task_start_click(scope)"></el-button>
+						<el-button icon="el-icon-folder" circle size="mini" @click="openDownFile(scope)"></el-button>
+						<el-button icon="el-icon-delete" circle size="mini" @click="deleteTask(scope)"></el-button>
+					</div>
+					<div v-else>
+						<el-button icon="el-icon-folder" circle size="mini" @click="openDownFile(scope)"></el-button>
+						<el-button icon="el-icon-delete" circle size="mini" @click="deleteTask(scope)"></el-button>
+					</div>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -51,15 +56,26 @@
 			//开始按钮
 			task_start_click(scope){
 				scope.row.task_flag=true;
+				scope.row.break_flag=true;
+				//调用后台 开启线程
+				start_thread(scope.row)
+				async function start_thread(data){
+					await eel.start_thread(data)();
+				}
+				//更新开始暂停标识
+				this.myCommon.update_task_flag(scope.row.id);
 			},
 			//暂停按钮
 			task_stop_click(scope){
 				scope.row.task_flag=false;
+				scope.row.break_flag=true;
 				//调用后台 暂停线程
 				stop_thread(scope.row.id)
 				async function stop_thread(id){
 					await eel.stop_thread(id)();
 				}
+				//更新开始暂停标识
+				this.myCommon.update_task_flag(scope.row.id);
 			},
 			deleteTask(data) {
 				var $this = this;

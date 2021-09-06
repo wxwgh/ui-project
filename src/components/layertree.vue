@@ -455,7 +455,7 @@ export default {
 			//更新下载信息
 			var target_coordinate="";
 			for(let i=0;i<$this.$refs.layertreeexportbox.options2.length;i++){
-				if($this.$refs.layertreeexportbox.option_value2===$this.$refs.layertreeexportbox.options2[i].value){
+				if($this.$refs.layertreeexportbox.option_value2===$this.$refs.layertreeexportbox.options2[i].label){
 					target_coordinate = $this.$refs.layertreeexportbox.options2[i].label;
 				}
 			}
@@ -917,11 +917,25 @@ export default {
 .custom-tree-node {
     flex: 1;
     display: flex;
+	flex-direction: row;
     align-items: center;
     justify-content: space-between;
     font-size: 13px;
 	color: #303133;
     padding-right: 8px;
+}
+.custom-tree-node>span:nth-child(1){
+	flex:1;
+	width:0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.custom-tree-node>span:nth-child(1)>span{
+	// width:100%;
+	// max-width: 150px;
+	// overflow: hidden;
+	// text-overflow: ellipsis;
+	// display: block;
 }
 .menuParent{
 	position: absolute;

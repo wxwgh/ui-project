@@ -257,6 +257,12 @@ export default {
 						$this.$refs.mapdownloadbox.init_tile_panel();
 					}
 				}else if($this.$refs.mapdownloadbox.activeName==="2"){
+					//判断是否为多记录面
+					var scope_layers = $this.$store.state.scope_layers;
+					var multirecord_flag=false;
+					if(scope_layers.length>1){
+						multirecord_flag=true;
+					}
 					//构建地形下载信息
 					var data={
 						id:$this.$UUID(),
@@ -280,6 +286,17 @@ export default {
 						multirecord_flag:multirecord_flag,
 						progress:0,
 						exportProgress:0,
+					}
+					//获取下载总数
+					var layers =$this.$store.state.scope_layers;
+					for(let j =0;j<layers.length;j++){
+						var bounds = layers[j].getBounds();
+						var min_lng=parseInt(bounds.getWest());
+						var min_lat=parseInt(bounds.getSouth());
+						var max_lng=parseInt(bounds.getEast());
+						var max_lat=parseInt(bounds.getNorth());
+						var num = (max_lng - min_lng+1)*(max_lat - min_lat +1);
+						data.total+=num;
 					}
 					//更新下载任务表
 					$this.myCommon.updateTaskTableDatas(data);
@@ -494,10 +511,6 @@ export default {
 	mouseLeave(post){
 		this.myCommon.mouseLeave(post);
 	},
-	// getDate(){
-	// 	var time=new Date().getFullYear() +"/" + (new Date().getMonth()+1)+"/"+new Date().getDate()+" "+new Date().getHours() +":"+ new Date().getMinutes()+":"+new Date().getSeconds();
-	// 	return time;
-	// },
   },
 }
 </script>

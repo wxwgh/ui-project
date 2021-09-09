@@ -27,7 +27,9 @@ export default {
 				// ]),
 				zoomControl: false,
 				attributionControl: false,
-				keyboard:false
+				keyboard:false,
+				//开启convas
+				preferCanvas: true
 			});
 		}else if(map_container.type==="baidu_map"){
 			map_container.map=L.map("commonMap",{

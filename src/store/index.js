@@ -600,6 +600,7 @@ export default new Vuex.Store({
 						isShow:false,
 						key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y",
 						url:"Aerial",
+						realUrl:"https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=11061",
 						imageProvider:new Cesium.BingMapsImageryProvider({
 							url : 'https://dev.virtualearth.net',
 							mapStyle : Cesium.BingMapsStyle.AERIAL,
@@ -616,6 +617,7 @@ export default new Vuex.Store({
 						isShow:false,
 						key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y",
 						url:"AerialWithLabels",
+						realUrl:"https://ecn.t3.tiles.virtualearth.net/tiles/h{quadkey}.jpeg?g=11061&mkt=en-US",
 						imageProvider:new Cesium.BingMapsImageryProvider({
 							url : 'https://dev.virtualearth.net',
 							mapStyle : Cesium.BingMapsStyle.AERIAL_WITH_LABELS,

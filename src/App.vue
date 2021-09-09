@@ -181,6 +181,14 @@
 				var data = $this.myCommon.lat_lng_to_tile_baidu(lat,lng,level);
 				return data;
 			}
+			window["lat_lng_to_quadkey_bing"]=function(lat,lng,level){
+				var data = $this.myCommon.lat_lng_to_quadkey_bing(lat,lng,level);
+				return data;
+			}
+			window["lat_lng_to_tile_tencent"]=function(lat,lng,level){
+				var data = $this.myCommon.lat_lng_to_tile_tencent(lat,lng,level);
+				return data;
+			}
 		},
 		initNavigationTree(){
 			var $this =this;

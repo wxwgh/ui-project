@@ -48,6 +48,16 @@
 		var data = window.lat_lng_to_tile_baidu(lat,lng,level);
 		return data;
 	}
+	eel.expose(lat_lng_to_quadkey_bing);
+	function lat_lng_to_quadkey_bing(lat,lng,level){
+		var data = window.lat_lng_to_quadkey_bing(lat,lng,level);
+		return data;
+	}
+	eel.expose(lat_lng_to_tile_tencent);
+	function lat_lng_to_tile_tencent(lat,lng,level){
+		var data = window.lat_lng_to_tile_tencent(lat,lng,level);
+		return data;
+	}
 </script>
 </body>
 </html>

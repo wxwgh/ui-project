@@ -390,6 +390,18 @@ export default{
 		var data = TileLnglatTransformBaidu.lnglatToTile(lng,lat,level);
 		return data;
 	},
+	//bing地图 瓦片坐标转四叉树编码
+	lat_lng_to_quadkey_bing(lat,lng,level){
+		var TileLnglatTransformBing = transform.TileLnglatTransformBing;
+		var data = TileLnglatTransformBing.lnglatToQuadkey(lng,lat,level);
+		return data;
+	},
+	//腾讯经纬度转瓦片坐标,与谷歌,高德,osm等瓦片坐标的tileY有差异
+	lat_lng_to_tile_tencent(lat,lng,level){
+		var TileLnglatTransformTencent = transform.TileLnglatTransformTencent;
+		var data = TileLnglatTransformTencent.lnglatToTile(lng,lat,level);
+		return data;
+	},
 	latLngToMercator(latLng) {
 		var mercator = {
 			x: 0,

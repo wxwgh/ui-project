@@ -3,13 +3,15 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 import eel
 import math
+import PIL
 from PIL import Image
 import numpy as np
 import shutil
 import requests
-from requests.adapters import HTTPAdapter
+import random
+# from urllib import request
+# import urllib.request
 import json
-from contextlib import closing
 import sys
 proj_str = os.path.dirname(sys.argv[0])+'/proj'
 os.environ['PROJ_LIB'] = proj_str
@@ -30,18 +32,18 @@ def stop_thread(id):
 # 开启新线程
 def start_thread(info):
     global thread_list
-    thread_pool.submit(map_load, info)
     thread_list[info["id"]] = True
-
-
-def tile_load(info):
-    global thread_list
     if info["downType"].find("影像下载")!=-1:
         thread_pool.submit(map_load, info)
-        thread_list[info["id"]] = True
     elif info["downType"].find("高程下载")!=-1:
-        thread_pool.submit(dem_load, info)
-        thread_list[info["id"]] = True
+        thread_pool.submit(dem_load,info)
+def tile_load(info):
+    global thread_list
+    thread_list[info["id"]] = True
+    if info["downType"].find("影像下载")!=-1:
+        thread_pool.submit(map_load, info)
+    elif info["downType"].find("高程下载")!=-1:
+        thread_pool.submit(dem_load,info)
 # 影像下载
 def map_load(info):
     global thread_list
@@ -110,6 +112,12 @@ def map_load(info):
                 tile1 = eel.lat_lng_to_tile_baidu(north_west["lat"],north_west["lng"],zooms[j])()
                 # 通过右下 级别获取瓦片范围
                 tile2 = eel.lat_lng_to_tile_baidu(south_east["lat"], south_east["lng"], zooms[j])()
+            elif map_name == "腾讯地图":
+                resolution = get_resolution_gaode(north_west, zooms[j])
+                # 通过左上 级别获取瓦片范围
+                tile1 = eel.lat_lng_to_tile_tencent(north_west["lat"], north_west["lng"], zooms[j])()
+                # 通过右下 级别获取瓦片范围
+                tile2 = eel.lat_lng_to_tile_tencent(south_east["lat"], south_east["lng"], zooms[j])()
             else:
                 resolution =get_resolution_gaode(north_west,zooms[j])
                 # 通过左上 级别获取瓦片范围
@@ -155,17 +163,41 @@ def map_load(info):
                                 # 此节点未下载,从此处开始下载
                                 break_flag=False
                     y_path = x_path +"/"+str(index)+".png"
-                    url=info["url"].replace("{z}",str(zooms[j])).replace("{x}",str(minX)).replace("{y}",str(index))
+                    url=""
+                    if map_name == "必应地图":
+                        # 获取四叉数编码
+                        bing_key = eel.lat_lng_to_quadkey_bing(index,minX,zooms[j])()
+                        url = info["url"].replace("{quadkey}",str(bing_key))
+                    else:
+                        url=info["url"].replace("{z}",str(zooms[j])).replace("{x}",str(minX)).replace("{y}",str(index))
                     print(url)
-                    # 判断线程是否中断
-                    if thread_list[info["id"]]==False:
-                        return False
                     x = 0
                     while x < 1000000:
                         try:
-                            result=requests.get(url,stream=True,proxies=proxies,timeout=10)
+                            # 判断线程是否中断
+                            if thread_list[info["id"]] == False:
+                                print("线程中断")
+                                return False
+                            # result=requests.get(url,stream=True,proxies=proxies,timeout=10)
+                            temp_image=""
+                            if map_name == "天地图":
+                                # 使用随机请求头
+                                temp_header={
+                                    'Accept':'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                                    'Accept-Encoding':'gzip, deflate',
+                                    'Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8',
+                                    'Connection':'keep-alive',
+                                    'Host':'t3.tianditu.gov.cn',
+                                    'Referer':'http://localhost:8080/',
+                                    'User-Agent' :'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
+                                }
+                                temp_image = Image.open(requests.get(url,headers=temp_header,stream=True,proxies=proxies,timeout=10).raw)
+                            else:
+                                temp_image = Image.open(requests.get(url, stream=True, proxies=proxies, timeout=10).raw)
+                            resizedImage = temp_image.resize((256, 256),PIL.Image.ANTIALIAS)
                             with open(y_path,'wb') as f:
-                                f.write(result.content)
+                                # f.write(resizedImage.content)
+                                resizedImage.save(y_path, quality=95)
                                 from_index+=1
                                 temp_progress=math.floor((from_index/total)*100)
                                 progress["progress"]=temp_progress
@@ -175,7 +207,8 @@ def map_load(info):
                                 f.close()
                             index+=1
                             break
-                        except requests.exceptions.RequestException as e:
+                        except Exception as e:
+                            print(e)
                             x+=1
                 minX+=1
     # 是否拼接大图
@@ -198,9 +231,8 @@ def map_load(info):
                     # 文件按名称排序(数字名称)
                     temp_files.sort(key=lambda q: int(q[:-4]))
                     for item2 in temp_files:
-                        # print(file_paths[s]["url"] + "/" + item + "/" + item2)
                         image_content = Image.open(file_paths[s]["url"] + "/" + item + "/" + item2)
-                        print(file_paths[s]["url"] + "/" + item + "/" + item2)
+                        # print(file_paths[s]["url"] + "/" + item + "/" + item2)
                         temp_images.append(image_content)
                         joint_index += 1
                         export_progress = math.floor((joint_index / total) * 100)
@@ -298,41 +330,16 @@ def get_resolution_gaode(north_west,level):
 def get_resolution_baidu(north_west,level):
     resolution = math.pow(2, (18 - level)) * math.cos(north_west["lat"])
     return resolution
-# 经纬度坐标转高德,谷歌,OSM瓦片坐标
-def lat_lng_to_tile_gaode(lat,lng,level):
-    # 某一瓦片等级下瓦片地图X轴(Y轴)上的瓦片数目
-    tile_num = math.pow(2,level)
-
-    # 经度转瓦片坐标x
-    x = (lng+180)/360
-    tile_x = math.floor(x * tile_num)
-    # 纬度转瓦片坐标y
-    lat_rad=lat*math.pi/180
-    y=(1-math.log(math.tan(lat_rad)+1/math.cos(lat_rad))/math.pi)/2
-    tile_y = math.floor(y*tile_num)
-    return {
-        "tile_x":tile_x,
-        "tile_y":tile_y
-    }
 
 
 # 高程下载
-def dem_load2(info):
+def dem_load(info):
     global thread_list
-    # dem文件地址
-    url = info["url"]
+    print('高程下载')
     # 存储路径
     save_path = os.path.join(info["savePath"], info["taskName"])
-    # 创建目录
-    os.makedirs(save_path)
-    # 获取瓦片地址信息
-    file_paths = info["file_paths"]
     # 多记录面标识
     multirecord_flag = info["multirecord_flag"]
-    # 地图名称
-    map_name = info["map_name"]
-    # 获取数组级别
-    zooms = info["zoom"]
     # 进度条字典
     progress = {}
     progress["id"] = info["id"]
@@ -343,6 +350,7 @@ def dem_load2(info):
     scope = info["scope"]
     # 下载总数
     total = info["total"]
+    print("瓦片总数:" + str(total))
     # 当前下载瓦片数量
     from_index = info["from_index"]
     # 断点续传标识
@@ -359,16 +367,64 @@ def dem_load2(info):
             polygon_path=info["savePath"]+"/"+info["taskName"]+"/"+features[i]["properties"]["id"]+str(i)
         else:
             polygon_path=info["savePath"]+"/"+info["taskName"]+"/"+features[i]["properties"]["id"]
+        # 判断文件夹是否存在
+        file_flag = os.path.exists(polygon_path)
+        if file_flag == False:
+            # 创建目录
+            os.makedirs(polygon_path)
         # 创建面对象
         polygon=ogr.CreateGeometryFromJson(json.dumps(features[i]["geometry"]))
         # 获取元素范围
         bounds = polygon.GetEnvelope()
-        min_lng = bounds[0]
-        min_lat = bounds[2]
-        max_lng = bounds[1]
-        max_lat = bounds[3]
+        minX = math.floor(bounds[0])
+        minY = math.floor(bounds[2])
+        maxX = math.floor(bounds[1])
+        maxY = math.floor(bounds[3])
+        while minX <= maxX:
+            index = minY
+            while index <= maxY:
+                tile_index += 1
+                # 判断是否是断点续传任务
+                if break_flag == True:
+                    if from_index != 0:
+                        # 判断当前瓦片计数 是否小于等于 当前下载数量
+                        if tile_index <= from_index:
+                            index += 1
+                            # 当前瓦片已下载
+                            continue
+                        else:
+                            # 此节点未下载,从此处开始下载
+                            break_flag = False
+                file_path = polygon_path + "/"+"N"+str(index)+"E"+str(minX)+".IMG"
+                print(file_path)
+                url = info["url"]+"/"+"N"+str(index)+"E"+str(minX)+".IMG"
+                print(url)
+                # 判断线程是否中断
+                if thread_list[info["id"]] == False:
+                    print('线程已终止')
+                    return False
+                x = 0
+                while x < 1000000:
+                    try:
+                        result = requests.get(url, stream=True, proxies=proxies, timeout=10)
+                        with open(file_path, 'wb') as f:
+                            f.write(result.content)
+                            from_index += 1
+                            temp_progress = math.floor((from_index / total) * 100)
+                            progress["progress"] = temp_progress
+                            progress["from_index"] = from_index
+                            eel.updateTaskProgress(progress)
+                            f.close()
+                        index += 1
+                        break
+                    except requests.exceptions.RequestException as e:
+                        x += 1
+            minX += 1
+    progress["exportProgress"] = 100
+    eel.updateTaskProgress(progress)
+    print('导出成功')
 # 老版高程下载
-def dem_load(info):
+def dem_load22(info):
     # dem文件地址
     url = "./dem"
     # 存储路径

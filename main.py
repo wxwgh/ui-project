@@ -107,9 +107,9 @@ def import_scope(info):
 def tile_load(info):
     download.tile_load(info)
 
-@eel.expose
-def dem_load(info):
-    download.down_load(info)
+# @eel.expose
+# def dem_load(info):
+#     download.down_load(info)
 
 
 # 下载任务相关

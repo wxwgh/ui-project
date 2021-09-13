@@ -87,4 +87,6 @@ def tif_coordinate_trans(info):
     del import_dataset
     del dst_ds
 
-
+# 等值线分析
+def isoline_analyze():
+    pass

@@ -60,6 +60,7 @@ export default {
   		this.myCommon.switchMouseStyle(false,map);
   		this.myCommon.clearOperation();
 		if(post.name==="提等值线"){
+			debugger;
 			// 创建一个拥有高程阴影和等高线的组合样式
 			function getElevationContourMaterial() {
 				return new Cesium.Material({

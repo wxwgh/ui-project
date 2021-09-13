@@ -93,7 +93,8 @@ export default {
 			map.on("mousedown",function(e){
 				if(e.originalEvent.button===0){
 					var latlng=e.latlng;
-					var layer = L.circle(latlng, {radius: 1,color:'red',weight:1}).addTo(map);
+					var layer = L.circleMarker(latlng, {radius: 5,color:'red',weight:1}).addTo(map);
+					// var marker = $this.myCommon.createMarker(latlng,"点");
 					var features=[[latlng.lat,latlng.lng]];
 					var layer_id = $this.$UUID();
 					var attribute=$this.get_attribute(layer_parent,"点图层",layer_id);

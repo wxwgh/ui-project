@@ -302,7 +302,7 @@ export default {
 						if(result.type==="point"){
 							if(i<=9){
 								//创建地图点图层
-								layer = L.circle(result.data[i].features[0], {radius: 1,color:'red',weight:1}).addTo(map);
+								layer = L.circleMarker(result.data[i].features[0], {radius: 5,color:'red',weight:1}).addTo(map);
 							}else{
 								layer=null;
 							}
@@ -762,7 +762,7 @@ export default {
 								layerGroup[i].children[j].icon="fa fa-eye-slash";
 								var layer =null;
 								if(layerGroup[i].children[j].type==="point"){
-									layer = L.circle(layerGroup[i].children[j].features[0], {radius: 1,color:'red',weight:1}).addTo(map);
+									layer = L.circleMarker(layerGroup[i].children[j].features[0], {radius: 5,color:'red',weight:1}).addTo(map);
 								}else if(layerGroup[i].children[j].type==="line"){
 									layer = L.polyline(layerGroup[i].children[j].features,{color:'red',weight:1}).addTo(map);
 								}else if(layerGroup[i].children[j].type==="region"){
@@ -791,7 +791,7 @@ export default {
 				data.layer.setIcon(myIcon);
 			}else if(data.type==="point"){
 				map.setView(data.layer.getLatLng(),map.getZoom());
-				data.layer.setStyle({radius: 1,color:'blue',weight:1});
+				data.layer.setStyle({radius: 5,color:'blue',weight:1});
 			}else if(data.type==="line"||data.type==="region"){
 				map.setView(data.layer.getCenter(),map.getZoom());
 				data.layer.setStyle({color:'blue',weight:1});
@@ -811,7 +811,7 @@ export default {
 		}
 	},
 	selectClick(node,data){
-		var map = this.myCommon.getMap();;
+		var map = this.myCommon.getMap();
 		this.myCommon.unbindMapEvent(map);
 		this.myCommon.switchMouseStyle(false,map);
 		//清除选中
@@ -844,7 +844,7 @@ export default {
 									layerGroup[i].children[j].icon="fa fa-eye-slash";
 									var layer =null;
 									if(layerGroup[i].children[j].type==="point"){
-										layer = L.circle(layerGroup[i].children[j].features[0], {radius: 1,color:'red',weight:1}).addTo(map);
+										layer = L.circleMarker(layerGroup[i].children[j].features[0], {radius:5,color:'red',weight:1}).addTo(map);
 									}else if(layerGroup[i].children[j].type==="line"){
 										layer = L.polyline(layerGroup[i].children[j].features,{color:'red',weight:1}).addTo(map);
 									}else if(layerGroup[i].children[j].type==="region"){
@@ -877,7 +877,7 @@ export default {
 								layerGroup[i].children[j].icon="fa fa-eye-slash";
 								var layer =null;
 								if(layerGroup[i].children[j].type==="point"){
-									layer = L.circle(layerGroup[i].children[j].features[0], {radius: 1,color:'red',weight:1}).addTo(map);
+									layer = L.circleMarker(layerGroup[i].children[j].features[0], {radius: 5,color:'red',weight:1}).addTo(map);
 								}else if(layerGroup[i].children[j].type==="line"){
 									layer = L.polyline(layerGroup[i].children[j].features,{color:'red',weight:1}).addTo(map);
 								}else if(layerGroup[i].children[j].type==="region"){

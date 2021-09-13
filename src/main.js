@@ -16,6 +16,8 @@ import myCommon from './assets/common/common.js';
 import $ from 'jquery';
 //引入leaflet
 import L from 'leaflet';
+//引入海量marker插件
+import './assets/plugins/leaflet.canvas-markers.js';
 import 'leaflet/dist/leaflet.css';
 //引入wmts引入插件
 import './assets/plugins/leaflet-tilelayer-wmts-src.js'

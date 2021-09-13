@@ -432,7 +432,7 @@ export default{
 						});
 						layerGroup[i].children[j].layer.setIcon(myIcon);
 					}else if(layerGroup[i].children[j].type==="point"&&layerGroup[i].children[j].layer){
-						layerGroup[i].children[j].layer.setStyle({radius: 1,color:'blue',weight:1});
+						layerGroup[i].children[j].layer.setStyle({radius: 5,color:'blue',weight:1});
 					}else if(layerGroup[i].children[j].type==="line"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({color:'blue',weight:1});
 					}else if(layerGroup[i].children[j].type==="region"&&layerGroup[i].children[j].layer){
@@ -460,7 +460,7 @@ export default{
 						});
 						layerGroup[i].children[j].layer.setIcon(myIcon);
 					}else if(layerGroup[i].children[j].type==="point"&&layerGroup[i].children[j].layer){
-						layerGroup[i].children[j].layer.setStyle({radius: 1,color:'red',weight:1});
+						layerGroup[i].children[j].layer.setStyle({radius: 5,color:'red',weight:1});
 					}else if(layerGroup[i].children[j].type==="line"&&layerGroup[i].children[j].layer){
 						layerGroup[i].children[j].layer.setStyle({color:'red',weight:1});
 					}else if(layerGroup[i].children[j].type==="region"&&layerGroup[i].children[j].layer){

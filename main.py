@@ -62,12 +62,29 @@ def is_same_geo(source,target):
 
 
 
-# 坐标转换相关
+# 地形分析相关
 # 获取导入tif路径
 @eel.expose
 def get_tif_path():
     file_path = analyze.get_tif_path()
     return file_path
+# 等值线分析
+@eel.expose
+def isoline_analyze(info):
+    analyze.isoline_analyze(info)
+
+# 等值面分析
+@eel.expose
+def contour_analyze(info):
+    analyze.contour_analyze(info)
+# 坡度分析
+@eel.expose
+def slope_analyze(info):
+    analyze.slope_analyze(info)
+# 坡向分析
+@eel.expose
+def aspect_analyze(info):
+    analyze.aspect_analyze(info)
 # 投影转换
 @eel.expose
 def tif_coordinate_trans(info):
@@ -125,7 +142,6 @@ def delete_file(path):
 @eel.expose
 def open_file(path):
     os.startfile(path)
-
 # 终止线程
 @eel.expose
 def stop_thread(id):

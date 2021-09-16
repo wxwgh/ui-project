@@ -1179,4 +1179,66 @@ def GetExtent(in_fn):
     min_y=geotrans[3]+ysize*geotrans[5]
     ds=None
     return min_x,max_y,max_x,min_y
-test_get_file()
+
+def isoline_analyze():
+
+    ogr.RegisterAll()
+    import_file_path = 'E:/nginx-1.16.1/html/dem/N22E108.IMG'
+    catalog_path = 'E:/SuperMapDownLoad/测试等高线'
+    # 判断文件夹是否存在
+    file_flag = os.path.exists(catalog_path)
+    if file_flag == False:
+        os.makedirs(catalog_path)
+    # 设置windows环境下识别中文
+    gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
+    gdal.SetConfigOption("SHAPE_ENCODING", "CP936")
+    in_ds = gdal.Open(import_file_path)
+    data_width = in_ds.RasterXSize
+    data_height = in_ds.RasterYSize
+    data_count = in_ds.RasterCount
+    # 读取图像数据波段
+    data_band  = in_ds.GetRasterBand(1)
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    # 文件地址
+    file_path = catalog_path + "/"+ "elevation.shp"
+    data_source = driver.CreateDataSource(file_path)
+    # 设置坐标系
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(4326)
+    # 创建layer
+    layer = data_source.CreateLayer("test", srs, ogr.wkbLineString)
+    # 设置表头字段
+    field_name2 = ogr.FieldDefn("demid", ogr.OFTInteger)
+    field_name2.SetWidth(30)
+    layer.CreateField(field_name2)
+    field_name = ogr.FieldDefn("elevation", ogr.OFTInteger)
+    field_name.SetWidth(30)
+    layer.CreateField(field_name)
+
+    '''
+    第一个参数为 图层波段
+    第二个参数为 等高线间距
+    第三个参数为 等高线起始高度
+    第四个参数为 一组固定高度值,如果不为空 则 等高线间距 和 等高线起始高度 设置 将不起作用
+    第五个参数为 是否使用无效值 False不使用 True使用
+    第六个参数为 如果使用无效值,则生成等高线时,会忽略原无效值,并使用该数值
+    第七个参数为 矢量图层
+    第八个参数为 指定列号 id号会保留在指定属性字段 列号从0开始
+    第九个参数为 指定列号 高程值会保留在指定属性字段 列号从0开始
+    第十个参数为
+    第十一个参数为
+    '''
+    temp_count = gdal.ContourGenerate(data_band,50,0,[],False,0,layer,0,1)
+
+
+
+    in_ds = None
+    del in_ds
+
+    data_source = None
+    del data_source
+
+# 测试回调
+def progress_fuc(data):
+    print(data)
+isoline_analyze()

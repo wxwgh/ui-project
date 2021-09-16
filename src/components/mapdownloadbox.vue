@@ -23,7 +23,7 @@
 	    <el-tab-pane label="高程下载" name="2" :disabled="get_dem_able">
 			<el-input v-model="demNameInput" @input="isSameName()" size="small" placeholder="任务名称" class="downnameClass"></el-input>
 			<el-input v-model="demDownInput" size="small" placeholder="存储目录" class="downloadClass">
-				<i slot="suffix" class="el-input__icon el-icon-folder"></i>
+				<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="fileChoose()"></i>
 			</el-input>
 			<el-select v-model="demOptionValue" size="mini" class="demSelectClass">
 				<el-option v-for="post in demOptions" :labek="post.label" :value="post.value"></el-option>

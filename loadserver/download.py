@@ -8,6 +8,7 @@ from PIL import Image
 import numpy as np
 import shutil
 import requests
+import imghdr
 import random
 # from urllib import request
 # import urllib.request
@@ -192,12 +193,17 @@ def map_load(info):
                                     'User-Agent' :'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
                                 }
                                 temp_image = Image.open(requests.get(url,headers=temp_header,stream=True,proxies=proxies,timeout=10).raw)
+                                resizedImage = temp_image.resize((256, 256), PIL.Image.ANTIALIAS)
+                            elif map_name.find("自定义")!=-1:
+                                temp_image = requests.get(url, stream=True, proxies=proxies, timeout=10)
                             else:
                                 temp_image = Image.open(requests.get(url, stream=True, proxies=proxies, timeout=10).raw)
-                            resizedImage = temp_image.resize((256, 256),PIL.Image.ANTIALIAS)
+                                resizedImage = temp_image.resize((256, 256),PIL.Image.ANTIALIAS)
                             with open(y_path,'wb') as f:
-                                # f.write(resizedImage.content)
-                                resizedImage.save(y_path, quality=95)
+                                if map_name.find("自定义")!=-1:
+                                    f.write(temp_image.content)
+                                else:
+                                    resizedImage.save(y_path, quality=95)
                                 from_index+=1
                                 temp_progress=math.floor((from_index/total)*100)
                                 progress["progress"]=temp_progress

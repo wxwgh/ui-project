@@ -20,7 +20,7 @@ import L from 'leaflet';
 import './assets/plugins/leaflet.canvas-markers.js';
 import 'leaflet/dist/leaflet.css';
 //引入wmts引入插件
-import './assets/plugins/leaflet-tilelayer-wmts-src.js'
+import './assets/plugins/leaflet-tilelayer-wmts.js'
 //引入地图纠偏插件
 import './assets/plugins/leaflet.mapCorrection.min.js';
 //引入加载第三方地图需要的Proj4

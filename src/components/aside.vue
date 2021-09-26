@@ -21,9 +21,12 @@
 						<span v-if="data.index==='1'">
 							<span>{{node.label}}</span>
 						</span>
-						<span v-else-if="data.index==='2'" class="map_child_class">
+						<span v-else-if="data.index==='2'" class="custom_map_class">
 							<el-image :src="data.image" class="map_child_image"></el-image>
-							<span>{{node.label}}</span>
+							<el-tooltip :content="data.label" placement="right-end" effect="light" v-if="data.isTip">
+								<span>{{node.label}}</span>
+							</el-tooltip>
+							<span v-else>{{node.label}}</span>
 						</span>
 						<span v-if="data.index==='1'">
 							<el-button size="mini" type="text">{{data.count}}</el-button>
@@ -158,27 +161,31 @@ export default {
 			for(let i=0;i<map_list.length;i++){
 				if(data.id === map_list[i].id){
 					map_list[i].isActive = true;
-					if(map_list[i].type === "wmts"){
-						console.log(map_list[i].realUrl)
-						layer = new L.TileLayer.WMTS(map_list[i].realUrl,{
-							layer: "WGS84",
+					if(map_list[i].type === "WMTS"){
+						layer = new L.TileLayer.WMTS(map_list[i].url,{
+							layer: map_list[i].layer_name,
 							format: 'image/jpeg',
-							tilematrixSet:"satImage",
+							tilematrixSet:map_list[i].tile_matrix,
 							attribution: "Weather data © 2012 IEM Nexrad"
 						}).addTo(map);
-						console.log(map_list[i].imageProvider);
+						//更新地图类型
+						this.$store.state.map_container.layer_type="WMTS";
 						//更新三维场景图层
 						this.$store.state.viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider(map_list[i].imageProvider));
-					}else if(map_list[i].type === "wms"){
-						layer = L.tileLayer.wms(map_list[i].realUrl, {
-						    layers: "WGS84",
+					}else if(map_list[i].type === "WMS"){
+						layer = L.tileLayer.wms(map_list[i].url, {
+						    layers: map_list[i].layer_name,
 						    format: 'image/jpeg',
 						    transparent: true,
 						    attribution: "Weather data © 2012 IEM Nexrad"
 						}).addTo(map);
+						//更新地图类型
+						this.$store.state.map_container.layer_type="WMS";
 						this.$store.state.viewer.imageryLayers.addImageryProvider(new Cesium.WebMapServiceImageryProvider(map_list[i].imageProvider))
 					}
-					this.$store.state.map_container.layer = layer;
+					this.$store.state.map_container.layer=layer;
+				}else{
+					map_list[i].isActive = false;
 				}
 			}
 			// 取消所有base地图选中状态
@@ -223,6 +230,24 @@ export default {
 						});
 						return false;
 					}
+					if(!taskRegex.test($this.$refs.custommaplistbox.layer_name)){
+						$this.$message({
+							showClose: true,
+							type: 'error',
+							message: '图层名称,格式不正确'
+						});
+						return false;
+					}
+					if($this.$refs.custommaplistbox.type_radio==="WMTS"){
+						if(!taskRegex.test($this.$refs.custommaplistbox.tile_matrix)){
+							$this.$message({
+								showClose: true,
+								type: 'error',
+								message: '比例尺集合参数,格式不正确'
+							});
+							return false;
+						}
+					}
 					if($this.$refs.custommaplistbox.isName){
 						$this.$message({
 							showClose: true,
@@ -238,39 +263,49 @@ export default {
 			}
 		}).then(() => {
 			// 判断地址类型
-			var type ="";
 			var imageProvider="";
-			if($this.$refs.custommaplistbox.map_url.indexOf("wmts")!=-1){
-				type = "wmts";
+			var realUrl="";
+			if($this.$refs.custommaplistbox.type_radio==="WMTS"){
 				//添加至provider对象
 				// L.TileLayer.ChinaProvider.providers.CusTom.Normal["自定义-"+$this.$refs.custommaplistbox.map_name] = $this.$refs.custommaplistbox.map_url.split(":")[1];
 				// L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
 				imageProvider={
 					url:$this.$refs.custommaplistbox.map_url,
-					layer:"WGS84",
+					layer:$this.$refs.custommaplistbox.layer_name,
 					style:"default",
-					format:"image/jpeg",
-					tileMatrixSetID:"satImage",
-					attribution: "Weather data © 2012 IEM Nexrad"
+					format:"image/png",
+					tileMatrixSetID:$this.$refs.custommaplistbox.tile_matrix,
+					//描述
+					attribution: "wxw"
 				};
-			}else if($this.$refs.custommaplistbox.map_url.indexOf("wms")!=-1){
-				type = "wms";
+				realUrl=$this.$refs.custommaplistbox.map_url+"?"+"service=WMTS&request=GetTile&version=1.0.0&layer="+$this.$refs.custommaplistbox.layer_name+"&style=&tilematrixset="+$this.$refs.custommaplistbox.tile_matrix+"&format=image/png&height=256&width=256&tilematrix={z}&tilerow={y}&tilecol={x}";
+			}else if($this.$refs.custommaplistbox.type_radio==="WMS"){
 				imageProvider={
 					url:$this.$refs.custommaplistbox.map_url,
-					layers:"WGS84",
+					layers:$this.$refs.custommaplistbox.layer_name,
 					parameters:{
-						format:'image/jpeg',
+						format:'image/png',
 						transparent: true,
-						attribution: "Weather data © 2012 IEM Nexrad"
+						//描述
+						attribution: "wxw"
 					}
 				}
+				realUrl=$this.$refs.custommaplistbox.map_url;
+			}
+			var isTip=null;
+			if(("自定义-"+$this.$refs.custommaplistbox.map_name).length*16>150){
+				isTip=true;
+			}else{
+				isTip=false;
 			}
 			//添加服务 至全局对象
 			var temp = {
 				id:$this.$UUID(),
 				label:"自定义-"+$this.$refs.custommaplistbox.map_name,
+				layer_name:$this.$refs.custommaplistbox.layer_name,
+				tile_matrix:$this.$refs.custommaplistbox.tile_matrix,
 				index:"2",
-				type:type,
+				type:$this.$refs.custommaplistbox.type_radio,
 				center: [39.550339, 100.114129],
 				dpi:96,
 				scale:[
@@ -296,12 +331,13 @@ export default {
 				],
 				isActive:false,
 				isShow:false,
+				isTip:isTip,
 				minZoom: 3,
 				maxZoom: 18,
 				image:require('../assets/custommaplist/custom.png'),
 				url:$this.$refs.custommaplistbox.map_url,
 				// url:"CusTom.Normal."+"自定义-"+$this.$refs.custommaplistbox.map_name,
-				realUrl:$this.$refs.custommaplistbox.map_url,
+				realUrl:realUrl,
 				imageProvider:imageProvider,
 			};
 			$this.$store.state.custom_map_list[0].children.push(temp);
@@ -372,8 +408,13 @@ export default {
 				}
 			}
 		}
-		//更新下载信息
-		// this.myCommon.updateNameAndUrl();
+		//更新地图类型
+		this.$store.state.map_container.layer_type="REST";
+		// 取消所有自定义地图选中状态
+		var custom_list = this.$store.state.custom_map_list[0].children;
+		for(let i=0;i<custom_list.length;i++){
+			custom_list[i].isActive=false;
+		}
 	},
 	mapListBottomClick(post){
 		if(post.name==="图层管理"){
@@ -489,5 +530,17 @@ export default {
 	width:14px;
 	height:14px;
 	margin-right:3px;
+}
+.custom_map_class{
+	display:flex;
+	flex-direction:row;
+	justify-content:flex-start;
+	align-items:center;
+}
+.custom_map_class>span{
+	flex:1;
+	width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 </style>

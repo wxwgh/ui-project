@@ -448,7 +448,7 @@ export default {
 				import_scope(temp_info);
 				async function import_scope(temp_info){
 					var result = await eel.import_scope(temp_info)();
-					console.log(result);
+					// console.log(result);
 					var polygon="";
 					var geojson = "";
 					$this.myCommon.clearScope();
@@ -522,6 +522,7 @@ export default {
   	},
 	//判断是否相交
 	is_joint(coordinates){
+		console.log("单面相交")
 		var $this =this;
 		//通过行政区划范围 创建turf多多边型
 		var polygon = $this.turf.polygon(coordinates);
@@ -542,15 +543,19 @@ export default {
 	},
 	// 多面相交判断
 	is_more_joint(import_features){
+		console.log("多记录面相交")
 		var $this =this;
-		var intersect_features=[];
 		var features = $this.$store.state.show_set.grid_geojson.features;
+		var intersect_features=[];
 		//通过导入范围 创建turf多多边型
 		for(let j=0;j<import_features.length;j++){
 			var polygon="";
 			if(import_features[j].geometry.type==="MultiPolygon"){
 				polygon = $this.turf.multiPolygon(import_features[j].geometry.coordinates);
 			}else if(import_features[j].geometry.type==="Polygon"){
+				if(import_features[j].geometry.coordinates[0][0][0]!=import_features[j].geometry.coordinates[0][import_features[j].geometry.coordinates[0].length-1][0]){
+					import_features[j].geometry.coordinates[0].push(import_features[j].geometry.coordinates[0][0]);
+				}
 				polygon = $this.turf.polygon(import_features[j].geometry.coordinates);
 			}
 			//遍历网格要素集合
@@ -581,11 +586,23 @@ export default {
 			if($this.$store.state.peration_rectangle!==""){
 				$this.$store.state.peration_rectangle.remove();
 			}
-			$(".topButton").each(function(){
-				if($(this).text()==="地图下载"){
-					$(this).trigger("click");
-				}
-			});
+			if($this.$store.state.map_container.layer_type=="WMS"){
+				$this.$message({
+					showClose: true,
+					type: 'error',
+					message: 'WMS类型服务不支持下载'
+				});
+				//清空范围
+				$this.myCommon.clearScope();
+				$this.myCommon.clear_scope_layers();
+			}else{
+				$(".topButton").each(function(){
+					if($(this).text()==="地图下载"){
+						$(this).trigger("click");
+					}
+				});
+			}	
+			
 		})
 	},
 	mouseOver(post){

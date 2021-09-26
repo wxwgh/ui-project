@@ -235,7 +235,6 @@ export default {
 							temp_coordinate = $this.$refs.layertreeimportbox.options[i].label;
 						}
 					}
-					console.log(temp_coordinate);
 					//创建图层父节点 类似数据集结构
 					var layer_option = {
 						id:$this.$UUID(),

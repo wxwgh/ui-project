@@ -108,11 +108,22 @@
 							}
 						}).addTo(map);
 						polygon.on("mousedown", function() {
-							$(".topButton").each(function() {
-								if ($(this).text() === "地图下载") {
-									$(this).trigger("click");
-								}
-							});
+							if($this.$store.state.map_container.layer_type=="WMS"){
+								$this.$message({
+									showClose: true,
+									type: 'error',
+									message: 'WMS类型服务不支持下载'
+								});
+								//清空范围
+								$this.myCommon.clearScope();
+								$this.myCommon.clear_scope_layers();
+							}else{
+								$(".topButton").each(function(){
+									if($(this).text()==="地图下载"){
+										$(this).trigger("click");
+									}
+								});
+							}
 						})
 						$this.myCommon.update_scopeInfo(false, "", [polygon], geojson);
 						var center = temp_data.districts[0].center;
@@ -151,11 +162,22 @@
 							}
 						}).addTo(map);
 						polygon.on("mousedown", function() {
-							$(".topButton").each(function() {
-								if ($(this).text() === "地图下载") {
-									$(this).trigger("click");
-								}
-							});
+							if($this.$store.state.map_container.layer_type=="WMS"){
+								$this.$message({
+									showClose: true,
+									type: 'error',
+									message: 'WMS类型服务不支持下载'
+								});
+								//清空范围
+								$this.myCommon.clearScope();
+								$this.myCommon.clear_scope_layers();
+							}else{
+								$(".topButton").each(function(){
+									if($(this).text()==="地图下载"){
+										$(this).trigger("click");
+									}
+								});
+							}	
 						})
 						$this.myCommon.update_scopeInfo(true, temp_data.districts[0].adcode, [polygon], geojson);
 						var center = temp_data.districts[0].center;

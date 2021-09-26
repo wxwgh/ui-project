@@ -189,24 +189,26 @@ export default {
 								}
 							}
 						}
-						// 根据图层列表 更新表格数据
-						for(let i=0;i<layerGroup.length;i++){
-							if(layerGroup[i].label===layer_list[0].label){
-								for(let j=0;j<layerGroup[i].children.length;j++){
-									if(layerGroup[i].children[j].isOperation){
-										//更新表格数据
-										$this.myCommon.setAttributeData(layerGroup[i].children[j].attribute);
-										// 更新表头
-										if(j===0){
-											$this.$store.state.attributeHeader.splice(0,$this.$store.state.attributeHeader.length);
-											for(let x=0;x<layerGroup[i].table_header.length;x++){
-												$this.$store.state.attributeHeader.push(layerGroup[i].table_header[x]);
+						if(layer_list.length>0){
+							// 根据图层列表 更新表格数据
+							for(let i=0;i<layerGroup.length;i++){
+								if(layerGroup[i].label===layer_list[0].label){
+									for(let j=0;j<layerGroup[i].children.length;j++){
+										if(layerGroup[i].children[j].isOperation){
+											//更新表格数据
+											$this.myCommon.setAttributeData(layerGroup[i].children[j].attribute);
+											// 更新表头
+											if(j===0){
+												$this.$store.state.attributeHeader.splice(0,$this.$store.state.attributeHeader.length);
+												for(let x=0;x<layerGroup[i].table_header.length;x++){
+													$this.$store.state.attributeHeader.push(layerGroup[i].table_header[x]);
+												}
 											}
 										}
 									}
 								}
+								
 							}
-							
 						}
 						if(index!==0){
 							//更新选取图层列表

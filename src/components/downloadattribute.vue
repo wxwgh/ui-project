@@ -2,10 +2,10 @@
 	<div class="taskParent">
 		<el-table :data="get_datas" border size="mini" :height="tableHeight">
 			<el-table-column prop="id" label="标识" v-if="false"></el-table-column>
-			<el-table-column prop="taskName" label="任务名称"></el-table-column>
-			<el-table-column prop="downType" label="数据类型"></el-table-column>
-			<el-table-column prop="time" label="创建时间"></el-table-column>
-			<el-table-column min-width="150" prop="savePath" label="保存地址"></el-table-column>
+			<el-table-column prop="taskName" label="任务名称" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="downType" label="数据类型" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="time" label="创建时间" show-overflow-tooltip></el-table-column>
+			<el-table-column min-width="150" prop="savePath" label="保存地址" show-overflow-tooltip></el-table-column>
 			<el-table-column min-width="150" prop="progress" label="下载进度">
 				<template slot-scope="scope">
 					<el-progress :percentage="scope.row.progress"></el-progress>

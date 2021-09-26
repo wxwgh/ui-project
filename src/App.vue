@@ -361,23 +361,29 @@
 					var result = e.target.result;
 					//查询数据
 					if(result){
-						var temp = {
-							id:result.value.id,
-							label:result.value.label,
-							index:result.value.index,
-							type:result.value.type,
-							center:result.value.center,
-							dpi:result.value.dpi,
-							scale:result.value.scale,
-							isActive:result.value.isActive,
-							isShow:result.value.isShow,
-							minZoom: result.value.minZoom,
-							maxZoom: result.value.maxZoom,
-							image:result.value.image,
-							url:result.value.url,
-							realUrl:result.value.realUrl,
-							imageProvider:result.value.imageProvider,
-						};
+						// console.log(Object.keys(result.value));
+						var keys = Object.keys(result.value);
+						var temp={}
+						for(let value of keys){
+							temp[value] = result.value[value];
+						}
+						// var temp = {
+						// 	id:result.value.id,
+						// 	label:result.value.label,
+						// 	index:result.value.index,
+						// 	type:result.value.type,
+						// 	center:result.value.center,
+						// 	dpi:result.value.dpi,
+						// 	scale:result.value.scale,
+						// 	isActive:result.value.isActive,
+						// 	isShow:result.value.isShow,
+						// 	minZoom: result.value.minZoom,
+						// 	maxZoom: result.value.maxZoom,
+						// 	image:result.value.image,
+						// 	url:result.value.url,
+						// 	realUrl:result.value.realUrl,
+						// 	imageProvider:result.value.imageProvider,
+						// };
 						$this.$store.state.custom_map_list[0].children.push(temp);
 						$this.$store.state.custom_map_list[0].count = $this.$store.state.custom_map_list[0].children.length;
 						// if(temp.type === "wmts"){

@@ -237,6 +237,7 @@ export default new Vuex.Store({
 		map_container:{
 			map:"",
 			layer:"",
+			layer_type:"REST",
 			type:"common_map",
 		},
 		mapList:[

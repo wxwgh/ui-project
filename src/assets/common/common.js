@@ -161,113 +161,223 @@ export default{
 		// 获取比例尺数组和dpi
 		var scale=[];
 		var dpi="";
-		var map_name=""
-		for(let i=0;i<$store.state.mapList.length;i++){
-			if($store.state.mapList[i].isShow){
-				scale=$store.state.mapList[i].scale;
-				dpi=$store.state.mapList[i].dpi;
-				map_name=$store.state.mapList[i].name;
+		var map_name="";
+		if($store.state.map_container.layer_type=="REST"){
+			for(let i=0;i<$store.state.mapList.length;i++){
+				if($store.state.mapList[i].isShow){
+					scale=$store.state.mapList[i].scale;
+					dpi=$store.state.mapList[i].dpi;
+					map_name=$store.state.mapList[i].name;
+				}
 			}
-		}
-		var layers = $store.state.scope_layers;
-		// bounds = bounds.extend(layers[i].getBounds());
-		//多记录 字节计数
-		var tile_byte={};
-		//多记录 瓦片计数
-		var tile_num={};
-		for(let j =0;j<layers.length;j++){
-			var bounds = layers[j].getBounds();
-			//左上
-			var north_west = bounds.getNorthWest();
-			//右下
-			var south_east = bounds.getSouthEast();
-			//获取级别范围
-			var minZoom = "";
-			var maxZoom="";
-			var mapList = $store.state.mapList;
-			for(let i=0;i<mapList.length;i++){
-				if(mapList[i].isShow){
-					for(let j=0;j<mapList[i].urls.length;j++){
-						if(mapList[i].urls[j].isActive){
-							minZoom=mapList[i].urls[j].minZoom;
-							maxZoom=mapList[i].urls[j].maxZoom;
+			var layers = $store.state.scope_layers;
+			// bounds = bounds.extend(layers[i].getBounds());
+			//多记录 字节计数
+			var tile_byte={};
+			//多记录 瓦片计数
+			var tile_num={};
+			for(let j =0;j<layers.length;j++){
+				var bounds = layers[j].getBounds();
+				//左上
+				var north_west = bounds.getNorthWest();
+				//右下
+				var south_east = bounds.getSouthEast();
+				//获取级别范围
+				var minZoom = "";
+				var maxZoom="";
+				var mapList = $store.state.mapList;
+				for(let i=0;i<mapList.length;i++){
+					if(mapList[i].isShow){
+						for(let j=0;j<mapList[i].urls.length;j++){
+							if(mapList[i].urls[j].isActive){
+								minZoom=mapList[i].urls[j].minZoom;
+								maxZoom=mapList[i].urls[j].maxZoom;
+							}
 						}
 					}
 				}
-			}
-			for(let i=minZoom;i<maxZoom+1;i++){
-				var tile1="";
-				var tile2=""
-				if(map_name == "百度地图"){
-					tile1 = this.lat_lng_to_tile_baidu(north_west.lat,north_west.lng,i);
-					tile2 = this.lat_lng_to_tile_baidu(south_east.lat,south_east.lng,i);
-				}else{
-					tile1 = this.lat_lng_to_tile_gaode(north_west.lat,north_west.lng,i);
-					tile2 = this.lat_lng_to_tile_gaode(south_east.lat,south_east.lng,i);
+				for(let i=minZoom;i<maxZoom+1;i++){
+					var tile1="";
+					var tile2=""
+					if(map_name == "百度地图"){
+						tile1 = this.lat_lng_to_tile_baidu(north_west.lat,north_west.lng,i);
+						tile2 = this.lat_lng_to_tile_baidu(south_east.lat,south_east.lng,i);
+					}else{
+						tile1 = this.lat_lng_to_tile_gaode(north_west.lat,north_west.lng,i);
+						tile2 = this.lat_lng_to_tile_gaode(south_east.lat,south_east.lng,i);
+					}
+					var minX = tile1.tileX<tile2.tileX?tile1.tileX:tile2.tileX;
+					var maxX = tile1.tileX>tile2.tileX?tile1.tileX:tile2.tileX;
+					var minY = tile1.tileY<tile2.tileY?tile1.tileY:tile2.tileY;
+					var maxY = tile1.tileY>tile2.tileY?tile1.tileY:tile2.tileY;
+					//获取瓦片总数
+					var num = (maxX-minX+1)*(maxY-minY+1);
+					//获取瓦片大小
+					var temp = num*30;
+					if(layers.length===1){
+						var downsize="";
+						if(temp<1024){
+							downsize = temp+"KB";
+						}else if(temp >= 1024 && temp < 1048576){
+							downsize = (temp/1024).toFixed(2)+"MB";
+						}else if (temp >= 1048576 && temp < 1073741824){
+							downsize = (temp/1024/1024).toFixed(2)+"GB";
+						}else{
+							downsize = (temp/1024/1024/1024).toFixed(2)+"T";
+						}
+						var tableData = {
+							level:i,
+							scale:scale[i],
+							resolution:(0.0254*parseInt(scale[i].split(":")[1])/dpi).toFixed(2)+"米",
+							total:num,
+							downsize:downsize,
+							dpi:dpi,
+							
+						};
+						$store.state.downloadTableDatas.push(tableData);
+					}else if(layers.length>1){
+						if(j===0){
+							tile_num[i]=num;
+							tile_byte[i]=temp;
+						}else{
+							tile_num[i]=tile_num[i]+num;
+							tile_byte[i]=tile_byte[i]+temp;
+						}
+					}
+					
 				}
-				var minX = tile1.tileX<tile2.tileX?tile1.tileX:tile2.tileX;
-				var maxX = tile1.tileX>tile2.tileX?tile1.tileX:tile2.tileX;
-				var minY = tile1.tileY<tile2.tileY?tile1.tileY:tile2.tileY;
-				var maxY = tile1.tileY>tile2.tileY?tile1.tileY:tile2.tileY;
-				//获取瓦片总数
-				var num = (maxX-minX+1)*(maxY-minY+1);
-				//获取瓦片大小
-				var temp = num*30;
-				if(layers.length===1){
-					var downsize="";
-					if(temp<1024){
-						downsize = temp+"KB";
-					}else if(temp >= 1024 && temp < 1048576){
-						downsize = (temp/1024).toFixed(2)+"MB";
-					}else if (temp >= 1048576 && temp < 1073741824){
-						downsize = (temp/1024/1024).toFixed(2)+"GB";
-					}else{
-						downsize = (temp/1024/1024/1024).toFixed(2)+"T";
-					}
-					var tableData = {
-						level:i,
-						scale:scale[i],
-						resolution:(0.0254*parseInt(scale[i].split(":")[1])/dpi).toFixed(2)+"米",
-						total:num,
-						downsize:downsize,
-						dpi:dpi,
-						
-					};
-					$store.state.downloadTableDatas.push(tableData);
-				}else if(layers.length>1){
-					if(j===0){
-						tile_num[i]=num;
-						tile_byte[i]=temp;
-					}else{
-						tile_num[i]=tile_num[i]+num;
-						tile_byte[i]=tile_byte[i]+temp;
+				if(layers.length>1&&j===layers.length-1){
+					for(let key in tile_num){
+						var temp_byte=tile_byte[key];
+						var temp_num=tile_num[key];
+						var downsize="";
+						if(temp_byte<1024){
+							downsize = temp_byte+"KB";
+						}else if(temp_byte >= 1024 && temp_byte < 1048576){
+							downsize = (temp_byte/1024).toFixed(2)+"MB";
+						}else if (temp_byte >= 1048576 && temp_byte < 1073741824){
+							downsize = (temp_byte/1024/1024).toFixed(2)+"GB";
+						}else{
+							downsize = (temp_byte/1024/1024/1024).toFixed(2)+"T";
+						}
+						var tableData = {
+							level:key,
+							scale:scale[key],
+							resolution:(0.0254*parseInt(scale[key].split(":")[1])/dpi).toFixed(2)+"米",
+							total:temp_num,
+							downsize:downsize,
+							dpi:dpi
+						};
+						$store.state.downloadTableDatas.push(tableData);
 					}
 				}
-				
 			}
-			if(layers.length>1&&j===layers.length-1){
-				for(let key in tile_num){
-					var temp_byte=tile_byte[key];
-					var temp_num=tile_num[key];
-					var downsize="";
-					if(temp_byte<1024){
-						downsize = temp_byte+"KB";
-					}else if(temp_byte >= 1024 && temp_byte < 1048576){
-						downsize = (temp_byte/1024).toFixed(2)+"MB";
-					}else if (temp_byte >= 1048576 && temp_byte < 1073741824){
-						downsize = (temp_byte/1024/1024).toFixed(2)+"GB";
-					}else{
-						downsize = (temp_byte/1024/1024/1024).toFixed(2)+"T";
+		}else if($store.state.map_container.layer_type=="WMS"){
+			return false;
+		}else if($store.state.map_container.layer_type=="WMTS"){
+			var temp_list = $store.state.custom_map_list[0].children; 
+			for(let i=0;i<temp_list.length;i++){
+				if(temp_list[i].isActive){
+					scale=temp_list[i].scale;
+					dpi=temp_list[i].dpi;
+					map_name=temp_list[i].label;
+				}
+			}
+			var layers = $store.state.scope_layers;
+			// bounds = bounds.extend(layers[i].getBounds());
+			//多记录 字节计数
+			var tile_byte={};
+			//多记录 瓦片计数
+			var tile_num={};
+			for(let j =0;j<layers.length;j++){
+				var bounds = layers[j].getBounds();
+				//左上
+				var north_west = bounds.getNorthWest();
+				//右下
+				var south_east = bounds.getSouthEast();
+				//获取级别范围
+				var minZoom = "";
+				var maxZoom="";
+				for(let i=0;i<temp_list.length;i++){
+					if(temp_list[i].isActive){
+						minZoom=temp_list[i].minZoom;
+						maxZoom=temp_list[i].maxZoom;
 					}
-					var tableData = {
-						level:key,
-						scale:scale[key],
-						resolution:(0.0254*parseInt(scale[key].split(":")[1])/dpi).toFixed(2)+"米",
-						total:temp_num,
-						downsize:downsize,
-						dpi:dpi
-					};
-					$store.state.downloadTableDatas.push(tableData);
+				}
+				for(let i=minZoom;i<maxZoom+1;i++){
+					var tile1="";
+					var tile2=""
+					if(map_name == "百度地图"){
+						tile1 = this.lat_lng_to_tile_baidu(north_west.lat,north_west.lng,i);
+						tile2 = this.lat_lng_to_tile_baidu(south_east.lat,south_east.lng,i);
+					}else{
+						tile1 = this.lat_lng_to_tile_gaode(north_west.lat,north_west.lng,i);
+						tile2 = this.lat_lng_to_tile_gaode(south_east.lat,south_east.lng,i);
+					}
+					var minX = tile1.tileX<tile2.tileX?tile1.tileX:tile2.tileX;
+					var maxX = tile1.tileX>tile2.tileX?tile1.tileX:tile2.tileX;
+					var minY = tile1.tileY<tile2.tileY?tile1.tileY:tile2.tileY;
+					var maxY = tile1.tileY>tile2.tileY?tile1.tileY:tile2.tileY;
+					//获取瓦片总数
+					var num = (maxX-minX+1)*(maxY-minY+1);
+					//获取瓦片大小
+					var temp = num*30;
+					if(layers.length===1){
+						var downsize="";
+						if(temp<1024){
+							downsize = temp+"KB";
+						}else if(temp >= 1024 && temp < 1048576){
+							downsize = (temp/1024).toFixed(2)+"MB";
+						}else if (temp >= 1048576 && temp < 1073741824){
+							downsize = (temp/1024/1024).toFixed(2)+"GB";
+						}else{
+							downsize = (temp/1024/1024/1024).toFixed(2)+"T";
+						}
+						var tableData = {
+							level:i,
+							scale:scale[i],
+							resolution:(0.0254*parseInt(scale[i].split(":")[1])/dpi).toFixed(2)+"米",
+							total:num,
+							downsize:downsize,
+							dpi:dpi,
+							
+						};
+						$store.state.downloadTableDatas.push(tableData);
+					}else if(layers.length>1){
+						if(j===0){
+							tile_num[i]=num;
+							tile_byte[i]=temp;
+						}else{
+							tile_num[i]=tile_num[i]+num;
+							tile_byte[i]=tile_byte[i]+temp;
+						}
+					}
+					
+				}
+				if(layers.length>1&&j===layers.length-1){
+					for(let key in tile_num){
+						var temp_byte=tile_byte[key];
+						var temp_num=tile_num[key];
+						var downsize="";
+						if(temp_byte<1024){
+							downsize = temp_byte+"KB";
+						}else if(temp_byte >= 1024 && temp_byte < 1048576){
+							downsize = (temp_byte/1024).toFixed(2)+"MB";
+						}else if (temp_byte >= 1048576 && temp_byte < 1073741824){
+							downsize = (temp_byte/1024/1024).toFixed(2)+"GB";
+						}else{
+							downsize = (temp_byte/1024/1024/1024).toFixed(2)+"T";
+						}
+						var tableData = {
+							level:key,
+							scale:scale[key],
+							resolution:(0.0254*parseInt(scale[key].split(":")[1])/dpi).toFixed(2)+"米",
+							total:temp_num,
+							downsize:downsize,
+							dpi:dpi
+						};
+						$store.state.downloadTableDatas.push(tableData);
+					}
 				}
 			}
 		}
@@ -281,103 +391,6 @@ export default{
 	update_scope_layers(layer){
 		$store.state.scope_layers.push(layer);
 	},
-	// updateDownLoadTable(){
-	// 	//清空表格
-	// 	this.clearDownLoadTableAndScope();
-	// 	// 获取比例尺数组和dpi
-	// 	var scale=[];
-	// 	var dpi="";
-	// 	var map_name=""
-	// 	for(let i=0;i<$store.state.mapList.length;i++){
-	// 		if($store.state.mapList[i].isShow){
-	// 			scale=$store.state.mapList[i].scale;
-	// 			dpi=$store.state.mapList[i].dpi;
-	// 			map_name=$store.state.mapList[i].name;
-	// 		}
-	// 	}
-	// 	var layers = $store.state.scope_layers;
-	// 	// bounds = bounds.extend(layers[i].getBounds());
-	// 	for(let i =0;i<layers.length;i++){
-	// 		var bounds = layers[i].getBounds();
-			
-			
-	// 	}
-		
-	// 	$store.state.downloadInfo.scopeLngLat={
-	// 		minLng:parseInt(bounds.getWest()),
-	// 		minLat:parseInt(bounds.getSouth()),
-	// 		maxLng:parseInt(bounds.getEast()),
-	// 		maxLat:parseInt(bounds.getNorth()),
-	// 	}
-	// 	//西北 左上
-	// 	var northWest = bounds.getNorthWest();
-	// 	$store.state.downloadInfo.northWest = this.latLngToMercator(northWest);
-	// 	//左上
-	// 	var north_west = bounds.getNorthWest();
-	// 	//右下
-	// 	var south_east = bounds.getSouthEast();
-	// 	//获取级别范围
-	// 	var minZoom = "";
-	// 	var maxZoom="";
-	// 	var mapList = $store.state.mapList;
-	// 	for(let i=0;i<mapList.length;i++){
-	// 		if(mapList[i].isShow){
-	// 			for(let j=0;j<mapList[i].urls.length;j++){
-	// 				if(mapList[i].urls[j].isActive){
-	// 					minZoom=mapList[i].urls[j].minZoom;
-	// 					maxZoom=mapList[i].urls[j].maxZoom;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	for(let i=minZoom;i<maxZoom+1;i++){
-	// 		var tile1="";
-	// 		var tile2=""
-	// 		if(map_name == "百度地图"){
-	// 			tile1 = this.lat_lng_to_tile_baidu(north_west.lat,north_west.lng,i);
-	// 			tile2 = this.lat_lng_to_tile_baidu(south_east.lat,south_east.lng,i);
-	// 		}else{
-	// 			tile1 = this.lat_lng_to_tile_gaode(north_west.lat,north_west.lng,i);
-	// 			tile2 = this.lat_lng_to_tile_gaode(south_east.lat,south_east.lng,i);
-	// 		}
-	// 		var minX = tile1.tileX<tile2.tileX?tile1.tileX:tile2.tileX;
-	// 		var maxX = tile1.tileX>tile2.tileX?tile1.tileX:tile2.tileX;
-	// 		var minY = tile1.tileY<tile2.tileY?tile1.tileY:tile2.tileY;
-	// 		var maxY = tile1.tileY>tile2.tileY?tile1.tileY:tile2.tileY;
-	// 		//获取瓦片总数
-	// 		var num = (maxX-minX+1)*(maxY-minY+1);
-	// 		//获取瓦片大小
-	// 		var temp = num*30;
-	// 		var downsize="";
-	// 		if(temp<1024){
-	// 			downsize = temp+"KB";
-	// 		}else if(temp >= 1024 && temp < 1048576){
-	// 			downsize = (temp/1024).toFixed(2)+"MB";
-	// 		}else if (temp >= 1048576 && temp < 1073741824){
-	// 			downsize = (temp/1024/1024).toFixed(2)+"GB";
-	// 		}else{
-	// 			downsize = (temp/1024/1024/1024).toFixed(2)+"T";
-	// 		}
-	// 		var tableData = {
-	// 			level:i,
-	// 			scale:scale[i],
-	// 			resolution:(0.0254*parseInt(scale[i].split(":")[1])/dpi).toFixed(2)+"米",
-	// 			total:num,
-	// 			downsize:downsize,
-	// 			dpi:dpi,
-				
-	// 		};
-	// 		var tempScope={}
-	// 		tempScope[i]={
-	// 			minX:minX,
-	// 			minY:minY,
-	// 			maxX:maxX,
-	// 			maxY:maxY
-	// 		}
-	// 		$store.state.downloadInfo.scope.push(tempScope);
-	// 		$store.state.downloadTableDatas.push(tableData);
-	// 	}
-	// },
 	// 高德,谷歌,OSM经纬度转瓦片坐标
 	lat_lng_to_tile_gaode(lat,lng,level){
 		var TileLnglatTransformGaode = transform.TileLnglatTransformGaode;

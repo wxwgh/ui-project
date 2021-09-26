@@ -1241,4 +1241,22 @@ def isoline_analyze():
 # 测试回调
 def progress_fuc(data):
     print(data)
-isoline_analyze()
+
+
+import PIL
+from PIL import Image
+import imghdr
+def test_custom():
+    url="http://support.supermap.com:8090/iserver/services/map-china400/wmts100?service=WMTS&request=GetTile&version=1.0.0&layer=ChinaDark&style=&tilematrixset=Custom_ChinaDark&format=image/png&height=256&width=256&tilematrix=6&tilerow=25&tilecol=49"
+    print(url)
+    path="E:/SuperMapDownLoad/nihao.png"
+    temp_image = requests.get(url, stream=True, timeout=10).raw
+    temp_image2 = Image.open(temp_image)
+    # resizedImage = temp_image.resize((256, 256), PIL.Image.ANTIALIAS)
+    print(imghdr.what("", temp_image2))
+    # resizedImage = requests.get(url, stream=True, timeout=10)
+    # with open(path, 'wb') as f:
+    #     # f.write(resizedImage.content)
+    #     resizedImage.save(path, quality=95)
+    #     f.close()
+test_custom()

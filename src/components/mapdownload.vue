@@ -192,16 +192,26 @@ export default {
 				}
 			}).then(() => {
 				if($this.$refs.mapdownloadbox.activeName==="1"){
-					var mapList = $this.$store.state.mapList;
 					var map_name = "";
 					var url = "";
-					for(let i=0;i<mapList.length;i++){
-						if(mapList[i].isShow){
-							map_name=mapList[i].name;
-							for(let j=0;j<mapList[i].urls.length;j++){
-								if(mapList[i].urls[j].isActive){
-									url=mapList[i].urls[j].realUrl;
+					if($this.$store.state.map_container.layer_type=="REST"){
+						var mapList = $this.$store.state.mapList;
+						for(let i=0;i<mapList.length;i++){
+							if(mapList[i].isShow){
+								map_name=mapList[i].name;
+								for(let j=0;j<mapList[i].urls.length;j++){
+									if(mapList[i].urls[j].isActive){
+										url=mapList[i].urls[j].realUrl;
+									}
 								}
+							}
+						}
+					}else if($this.$store.state.map_container.layer_type=="WMTS"){
+						var temp_list = $this.$store.state.custom_map_list[0].children;
+						for(let i=0;i<temp_list.length;i++){
+							if(temp_list[i].isActive){
+								map_name=temp_list[i].label;
+								url = temp_list[i].realUrl;
 							}
 						}
 					}

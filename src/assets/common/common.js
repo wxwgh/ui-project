@@ -743,15 +743,23 @@ export default{
 			if(progress_id===tableDatas[i].id){
 				tableDatas[i].progress=data.progress;
 				tableDatas[i].exportProgress=data.exportProgress;
-				tableDatas[i].file_paths=data.file_paths;
-				tableDatas[i].from_index=data.from_index;
+				if(typeof(data.file_paths)!="undefined"){
+					tableDatas[i].file_paths=data.file_paths;
+				}
+				if(typeof(data.from_index)!="undefined"){
+					tableDatas[i].from_index=data.from_index;
+				}
 				//更新开始暂停按钮是否可用标识
 				if(data.progress==100){
-					//不可用状态为true
-					tableDatas[i].task_disable=true;
+					if(typeof(tableDatas[i].task_disable)!="undefined"){
+						//不可用状态为true
+						tableDatas[i].task_disable=true;
+					}
 				}else{
-					//可用状态为false
-					tableDatas[i].task_disable=false;
+					if(typeof(tableDatas[i].task_disable)!="undefined"){
+						//可用状态为false
+						tableDatas[i].task_disable=false;
+					}
 				}
 				temp=tableDatas[i];
 			}

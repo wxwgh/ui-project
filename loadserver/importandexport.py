@@ -75,6 +75,8 @@ while decrement:
         decrement = True
 # 判断是否是相同基准坐标系
 def is_same_geo(source,target):
+    print(target)
+    print(source)
     source_coordinate = osr.SpatialReference()
     source_coordinate.ImportFromEPSG(int(source))
     target_coordinate = osr.SpatialReference()

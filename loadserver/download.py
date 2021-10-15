@@ -351,7 +351,6 @@ def dem_load(info):
     progress["id"] = info["id"]
     progress["progress"] = 0
     progress["exportProgress"] = 0
-    progress["file_paths"] = []
     # 下载范围
     scope = info["scope"]
     # 下载总数

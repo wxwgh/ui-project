@@ -5,7 +5,7 @@
 			<i slot="suffix" class="el-input__icon el-icon-folder layerCursor" @click="exportFileChoose()"></i>
 		</el-input>
 		<el-select v-model="option_value2" @change="is_need_seven(option_value2)" size="mini" class="aliasInputClass">
-			<el-option v-for="post in options2" :label="post.value" :value="post.label" :disabled="post.disabled"></el-option>
+			<el-option v-for="post in options2" :label="post.label" :value="post.value" :disabled="post.disabled"></el-option>
 		</el-select>
 		<div class="seven_title"><span :class="{'on_need':on_need,'off_need':off_need}">七参数设置</span></div>
 		<div class="seven_parent">
@@ -45,7 +45,7 @@ export default {
 		on_need:false,
 		off_need:true,
 		task_name:"",
-		save_path:"D:/SuperMap DownLoad",
+		save_path:"D:/SuperMapDownLoad",
 		isName:false,
 		option_value:"shp",
 		options:[
@@ -65,513 +65,513 @@ export default {
 		option_value2:"",
 		options2:[
 			{
-				value:"WGS 84",
-				label:"4326",
+				label:"WGS 84",
+				value:"4326",
 				disabled:false
 			},
 			{
-				value:"WGS 84 / Pseudo-Mercator",
-				label:"3857",
+				label:"WGS 84 / Pseudo-Mercator",
+				value:"3857",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954",
-				label:"4214",
+				label:"Beijing 1954",
+				value:"4214",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 13",
-				label:"21413",
+				label:"Beijing 1954 / Gauss-Kruger zone 13",
+				value:"21413",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 14",
-				label:"21414",
+				label:"Beijing 1954 / Gauss-Kruger zone 14",
+				value:"21414",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 15",
-				label:"21415",
+				label:"Beijing 1954 / Gauss-Kruger zone 15",
+				value:"21415",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 16",
-				label:"21416",
+				label:"Beijing 1954 / Gauss-Kruger zone 16",
+				value:"21416",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 17",
-				label:"21417",
+				label:"Beijing 1954 / Gauss-Kruger zone 17",
+				value:"21417",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 18",
-				label:"21418",
+				label:"Beijing 1954 / Gauss-Kruger zone 18",
+				value:"21418",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 19",
-				label:"21419",
+				label:"Beijing 1954 / Gauss-Kruger zone 19",
+				value:"21419",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 20",
-				label:"21420",
+				label:"Beijing 1954 / Gauss-Kruger zone 20",
+				value:"21420",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 21",
-				label:"21421",
+				label:"Beijing 1954 / Gauss-Kruger zone 21",
+				value:"21421",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 22",
-				label:"21422",
+				label:"Beijing 1954 / Gauss-Kruger zone 22",
+				value:"21422",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / Gauss-Kruger zone 23",
-				label:"21423",
+				label:"Beijing 1954 / Gauss-Kruger zone 23",
+				value:"21423",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 25",
-				label:"2401",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 25",
+				value:"2401",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 26",
-				label:"2402",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 26",
+				value:"2402",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 27",
-				label:"2403",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 27",
+				value:"2403",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 28",
-				label:"2404",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 28",
+				value:"2404",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 29",
-				label:"2405",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 29",
+				value:"2405",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 30",
-				label:"2406",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 30",
+				value:"2406",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 25",
-				label:"2407",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 25",
+				value:"2407",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 31",
-				label:"2408",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 31",
+				value:"2408",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 32",
-				label:"2409",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 32",
+				value:"2409",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 33",
-				label:"2410",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 33",
+				value:"2410",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 34",
-				label:"2411",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 34",
+				value:"2411",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 35",
-				label:"2401",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 35",
+				value:"2401",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 36",
-				label:"2412",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 36",
+				value:"2412",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 37",
-				label:"2413",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 37",
+				value:"2413",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 38",
-				label:"2414",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 38",
+				value:"2414",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 39",
-				label:"2415",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 39",
+				value:"2415",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 40",
-				label:"2416",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 40",
+				value:"2416",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 41",
-				label:"2417",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 41",
+				value:"2417",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 42",
-				label:"2418",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 42",
+				value:"2418",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 43",
-				label:"2419",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 43",
+				value:"2419",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 44",
-				label:"2420",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 44",
+				value:"2420",
 				disabled:false
 			},
 			{
-				value:"Beijing 1954 / 3-degree Gauss-Kruger zone 45",
-				label:"2421",
+				label:"Beijing 1954 / 3-degree Gauss-Kruger zone 45",
+				value:"2421",
 				disabled:false
 			},
 			{
-				value:"Xian 1980",
-				label:"4610",
+				label:"Xian 1980",
+				value:"4610",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 13",
-				label:"2327",
+				label:"Xian 1980 / Gauss-Kruger zone 13",
+				value:"2327",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 14",
-				label:"2328",
+				label:"Xian 1980 / Gauss-Kruger zone 14",
+				value:"2328",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 15",
-				label:"2329",
+				label:"Xian 1980 / Gauss-Kruger zone 15",
+				value:"2329",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 16",
-				label:"2330",
+				label:"Xian 1980 / Gauss-Kruger zone 16",
+				value:"2330",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 17",
-				label:"2331",
+				label:"Xian 1980 / Gauss-Kruger zone 17",
+				value:"2331",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 18",
-				label:"2332",
+				label:"Xian 1980 / Gauss-Kruger zone 18",
+				value:"2332",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 19",
-				label:"2333",
+				label:"Xian 1980 / Gauss-Kruger zone 19",
+				value:"2333",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 20",
-				label:"2334",
+				label:"Xian 1980 / Gauss-Kruger zone 20",
+				value:"2334",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 21",
-				label:"2335",
+				label:"Xian 1980 / Gauss-Kruger zone 21",
+				value:"2335",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 22",
-				label:"2336",
+				label:"Xian 1980 / Gauss-Kruger zone 22",
+				value:"2336",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / Gauss-Kruger zone 23",
-				label:"2337",
+				label:"Xian 1980 / Gauss-Kruger zone 23",
+				value:"2337",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 25",
-				label:"2349",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 25",
+				value:"2349",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 26",
-				label:"2350",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 26",
+				value:"2350",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 27",
-				label:"2351",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 27",
+				value:"2351",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 28",
-				label:"2352",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 28",
+				value:"2352",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 29",
-				label:"2353",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 29",
+				value:"2353",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 30",
-				label:"2354",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 30",
+				value:"2354",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 31",
-				label:"2355",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 31",
+				value:"2355",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 32",
-				label:"2356",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 32",
+				value:"2356",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 33",
-				label:"2357",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 33",
+				value:"2357",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 34",
-				label:"2358",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 34",
+				value:"2358",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 35",
-				label:"2359",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 35",
+				value:"2359",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 36",
-				label:"2360",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 36",
+				value:"2360",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 37",
-				label:"2361",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 37",
+				value:"2361",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 38",
-				label:"2362",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 38",
+				value:"2362",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 39",
-				label:"2363",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 39",
+				value:"2363",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 40",
-				label:"2364",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 40",
+				value:"2364",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 41",
-				label:"2365",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 41",
+				value:"2365",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 42",
-				label:"2366",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 42",
+				value:"2366",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 43",
-				label:"2367",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 43",
+				value:"2367",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 44",
-				label:"2368",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 44",
+				value:"2368",
 				disabled:false
 			},
 			{
-				value:"Xian 1980 / 3-degree Gauss-Kruger zone 45",
-				label:"2369",
+				label:"Xian 1980 / 3-degree Gauss-Kruger zone 45",
+				value:"2369",
 				disabled:false
 			},
 			{
-				value:"China Geodetic Coordinate System 2000",
-				label:"4490",
+				label:"China Geodetic Coordinate System 2000",
+				value:"4490",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 13",
-				label:"4491",
+				label:"CGCS2000 / Gauss-Kruger zone 13",
+				value:"4491",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 14",
-				label:"4492",
+				label:"CGCS2000 / Gauss-Kruger zone 14",
+				value:"4492",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 15",
-				label:"4493",
+				label:"CGCS2000 / Gauss-Kruger zone 15",
+				value:"4493",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 16",
-				label:"4494",
+				label:"CGCS2000 / Gauss-Kruger zone 16",
+				value:"4494",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 17",
-				label:"4495",
+				label:"CGCS2000 / Gauss-Kruger zone 17",
+				value:"4495",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 18",
-				label:"4496",
+				label:"CGCS2000 / Gauss-Kruger zone 18",
+				value:"4496",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 19",
-				label:"4497",
+				label:"CGCS2000 / Gauss-Kruger zone 19",
+				value:"4497",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 20",
-				label:"4498",
+				label:"CGCS2000 / Gauss-Kruger zone 20",
+				value:"4498",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 21",
-				label:"4499",
+				label:"CGCS2000 / Gauss-Kruger zone 21",
+				value:"4499",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 22",
-				label:"4500",
+				label:"CGCS2000 / Gauss-Kruger zone 22",
+				value:"4500",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / Gauss-Kruger zone 23",
-				label:"4501",
+				label:"CGCS2000 / Gauss-Kruger zone 23",
+				value:"4501",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 25",
-				label:"4513",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 25",
+				value:"4513",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 26",
-				label:"4514",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 26",
+				value:"4514",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 27",
-				label:"4515",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 27",
+				value:"4515",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 28",
-				label:"4516",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 28",
+				value:"4516",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 29",
-				label:"4517",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 29",
+				value:"4517",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 30",
-				label:"4518",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 30",
+				value:"4518",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 31",
-				label:"4519",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 31",
+				value:"4519",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 32",
-				label:"4520",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 32",
+				value:"4520",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 33",
-				label:"4521",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 33",
+				value:"4521",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 34",
-				label:"4522",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 34",
+				value:"4522",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 35",
-				label:"4523",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 35",
+				value:"4523",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 36",
-				label:"4524",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 36",
+				value:"4524",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 37",
-				label:"4525",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 37",
+				value:"4525",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 38",
-				label:"4526",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 38",
+				value:"4526",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 39",
-				label:"4527",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 39",
+				value:"4527",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 40",
-				label:"4528",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 40",
+				value:"4528",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 41",
-				label:"4529",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 41",
+				value:"4529",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 42",
-				label:"4530",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 42",
+				value:"4530",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 43",
-				label:"4531",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 43",
+				value:"4531",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 44",
-				label:"4532",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 44",
+				value:"4532",
 				disabled:false
 			},
 			{
-				value:"CGCS2000 / 3-degree Gauss-Kruger zone 45",
-				label:"4533",
+				label:"CGCS2000 / 3-degree Gauss-Kruger zone 45",
+				value:"4533",
 				disabled:false
 			},
 		],
@@ -583,7 +583,7 @@ export default {
 		this.option_value2 = "";
 		this.option_value = "shp";
 		this.task_name = "";
-		this.save_path = "D:/SuperMap DownLoad";
+		this.save_path = "D:/SuperMapDownLoad";
 		this.isName = false;
 		this.on_need = false;
 		this.off_need = true;
@@ -604,9 +604,9 @@ export default {
 	select_change(){
 		var $this = this;
 		if(this.option_value === "kml"){
-			this.option_value2 = "WGS 84";
+			this.option_value2 = "4326";
 			for(let i=0;i<this.options2.length;i++){
-				if(this.options2[i].label !== "4326"){
+				if(this.options2[i].value !== "4326"){
 					this.options2[i].disabled = true;
 				}
 			}
@@ -625,7 +625,7 @@ export default {
 		var target_coordinate = "";
 		for(let i = 0;i<this.options2.length;i++){
 			if(value === this.options2[i].value){
-				target_coordinate = this.options2[i].label;
+				target_coordinate = this.options2[i].value;
 			}
 		}
 		console.log(source_coordinate);

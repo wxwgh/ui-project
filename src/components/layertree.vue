@@ -454,8 +454,8 @@ export default {
 			//更新下载信息
 			var target_coordinate="";
 			for(let i=0;i<$this.$refs.layertreeexportbox.options2.length;i++){
-				if($this.$refs.layertreeexportbox.option_value2===$this.$refs.layertreeexportbox.options2[i].label){
-					target_coordinate = $this.$refs.layertreeexportbox.options2[i].label;
+				if($this.$refs.layertreeexportbox.option_value2===$this.$refs.layertreeexportbox.options2[i].value){
+					target_coordinate = $this.$refs.layertreeexportbox.options2[i].value;
 				}
 			}
 			var features = [];
@@ -483,6 +483,8 @@ export default {
 				time:$this.getDate(),
 				features:features,
 				attributes:attributes,
+				progress:0,
+				exportProgress:0,
 			}
 			console.log(temp_info)
 			//更新下载任务表

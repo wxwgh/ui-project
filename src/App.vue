@@ -32,7 +32,7 @@
 		  			<!-- 地形分析 -->
 		  			<analyze />
 		  			<!-- 坐标转换 -->
-		  			<!-- <coordinate></coordinate> -->
+		  			<coordinate></coordinate>
 		  		</div>
 		  	</el-tab-pane>
 		      <el-tab-pane label="许可中心" name="fourth">

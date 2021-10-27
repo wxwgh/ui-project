@@ -58,9 +58,10 @@ def get_import_coordinate(info):
         # 获取数据源坐标系
         source_coordinate = layer.GetSpatialRef()
         temp_coord_name = source_coordinate.GetName()
-        coord_name = temp_coord_name
+        coord_name = str(temp_coord_name)
     else:
         coord_name="WGS 84"
+    print(coord_name)
     return coord_name
 
 # 解决csv读取大小限制
@@ -249,7 +250,7 @@ def get_import_features(info):
             x = info["x"]
             y = info["y"]
             # 打开csv文件
-            with open(file_path, 'r') as f:
+            with open(file_path, 'r',encoding='UTF-8') as f:
                 reader = list(csv.reader(f))
                 field_keys = ""
                 for row in range(len(reader)):
@@ -277,7 +278,7 @@ def get_import_features(info):
         elif feature_type == "line":
             # 获取空间对象列号
             geometry_col = info["geometry"]
-            with open(file_path, 'r') as f:
+            with open(file_path, 'r',encoding='UTF-8') as f:
                 reader = list(csv.reader(f))
                 field_keys = ""
                 for row in range(len(reader)):
@@ -334,7 +335,7 @@ def get_import_features(info):
             f.close()
         elif feature_type == "region":
             geometry_col = info["geometry"]
-            with open(file_path, 'r') as f:
+            with open(file_path, 'r',encoding='UTF-8') as f:
                 reader = list(csv.reader(f))
                 field_keys = ""
                 for row in range(len(reader)):
@@ -881,7 +882,7 @@ def import_scope(info):
     }
     if file_format=="csv":
         geometry_col=info["geometry"]
-        with open(file_path,'r') as f:
+        with open(file_path,'r',encoding='UTF-8') as f:
             reader=list(csv.reader(f))
             field_keys=""
             for row in range(len(reader)):

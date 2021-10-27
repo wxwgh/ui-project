@@ -175,6 +175,20 @@ export default {
 			}else{
 				this.$store.state.is_init_map = false;
 			}
+		}else if(post.name=="我的地图"){
+			if(this.$store.state.map_container.type!=="custom_map"){
+				this.$store.state.map_container.type="custom_map";
+				if(this.$store.state.tabActionName === "1" || this.$store.state.tabActionName === "first"){
+					//刷新地图窗口
+					this.reload();
+					this.myCommon.clear_layers();
+					this.$store.state.is_init_map = false;
+				}else{
+					this.$store.state.is_init_map = true;
+				}
+			}else{
+				this.$store.state.is_init_map = false;
+			}
 		}else{
 			if(this.$store.state.map_container.type!=="common_map"){
 				this.$store.state.map_container.type="common_map";

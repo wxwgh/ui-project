@@ -115,7 +115,7 @@ export default {
 				// 分析参数
 				var data={
 					id:$this.$UUID(),
-					downType:"坡度分析",
+					downType:"提取等值线",
 					taskName:$this.$refs.contourlinebox.task_name,
 					savePath:$this.$refs.contourlinebox.save_path,
 					saveType:$this.$refs.contourlinebox.option_value,

@@ -431,7 +431,7 @@ export default {
 				var coordinate="";
 				for(let i=0;i<$this.$refs.scopesetimport.options.length;i++){
 					if($this.$refs.scopesetimport.option_value===$this.$refs.scopesetimport.options[i].value){
-						coordinate = $this.$refs.scopesetimport.options[i].label;
+						coordinate = $this.$refs.scopesetimport.options[i].value;
 					}
 				}
 				var temp_info={

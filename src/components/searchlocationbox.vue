@@ -10,7 +10,7 @@ export default {
   name: 'searchlocationbox',
   data(){
     return {
-		location_value:"116.72,39.62",
+		location_value:"116.720000,39.620000",
 	}
   },
   methods:{

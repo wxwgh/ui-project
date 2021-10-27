@@ -278,7 +278,8 @@ export default {
 					//描述
 					attribution: "wxw"
 				};
-				realUrl=$this.$refs.custommaplistbox.map_url+"?"+"service=WMTS&request=GetTile&version=1.0.0&layer="+$this.$refs.custommaplistbox.layer_name+"&style=&tilematrixset="+$this.$refs.custommaplistbox.tile_matrix+"&format=image/png&height=256&width=256&tilematrix={z}&tilerow={y}&tilecol={x}";
+				realUrl=$this.$refs.custommaplistbox.map_url+"?"+"Service=WMTS&Request=GetTile&Version=1.0.0&STANDARD=OGC&ACCOUNT=zt_sasmac&PASSWD=3abe52f65870a7b40aaf1b75529ae39b&layer="+$this.$refs.custommaplistbox.layer_name+"&style=default&tilematrixset="+$this.$refs.custommaplistbox.tile_matrix+"&format=image/png&height=256&width=256&tilematrix={z}&tilerow={y}&tilecol={x}";
+				// http://satmap.sasclouds.com/OneMap2016/wmts?Service=WMTS&Request=GetTile&Version=1.0.0&STANDARD=OGC&ACCOUNT=zt_sasmac&PASSWD=3abe52f65870a7b40aaf1b75529ae39b&layer=satImage&style=default&tilematrixset=satImage&Format=image%2Fjpeg&height=256&width=256&tilematrix=4&tilerow=4&tilecol=23
 			}else if($this.$refs.custommaplistbox.type_radio==="WMS"){
 				imageProvider={
 					url:$this.$refs.custommaplistbox.map_url,

@@ -182,7 +182,7 @@ export default {
 			var coordinate="";
 			for(let i=0;i<$this.$refs.layertreeimportbox.options.length;i++){
 				if($this.$refs.layertreeimportbox.option_value===$this.$refs.layertreeimportbox.options[i].value){
-					coordinate = $this.$refs.layertreeimportbox.options[i].label;
+					coordinate = $this.$refs.layertreeimportbox.options[i].value;
 				}
 			}
 			var temp_info={
@@ -247,7 +247,7 @@ export default {
 						type:result.type,
 						table_header:table_header,
 						header_keys:temp_keys,
-						icon:"fa fa-eye-slash",
+						icon:"fa fa-eye",
 						coordinate:temp_coordinate,
 						isSelect:true,
 						children:[]
@@ -291,10 +291,10 @@ export default {
 						var icon="";
 						var isSelect="";
 						if(i>9){
-							icon ="fa fa-eye"
+							icon ="fa fa-eye-slash"
 							isSelect=false;
 						}else{
-							icon ="fa fa-eye-slash"
+							icon ="fa fa-eye"
 							isSelect=true;
 						}
 						var layer="";
@@ -658,7 +658,7 @@ export default {
 				isPlot:true,
 				type:type,
 				isShow:true,
-				icon:"fa fa-eye-slash",
+				icon:"fa fa-eye",
 				table_header:table_header,
 				header_keys:temp_list,
 				coordinate:"4326",
@@ -760,7 +760,7 @@ export default {
 							
 							if(!layerGroup[i].children[j].isSelect){
 								layerGroup[i].children[j].isSelect=true;
-								layerGroup[i].children[j].icon="fa fa-eye-slash";
+								layerGroup[i].children[j].icon="fa fa-eye";
 								var layer =null;
 								if(layerGroup[i].children[j].type==="point"){
 									layer = L.circleMarker(layerGroup[i].children[j].features[0], {radius: 5,color:'red',weight:1}).addTo(map);
@@ -825,11 +825,11 @@ export default {
 				if(layerGroup[i].id===data.id){
 					if(data.isSelect){
 						layerGroup[i].isSelect=false;
-						layerGroup[i].icon="fa fa-eye";
+						layerGroup[i].icon="fa fa-eye-slash";
 						for(let j=0;j<layerGroup[i].children.length;j++){
 							if(layerGroup[i].children[j].isSelect){
 								layerGroup[i].children[j].isSelect=false;
-								layerGroup[i].children[j].icon="fa fa-eye";
+								layerGroup[i].children[j].icon="fa fa-eye-slash";
 								if(layerGroup[i].children[j].layer){
 									layerGroup[i].children[j].layer.remove();
 								}
@@ -837,12 +837,12 @@ export default {
 						}
 					}else{
 						layerGroup[i].isSelect=true;
-						layerGroup[i].icon="fa fa-eye-slash";
+						layerGroup[i].icon="fa fa-eye";
 						for(let j=0;j<layerGroup[i].children.length;j++){
 							if(j<10){
 								if(!layerGroup[i].children[j].isSelect){
 									layerGroup[i].children[j].isSelect=true;
-									layerGroup[i].children[j].icon="fa fa-eye-slash";
+									layerGroup[i].children[j].icon="fa fa-eye";
 									var layer =null;
 									if(layerGroup[i].children[j].type==="point"){
 										layer = L.circleMarker(layerGroup[i].children[j].features[0], {radius:5,color:'red',weight:1}).addTo(map);
@@ -871,11 +871,11 @@ export default {
 						if(layerGroup[i].children[j].id===data.id){
 							if(layerGroup[i].children[j].isSelect){
 								layerGroup[i].children[j].isSelect=false;
-								layerGroup[i].children[j].icon="fa fa-eye";
+								layerGroup[i].children[j].icon="fa fa-eye-slash";
 								layerGroup[i].children[j].layer.remove();
 							}else{
 								layerGroup[i].children[j].isSelect=true;
-								layerGroup[i].children[j].icon="fa fa-eye-slash";
+								layerGroup[i].children[j].icon="fa fa-eye";
 								var layer =null;
 								if(layerGroup[i].children[j].type==="point"){
 									layer = L.circleMarker(layerGroup[i].children[j].features[0], {radius: 5,color:'red',weight:1}).addTo(map);
@@ -902,10 +902,10 @@ export default {
 				}
 				if(!flag){
 					layerGroup[i].isSelect=false;
-					layerGroup[i].icon="fa fa-eye";
+					layerGroup[i].icon="fa fa-eye-slash";
 				}else{
 					layerGroup[i].isSelect=true;
-					layerGroup[i].icon="fa fa-eye-slash";
+					layerGroup[i].icon="fa fa-eye";
 				}
 			}
 		}

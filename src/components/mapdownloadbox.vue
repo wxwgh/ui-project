@@ -53,11 +53,11 @@ export default {
 		tableHeight:"223",
 		isName:false,
 		tileNameInput:"",
-		tileDownInput:"D:/SuperMapDownLoad",
+		tileDownInput:"C:/MapDownLoad",
 		tile_is_clip:false,
 		tile_radio:"原始瓦片",
 		demNameInput:"",
-		demDownInput:"D:/SuperMapDownLoad",
+		demDownInput:"C:/MapDownLoad",
 		demOptionValue:"img",
 		demOptions:[
 			{
@@ -68,7 +68,7 @@ export default {
 		//poi下载相关变量
 		poi_name:"",
 		poi_search_name:"",
-		poi_save_path:"D:/SuperMap DownLoad",
+		poi_save_path:"C:/MapDownLoad",
 		poi_save_format:"shp",
 		is_poi_name:false,
 		poi_save_format_options:[
@@ -100,7 +100,7 @@ export default {
 	//初始化poi下载面板
 	init_poi_panel(){
 		this.poi_name="";
-		this.poi_save_path="D:/SuperMap DownLoad";
+		this.poi_save_path="C:/MapDownLoad";
 		this.poi_save_format="shp";
 		this.is_poi_name=false;
 		this.poi_search_name="";
@@ -108,7 +108,7 @@ export default {
 	//初始化影像下载面板
 	init_tile_panel(){
 		this.tileNameInput="";
-		this.tileDownInput="D:/SuperMapDownLoad";
+		this.tileDownInput="C:/MapDownLoad";
 		this.tile_is_clip=false;
 		this.tile_radio="原始瓦片";
 		this.tileOptionValue="png";
@@ -123,7 +123,7 @@ export default {
 	//初始化高程下载面板
 	init_dem_panel(){
 		this.demNameInput="";
-		this.demDownInput="D:/SuperMapDownLoad";
+		this.demDownInput="C:/MapDownLoad";
 		this.demOptionValue="img";
 	},
 	//文件路径选取

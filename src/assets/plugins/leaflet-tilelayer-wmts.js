@@ -1,12 +1,15 @@
 L.TileLayer.WMTS = L.TileLayer.extend({
 	defaultWmtsParams: {
-		service: "WMTS",
-		request: "GetTile",
-		version: "1.0.0",
-		layer: "",
-		style: "",
-		tilematrixset: "",
-		format: "image/jpeg"
+		Service: "WMTS",
+		Request: "GetTile",
+		Version: "1.0.0",
+		STANDARD:"OGC",
+		ACCOUNT:"zt_sasmac",
+		PASSWD:"3abe52f65870a7b40aaf1b75529ae39b",
+		layer: "satImage",
+		style: "default",
+		tilematrixset: "satImage",
+		Format: "image/jpeg"
 	},
 	initialize: function(a, b) {
 		this._url = a;
@@ -51,7 +54,8 @@ L.TileLayer.WMTS = L.TileLayer.extend({
 	getDefaultMatrix: function() {
 		for (var a = Array(22), b = 0; 22 > b; b++) a[b] = {
 			identifier: "" + b,
-			topLeftCorner: new L.LatLng(20037508.3428, -20037508.3428)
+			topLeftCorner: new L.LatLng(90.0,-180.0)
+			// topLeftCorner: new L.LatLng(20037508.3428, -20037508.3428)
 		};
 		return a
 	}

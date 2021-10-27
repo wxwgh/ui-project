@@ -45,7 +45,7 @@ export default {
 		on_need:false,
 		off_need:true,
 		task_name:"",
-		save_path:"D:/SuperMapDownLoad",
+		save_path:"C:/MapDownLoad",
 		isName:false,
 		option_value:"shp",
 		options:[
@@ -583,7 +583,7 @@ export default {
 		this.option_value2 = "";
 		this.option_value = "shp";
 		this.task_name = "";
-		this.save_path = "D:/SuperMapDownLoad";
+		this.save_path = "C:/MapDownLoad";
 		this.isName = false;
 		this.on_need = false;
 		this.off_need = true;

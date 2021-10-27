@@ -18,6 +18,7 @@ export default {
 		if(map_container.type==="common_map"){
 			map_container.map=L.map("commonMap",{
 				center: [39.550339, 100.114129],
+				crs:L.CRS.EPSG3857,
 				zoom: 3,
 				minZoom:3,
 				maxZoom: 18,
@@ -42,6 +43,19 @@ export default {
 				// 	[-90, -180],
 				// 	[90, 180]
 				// ]),
+				zoomControl: false,
+				attributionControl: false,
+				keyboard:false,
+				//开启convas
+				preferCanvas: true
+			});
+		}else if(map_container.type==="custom_map"){
+			map_container.map=L.map("commonMap",{
+				crs:L.CRS.EPSG4326,
+				center:[39.550339, 100.114129],
+				zoom:3,
+				minZoom:3,
+				maxZoom: 18,
 				zoomControl: false,
 				attributionControl: false,
 				keyboard:false,

@@ -119,7 +119,7 @@ export default {
 						type:"marker",
 						isShow:true,
 						coordinate:"4326",
-						icon:"fa fa-eye-slash",
+						icon:"fa fa-eye",
 						table_header:table_header,
 						header_keys:temp_list,
 						isSelect:true,
@@ -173,7 +173,7 @@ export default {
 					isOperation:false,
 					isTip:isTip,
 					isShow:true,
-					icon:"fa fa-eye-slash",
+					icon:"fa fa-eye",
 					isSelect:true,
 					type:"marker",
 					layer:marker,
@@ -190,7 +190,7 @@ export default {
 				$this.$message({
 				    showClose: true,
 					type: 'error',
-				    message: '当前没有范围'
+				    message: '当前没有设置范围'
 				});
 				return false;
 			}
@@ -260,7 +260,7 @@ export default {
 			isShow:true,
 			type:"marker",
 			coordinate:"4326",
-			icon:"fa fa-eye-slash",
+			icon:"fa fa-eye",
 			table_header:table_header,
 			header_keys:temp_list,
 			isSelect:true,
@@ -331,11 +331,11 @@ export default {
 							if(i<$this.selectLength&&select.length<=$this.selectLength){
 								select.push(i);
 								isSelect=true;
-								icon = "fa fa-eye-slash";
+								icon = "fa fa-eye";
 								marker = $this.myCommon.createMarker(latlng,temp.pois[i].name);
 							}else{
 								isSelect=false;
-								icon ="fa fa-eye";
+								icon ="fa fa-eye-slash";
 								marker=null;
 							}
 							var layer_id = $this.$UUID();
@@ -429,11 +429,11 @@ export default {
 							if(i<$this.selectLength&&select.length<=$this.selectLength){
 								select.push(i);
 								isSelect=true;
-								icon = "fa fa-eye-slash";
+								icon = "fa fa-eye";
 								marker = $this.myCommon.createMarker(latlng,temp.pois[i].name);
 							}else{
 								isSelect=false;
-								icon ="fa fa-eye";
+								icon ="fa fa-eye-slash";
 								marker=null;
 							}
 							var layer_id = $this.$UUID();

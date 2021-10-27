@@ -57,7 +57,7 @@ export default {
 				$this.$message({
 				    showClose: true,
 					type: 'error',
-				    message: '当前没有范围'
+				    message: '当前没有设置范围'
 				});
 				return false;
 			}

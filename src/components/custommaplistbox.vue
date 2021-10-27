@@ -31,8 +31,18 @@ export default {
 	radio_change(){
 		if(this.type_radio==="WMS"){
 			this.map_type_flag=true;
+			this.map_name="";
+			this.map_url="";
+			this.layer_name="";
+			this.tile_matrix="";
+			this.isName=false;
 		}else{
 			this.map_type_flag=false;
+			this.map_name="";
+			this.map_url="";
+			this.layer_name="satImage";
+			this.tile_matrix="satImage";
+			this.isName=false;
 		}
 	},
 	init_custommaplistbox(){

@@ -154,8 +154,10 @@ export default new Vuex.Store({
     state: {
 		viewer:"",
 		//cesium地形地址
+		// cesium_dem_url:"http://172.31.12.116:18080/yaogandem",
 		cesium_dem_url:"http://localhost:18080/yaogandem",
 		//自建地形服务 地址
+		// dem_url:"http://172.31.12.116:18080/dem",
 		dem_url:"http://localhost:18080/dem",
 		loading:false,
 		// 选择框

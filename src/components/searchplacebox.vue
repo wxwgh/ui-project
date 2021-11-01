@@ -10,7 +10,7 @@ export default {
   name: 'searchplacebox',
   data(){
     return {
-		place_name:"派出所",
+		place_name:"学校",
 		isName:false,
 	}
   },

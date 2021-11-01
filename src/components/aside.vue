@@ -162,12 +162,7 @@ export default {
 				if(data.id === map_list[i].id){
 					map_list[i].isActive = true;
 					if(map_list[i].type === "WMTS"){
-						layer = new L.TileLayer.WMTS(map_list[i].url,{
-							layer: map_list[i].layer_name,
-							format: 'image/jpeg',
-							tilematrixSet:map_list[i].tile_matrix,
-							attribution: "Weather data © 2012 IEM Nexrad"
-						}).addTo(map);
+						layer = new L.TileLayer.WMTS(map_list[i].url,{}).addTo(map);
 						//更新地图类型
 						this.$store.state.map_container.layer_type="WMTS";
 						//更新三维场景图层
@@ -222,6 +217,22 @@ export default {
 						});
 						return false;
 					}
+					if(!taskRegex.test($this.$refs.custommaplistbox.user_name)){
+						$this.$message({
+							showClose: true,
+							type: 'error',
+							message: '用户名,格式不正确'
+						});
+						return false;
+					}
+					if(!taskRegex.test($this.$refs.custommaplistbox.user_password)){
+						$this.$message({
+							showClose: true,
+							type: 'error',
+							message: '密码,格式不正确'
+						});
+						return false;
+					}
 					if(!taskRegex.test($this.$refs.custommaplistbox.map_url)){
 						$this.$message({
 							showClose: true,
@@ -265,21 +276,27 @@ export default {
 			// 判断地址类型
 			var imageProvider="";
 			var realUrl="";
+			var url="";
 			if($this.$refs.custommaplistbox.type_radio==="WMTS"){
 				//添加至provider对象
 				// L.TileLayer.ChinaProvider.providers.CusTom.Normal["自定义-"+$this.$refs.custommaplistbox.map_name] = $this.$refs.custommaplistbox.map_url.split(":")[1];
 				// L.TileLayer.ChinaProvider.providers.CusTom["Subdomains"]=[];
 				imageProvider={
-					url:$this.$refs.custommaplistbox.map_url,
+					url:$this.$refs.custommaplistbox.map_url+"?ACCOUNT="+$this.$refs.custommaplistbox.user_name+"&PASSWD="+$this.$refs.custommaplistbox.user_password,
 					layer:$this.$refs.custommaplistbox.layer_name,
 					style:"default",
-					format:"image/png",
+					format:"tiles",
+					Service: "WMTS",
+					Request: "GetTile",
+					Version: "1.0.0",
+					STANDARD:"OGC",
 					tileMatrixSetID:$this.$refs.custommaplistbox.tile_matrix,
 					//描述
 					attribution: "wxw"
 				};
-				realUrl=$this.$refs.custommaplistbox.map_url+"?"+"Service=WMTS&Request=GetTile&Version=1.0.0&STANDARD=OGC&ACCOUNT=zt_sasmac&PASSWD=3abe52f65870a7b40aaf1b75529ae39b&layer="+$this.$refs.custommaplistbox.layer_name+"&style=default&tilematrixset="+$this.$refs.custommaplistbox.tile_matrix+"&format=image/png&height=256&width=256&tilematrix={z}&tilerow={y}&tilecol={x}";
-				// http://satmap.sasclouds.com/OneMap2016/wmts?Service=WMTS&Request=GetTile&Version=1.0.0&STANDARD=OGC&ACCOUNT=zt_sasmac&PASSWD=3abe52f65870a7b40aaf1b75529ae39b&layer=satImage&style=default&tilematrixset=satImage&Format=image%2Fjpeg&height=256&width=256&tilematrix=4&tilerow=4&tilecol=23
+				realUrl=$this.$refs.custommaplistbox.map_url+"?"+"Service=WMTS&Request=GetTile&Version=1.0.0&STANDARD=OGC&ACCOUNT="+$this.$refs.custommaplistbox.user_name+"&PASSWD="+$this.$refs.custommaplistbox.user_password+"&layer="+$this.$refs.custommaplistbox.layer_name+"&style=default&tilematrixset="+$this.$refs.custommaplistbox.tile_matrix+"&format=image/png&height=256&width=256&tilematrix={z}&tilerow={y}&tilecol={x}";
+				url = $this.$refs.custommaplistbox.map_url+"?"+"Service=WMTS&Request=GetTile&Version=1.0.0&STANDARD=OGC&ACCOUNT="+$this.$refs.custommaplistbox.user_name+"&PASSWD="+$this.$refs.custommaplistbox.user_password+"&layer="+$this.$refs.custommaplistbox.layer_name+"&style=default&tilematrixset="+$this.$refs.custommaplistbox.tile_matrix+"&format=image/jpeg&height=256&width=256";
+				
 			}else if($this.$refs.custommaplistbox.type_radio==="WMS"){
 				imageProvider={
 					url:$this.$refs.custommaplistbox.map_url,
@@ -291,7 +308,8 @@ export default {
 						attribution: "wxw"
 					}
 				}
-				realUrl=$this.$refs.custommaplistbox.map_url;
+				realUrl=$this.$refs.custommaplistbox.map_url+"?SERVICE=WMS&REQUEST=GetCapabilities&SRS=WGS84&ACCOUNT="+$this.$refs.custommaplistbox.user_name+"&PASSWD="+$this.$refs.custommaplistbox.user_password;
+				url=realUrl;
 			}
 			var isTip=null;
 			if(("自定义-"+$this.$refs.custommaplistbox.map_name).length*16>150){
@@ -336,7 +354,7 @@ export default {
 				minZoom: 3,
 				maxZoom: 18,
 				image:require('../assets/custommaplist/custom.png'),
-				url:$this.$refs.custommaplistbox.map_url,
+				url:url,
 				// url:"CusTom.Normal."+"自定义-"+$this.$refs.custommaplistbox.map_name,
 				realUrl:realUrl,
 				imageProvider:imageProvider,

@@ -231,8 +231,8 @@ export default {
 					}
 					var temp_coordinate = "";
 					for(let i=0;i<$this.$refs.layertreeimportbox.options.length;i++){
-						if(result.coordinate===$this.$refs.layertreeimportbox.options[i].value){
-							temp_coordinate = $this.$refs.layertreeimportbox.options[i].label;
+						if(result.coordinate===$this.$refs.layertreeimportbox.options[i].label){
+							temp_coordinate = $this.$refs.layertreeimportbox.options[i].value;
 						}
 					}
 					//创建图层父节点 类似数据集结构
@@ -341,6 +341,7 @@ export default {
 							features:result.data[i].features,
 							attribute:temp_attribute,
 						};
+						console.log(result.data[i].features);
 						//创建图层
 						$this.myCommon.createLayer(option);
 						

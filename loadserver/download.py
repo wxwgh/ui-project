@@ -8,6 +8,7 @@ from PIL import Image
 import numpy as np
 import shutil
 import requests
+from natsort import natsorted
 import imghdr
 import random
 # from urllib import request
@@ -92,6 +93,7 @@ def map_load(info):
         polygon=ogr.CreateGeometryFromJson(json.dumps(features[i]["geometry"]))
         # 获取元素范围
         bounds = polygon.GetEnvelope()
+        print(bounds)
         # 获取左上角点
         north_west = {
             "lat":bounds[3],
@@ -102,13 +104,18 @@ def map_load(info):
             "lat":bounds[2],
             "lng":bounds[1]
         }
+        # 获取左下角
+        south_west = {
+            "lat": bounds[2],
+            "lng": bounds[0]
+        }
         # 根据zoom下载散列瓦片
         for j in range(len(zooms)):
             resolution =""
             tile1=""
             tile2=""
             if map_name == "百度地图":
-                resolution = get_resolution_baidu(north_west,zooms[j])
+                resolution = get_resolution_gaode(north_west,zooms[j])
                 # 通过左上 级别获取瓦片范围
                 tile1 = eel.lat_lng_to_tile_baidu(north_west["lat"],north_west["lng"],zooms[j])()
                 # 通过右下 级别获取瓦片范围
@@ -127,7 +134,7 @@ def map_load(info):
                 tile2 = eel.lat_lng_to_tile_gaode(south_east["lat"], south_east["lng"], zooms[j])()
             temp_info={
                 "url":polygon_path+"/"+str(zooms[j]),
-                "north_west":north_west,
+                "south_west":south_west,
                 "resolution":resolution,
                 "zoom":zooms[j]
             }
@@ -227,25 +234,26 @@ def map_load(info):
             new_image_prj = file_paths[s]["url"] + "/" + str(file_paths[s]["zoom"]) + ".prj"
             new_image_tfw = file_paths[s]["url"] + "/" + str(file_paths[s]["zoom"])+ ".jgw"
             resolution = file_paths[s]["resolution"]
-            north_west_mi = lnglat_to_Mercator(file_paths[s]["north_west"])
+            # north_west_mi = lnglat_to_Mercator(file_paths[s]["north_west"])
+            south_west_mi = file_paths[s]["south_west"]
             images = []
             # 获取瓦片拼接存储地址
-            for item in os.listdir(file_paths[s]["url"]):
+            for item in natsorted(os.listdir(file_paths[s]["url"])):
                 temp_images = []
                 if os.path.isdir(file_paths[s]["url"] + "/" + item):
-                    temp_files = os.listdir(file_paths[s]["url"] + "/" + item)
                     # 文件按名称排序(数字名称)
-                    temp_files.sort(key=lambda q: int(q[:-4]))
+                    temp_files = natsorted(os.listdir(file_paths[s]["url"] + "/" + item))
+                    # temp_files.sort(key=lambda q: int(q.split('.png')[0]))
                     for item2 in temp_files:
                         image_content = Image.open(file_paths[s]["url"] + "/" + item + "/" + item2)
-                        # print(file_paths[s]["url"] + "/" + item + "/" + item2)
+                        print(file_paths[s]["url"] + "/" + item + "/" + item2)
                         temp_images.append(image_content)
                         joint_index += 1
                         export_progress = math.floor((joint_index / total) * 100)
                         progress["exportProgress"] = export_progress
                         eel.updateTaskProgress(progress)
                     # 根据不同的地图 进行相应的拼接方式
-                    if map_name == "百度地图":
+                    if map_name == "百度地图" or map_name =="腾讯地图":
                         temp_images.reverse()
                     images.append(temp_images)
             # 获取图片总宽度和高度
@@ -271,18 +279,19 @@ def map_load(info):
             fd.write('0.0000000000\r')
             # 写入y方向 像素分辨率
             fd.write(str(resolution) + '\r')
-            # 写入图像左上角x坐标
-            fd.write(str(north_west_mi["lng"]) + '\r')
-            # 写入图像左上角y坐标
-            fd.write(str(north_west_mi["lat"]) + '\r')
+            # 写入图像左下角x坐标
+            fd.write(str(south_west_mi["lng"]) + '\r')
+            # 写入图像左下角y坐标
+            fd.write(str(south_west_mi["lat"]) + '\r')
             fd.close()
 
             # 生成坐标系文件
             # 创建prj文件 用于标识tif的位置
             prj = open(new_image_prj, mode="w", encoding="utf-8")
             # 坐标系字符串
-            prj.write(
-                'PROJCS["WGS_1984_Web_Mercator_Auxiliary_Sphere",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator_Auxiliary_Sphere"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],PARAMETER["Auxiliary_Sphere_Type",0.0],UNIT["Meter",1.0],EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"]]')
+            # prj.write(
+            #     'PROJCS["WGS_1984_Web_Mercator_Auxiliary_Sphere",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator_Auxiliary_Sphere"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],PARAMETER["Auxiliary_Sphere_Type",0.0],UNIT["Meter",1.0],EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"]]')
+            prj.write('GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295],AUTHORITY["EPSG","4326"]]')
             prj.close()
             driver = gdal.GetDriverByName('GTiff')
             in_ds = gdal.Open(new_image_path)
@@ -327,8 +336,51 @@ def lnglat_to_Mercator(north_west):
         "lng":lng,
         "lat":lat
     }
-# 获取高德,谷歌,OSM分辨率
+# 获取分辨率 采用国际180度切片方案 原点:-180,90 dpi:96 size:256
 def get_resolution_gaode(north_west,level):
+    resolution=""
+    if int(level) == 0:
+        resolution = 0.703125000000001
+    elif int(level) == 1:
+        resolution = 0.351562500000001
+    elif int(level) == 2:
+        resolution = 0.17578125
+    elif int(level) == 3:
+        resolution = 8.78906250000002E-02
+    elif int(level) == 4:
+        resolution = 4.39453125000001E-02
+    elif int(level) == 5:
+        resolution = 0.02197265625
+    elif int(level) == 6:
+        resolution = 0.010986328125
+    elif int(level) == 7:
+        resolution = 5.49316406250001E-03
+    elif int(level) == 8:
+        resolution = 0.00274658203125
+    elif int(level) == 9:
+        resolution = 0.001373291015625
+    elif int(level) == 10:
+        resolution = 6.86645507812501E-04
+    elif int(level) == 11:
+        resolution = 3.43322753906251E-04
+    elif int(level) == 12:
+        resolution = 1.71661376953125E-04
+    elif int(level) == 13:
+        resolution = 8.58306884765626E-05
+    elif int(level) == 14:
+        resolution = 4.29153442382813E-05
+    elif int(level) == 15:
+        resolution = 2.14576721191407E-05
+    elif int(level) == 16:
+        resolution = 1.07288360595703E-05
+    elif int(level) == 17:
+        resolution = 5.36441802978517E-06
+    elif int(level) == 18:
+        resolution = 2.68220901489258E-06
+    elif int(level) == 19:
+        resolution = 1.34110450744629E-06
+    return resolution
+def get_resolution_gaode2(north_west,level):
     num = math.pow(2, int(level))
     resolution=6378137.0*2*math.pi*math.cos(north_west["lat"])/256/num
     return resolution

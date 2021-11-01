@@ -310,9 +310,13 @@ export default{
 					if(map_name == "百度地图"){
 						tile1 = this.lat_lng_to_tile_baidu(north_west.lat,north_west.lng,i);
 						tile2 = this.lat_lng_to_tile_baidu(south_east.lat,south_east.lng,i);
+					}else if(map_name=="腾讯地图"){
+						tile1 = this.lat_lng_to_tile_tencent(north_west.lat,north_west.lng,i);
+						tile2 = this.lat_lng_to_tile_tencent(south_east.lat,south_east.lng,i);
 					}else{
 						tile1 = this.lat_lng_to_tile_gaode(north_west.lat,north_west.lng,i);
 						tile2 = this.lat_lng_to_tile_gaode(south_east.lat,south_east.lng,i);
+						
 					}
 					var minX = tile1.tileX<tile2.tileX?tile1.tileX:tile2.tileX;
 					var maxX = tile1.tileX>tile2.tileX?tile1.tileX:tile2.tileX;

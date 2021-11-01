@@ -200,10 +200,10 @@ export default {
 				closeOnClickModal:false,
 				beforeClose:function(action, instance, done){
 					if(action==="close"){
-						$this.$refs.searchplacebox.place_name="";
+						$this.$refs.searchplacebox.place_name="学校";
 						done();
 					}else if(action==="cancel"){
-						$this.$refs.searchplacebox.place_name="";
+						$this.$refs.searchplacebox.place_name="学校";
 						done();
 					}else if(action==="confirm"){
 						var taskRegex = /([0-9]|[a-z]|[\u4e00-\u9fa5])+/;
@@ -230,7 +230,7 @@ export default {
 			}).then(() => {
 				var value = $this.$refs.searchplacebox.place_name;
 				$this.searchResult(value);
-				$this.$refs.searchplacebox.place_name="";
+				$this.$refs.searchplacebox.place_name="学校";
 			}).catch(() => {
 				
 			});

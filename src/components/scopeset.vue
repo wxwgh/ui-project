@@ -586,11 +586,11 @@ export default {
 			if($this.$store.state.peration_rectangle!==""){
 				$this.$store.state.peration_rectangle.remove();
 			}
-			if($this.$store.state.map_container.layer_type=="WMS"){
+			if($this.$store.state.map_container.layer_type=="WMS"||$this.$store.state.map_container.layer_type=="WMTS"){
 				$this.$message({
 					showClose: true,
 					type: 'error',
-					message: 'WMS类型服务不支持下载'
+					message: '出于数据保护目的,wms及wmts类型服务不支持下载'
 				});
 				//清空范围
 				$this.myCommon.clearScope();

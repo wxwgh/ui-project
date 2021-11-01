@@ -155,10 +155,10 @@ export default new Vuex.Store({
 		viewer:"",
 		//cesium地形地址
 		// cesium_dem_url:"http://172.31.12.116:18080/yaogandem",
-		cesium_dem_url:"http://localhost:18080/yaogandem",
+		cesium_dem_url:"http://192.168.1.143:18080/yaogandem",
 		//自建地形服务 地址
 		// dem_url:"http://172.31.12.116:18080/dem",
-		dem_url:"http://localhost:18080/dem",
+		dem_url:"http://192.168.1.143:18080/dem",
 		loading:false,
 		// 选择框
 		peration_rectangle:"",
@@ -610,23 +610,23 @@ export default new Vuex.Store({
 							key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y"
 						}),
 					},
-					{
-						id:UUID(),
-						name:"必应地图-影像+路网",
-						minZoom: 3,
-						maxZoom: 18,
-						image:require('../assets/bingmap/bingyxlw.png'),
-						isActive:false,
-						isShow:false,
-						key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y",
-						url:"AerialWithLabels",
-						realUrl:"https://ecn.t3.tiles.virtualearth.net/tiles/h{quadkey}.jpeg?g=11061&mkt=en-US",
-						imageProvider:new Cesium.BingMapsImageryProvider({
-							url : 'https://dev.virtualearth.net',
-							mapStyle : Cesium.BingMapsStyle.AERIAL_WITH_LABELS,
-							key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y"
-						}),
-					},
+					// {
+					// 	id:UUID(),
+					// 	name:"必应地图-影像+路网",
+					// 	minZoom: 3,
+					// 	maxZoom: 18,
+					// 	image:require('../assets/bingmap/bingyxlw.png'),
+					// 	isActive:false,
+					// 	isShow:false,
+					// 	key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y",
+					// 	url:"AerialWithLabels",
+					// 	realUrl:"https://ecn.t3.tiles.virtualearth.net/tiles/h{quadkey}.jpeg?g=11061&mkt=en-US",
+					// 	imageProvider:new Cesium.BingMapsImageryProvider({
+					// 		url : 'https://dev.virtualearth.net',
+					// 		mapStyle : Cesium.BingMapsStyle.AERIAL_WITH_LABELS,
+					// 		key:"AlZYB-gED-VU97g8sxXkkQFR9lodXJtSByPb-yoZsE4mnpfD35DIqwhPAQMXwo8Y"
+					// 	}),
+					// },
 					// {
 					// 	id:UUID(),
 					// 	name:"必应地图-黑夜",

@@ -59,14 +59,6 @@ export default {
 				value:"4214"
 			},
 			{
-				label:"Beijing 1954 / Gauss-Kruger zone 13",
-				value:"21413"
-			},
-			{
-				label:"Beijing 1954 / Gauss-Kruger zone 14",
-				value:"21414"
-			},
-			{
 				label:"Beijing 1954 / Gauss-Kruger zone 15",
 				value:"21415"
 			},
@@ -75,44 +67,16 @@ export default {
 				value:"4610"
 			},
 			{
-				label:"Xian 1980 / Gauss-Kruger zone 13",
-				value:"2327"
-			},
-			{
-				label:"Xian 1980 / Gauss-Kruger zone 14",
-				value:"2328"
-			},
-			{
 				label:"Xian 1980 / Gauss-Kruger zone 15",
-				value:"2329"
-			},
-			{
-				label:"Xian 1980 / Gauss-Kruger zone 16",
-				value:"2330"
-			},
-			{
-				label:"Xian 1980 / Gauss-Kruger zone 17",
-				value:"2331"
+				value:"2329",
 			},
 			{
 				label:"China Geodetic Coordinate System 2000",
 				value:"4490"
 			},
 			{
-				label:"CGCS2000 / Gauss-Kruger zone 13",
-				value:"4491"
-			},
-			{
-				label:"CGCS2000 / Gauss-Kruger zone 14",
-				value:"4492"
-			},
-			{
 				label:"CGCS2000 / Gauss-Kruger zone 15",
-				value:"4493"
-			},
-			{
-				label:"CGCS2000 / Gauss-Kruger zone 16",
-				value:"4494"
+				value:"4493",
 			},
 		],
 		is_model_show:true,

@@ -788,15 +788,15 @@ def export_features(info):
                 # 判断数组维数,4维则是多面类型
                 if len(np.array(features[j]).shape) == 3:
                     print("多面类型")
-                    wkt = "MULTIPOLYGON(("
+                    wkt = "MULTIPOLYGON((("
                     for s in range(len(features[j][0])):
                         temp_feature = get_coordinate_trans(source, target, features[j][0][s][1], features[j][0][s][0], seven)
                         if info["saveType"] == "kml":
                             temp_tup = (temp_feature[1], temp_feature[0])
                         elif info["saveType"] == "shp":
                             temp_tup = (temp_feature[0], temp_feature[1])
-                        if s == len(features[j]) - 1:
-                            wkt += str(temp_tup[0]) + " " + str(temp_tup[1]) + "))"
+                        if s == len(features[j][0]) - 1:
+                            wkt += str(temp_tup[0]) + " " + str(temp_tup[1]) + ")))"
                         else:
                             wkt += str(temp_tup[0]) + " " + str(temp_tup[1]) + ","
                 # 判断数组维数,3维则是简单面类型

@@ -51,10 +51,11 @@
 						var temp_points = temp[j].split(";");
 						var coordinate = [];
 						for (let f = 0; f < temp_points.length; f++) {
-							var temp_lnglat = $this.gcj02towgs84(parseFloat(temp_points[f].split(",")[0]),
-								parseFloat(temp_points[f].split(",")[1]));
+							// var temp_lnglat = $this.gcj02towgs84(parseFloat(temp_points[f].split(",")[0]),
+							// 	parseFloat(temp_points[f].split(",")[1]));
 							// var coordinates = L.latLng(temp_lnglat[1],temp_lnglat[0]);
-							coordinate.push([temp_lnglat[0], temp_lnglat[1]]);
+							coordinate.push([parseFloat(temp_points[f].split(",")[0]), parseFloat(temp_points[f].split(",")[1])]);
+							// coordinate.push([temp_lnglat[0], temp_lnglat[1]]);
 						}
 						coordinates.push([coordinate]);
 					}
@@ -182,6 +183,7 @@
 						$this.myCommon.update_scopeInfo(true, temp_data.districts[0].adcode, [polygon], geojson);
 						var center = temp_data.districts[0].center;
 						map.flyToBounds(polygon.getBounds());
+						console.log(polygon.getBounds())
 					}
 					$this.$store.state.loading = false;
 				})

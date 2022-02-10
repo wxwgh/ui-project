@@ -68,7 +68,7 @@ export default {
 		//初始化级别指示条
 		this.myCommon.init_zoom_slider();
 		this.myCommon.unbindMapEvent(map_container.map);
-		// L.control.scale({maxWidth:100,metric:true,imperial:false}).addTo(map_container.map);
+		L.control.scale({maxWidth:100,metric:true,imperial:false}).addTo(map_container.map);
 		window.onresize=function(){
 			//地图窗口大小
 			map_container.map.invalidateSize(true);

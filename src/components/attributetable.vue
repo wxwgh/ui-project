@@ -19,7 +19,7 @@
 				<i class="el-icon-my-line" v-else-if="get_type==='line'"></i>
 				<i class="el-icon-my-polygon" v-else-if="get_type==='region'"></i>
 				<el-select :value="get_value" size="mini" @change="attributeSelectChange">
-					<el-option v-for="post in get_options" :labek="post.label" :value="post.value">
+					<el-option v-for="post in get_options" :label="post.label" :value="post.value">
 						<i class="el-icon-my-point" v-if="post.type==='marker'"></i>
 						<i class="el-icon-my-point" v-else-if="post.type==='point'"></i>
 						<i class="el-icon-my-line" v-else-if="post.type==='line'"></i>
